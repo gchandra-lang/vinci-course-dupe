@@ -33,340 +33,1047 @@
     ],
     "slides": [
       {
-        "title": "Why This Lecture Matters",
-        "thesis": "Today builds your robot mental model. The goal is not memorization; the goal is safe interpretation of robot data and software behavior.",
-        "board_type": "grid",
-        "board_data": [
-          {
-            "label": "01. See Go2 as a System",
-            "value": "Connect the robot body, onboard computers, network, SDK, ROS 2 graph, and safety process into one unified mental model."
-          },
-          {
-            "label": "02. Predict Data Movement",
-            "value": "Understand exactly when information should flow as a topic stream, a service request, an action goal, or a dynamic parameter."
-          },
-          {
-            "label": "03. Debug Before Control",
-            "value": "Utilize arrays, frames, TF, RViz displays, and active message inspection to verify robot state before commanding physical motors."
-          }
-        ],
-        "bottom_band": "Teaching Rhythm: Pause, inspect commands, and ask questions before moving to the physical hardware."
-      },
-      {
-        "title": "Go2 Is More Than a Robot Body",
-        "thesis": "Before sending any command, ask: which layer produces the data, which layer moves it, and which layer has authority to act?",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Layer",
-            "Components",
-            "Core Role & Safety Risk"
-          ],
-          "rows": [
-            [
-              "ROBOT BODY",
-              "Legs, joints, motors, battery",
-              "Creates physical motion and physical risk. High mechanical authority."
-            ],
-            [
-              "SENSORS",
-              "IMU, joint state, foot force, LiDAR",
-              "Describes what the robot can observe. Essential for closed-loop control."
-            ],
-            [
-              "COMPUTE",
-              "Built-in control compute, expansion compute",
-              "Separates low-level robot operation from student development work."
-            ],
-            [
-              "NETWORK",
-              "Ethernet, IP subnet, DDS discovery",
-              "Decides whether software can see, monitor, or command the robot."
-            ]
-          ]
-        },
-        "bottom_band": "Mental Model: Always see layers, not just legs."
-      },
-      {
-        "title": "Go2 Platform Reasoning",
-        "thesis": "Why do we use quadruped platforms for research and inspection? It is a balance of physical capability and software complexity.",
-        "board_type": "grid",
-        "board_data": [
-          {
-            "label": "Physical Capability",
-            "value": "Stairs, slopes, rough terrain, and active obstacle avoidance. Legged systems go where wheels cannot."
-          },
-          {
-            "label": "Software Complexity",
-            "value": "Requires high-frequency joint control, state estimation, active balance, and dynamic gait planning."
-          },
-          {
-            "label": "Safety First",
-            "value": "Unlike humanoids, quadrupeds have a stable static base. However, active gaits still present high kinetic risks."
-          }
-        ],
-        "bottom_band": "Platform Goal: Bridge the gap between low-level kinematics and high-level autonomous navigation."
-      },
-      {
-        "title": "Go2 Onboard Computing",
-        "thesis": "Low-level motor control is separated from high-level user applications to protect the robot's physical stability.",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Compute Node",
-            "Operating System",
-            "Primary Function"
-          ],
-          "rows": [
-            [
-              "Low-Level controller",
-              "Real-Time OS (RTOS)",
-              "High-frequency joint control, balance, state estimation, safety guards."
-            ],
-            [
-              "Onboard PC (Jetson/Orin)",
-              "Ubuntu Linux + ROS 2",
-              "User development, SLAM, perception, navigation, custom algorithms."
-            ],
-            [
-              "Student Workstation",
-              "Ubuntu Linux + ROS 2",
-              "Monitoring, visualization (RViz), remote control, and build environment."
-            ]
-          ]
-        },
-        "bottom_band": "Architecture Rule: Never run heavy compute or blocking loops on the low-level controller."
-      },
-      {
-        "title": "Go2 Networking & DDS Discovery",
-        "thesis": "A robust local network is the nervous system of the robot. All communication relies on DDS discovery over specific interfaces.",
-        "board_type": "list",
-        "board_data": [
-          "Robot Subnet: Go2 operates on a dedicated subnet (typically 192.168.123.xx). Your workstation must join this subnet.",
-          "DDS Discovery: Data Distribution Service (DDS) allows ROS 2 nodes to discover each other automatically without a central master.",
-          "Interface Selection: You must configure 'CYCLONEDDS_URI' or 'RMW_IMPLEMENTATION' to bind to the correct physical network interface.",
-          "IP Conflict Warning: Never connect multiple workstations to the robot network with conflicting static IPs."
-        ],
-        "bottom_band": "Debugging Habit: Always run 'ros2 node list' or 'ros2 topic list' to verify network discovery before launching nodes."
-      },
-      {
-        "title": "Go2 Safety Before Motion",
-        "thesis": "Safety is not a checklist; it is an active programming habit. Legged robots can fail instantly and violently.",
-        "board_type": "list",
-        "board_data": [
-          "Unsafe Pattern: Running a new motor controller node without first subscribing to the robot's High-State feedback.",
-          "Clear Workspace: Always place the robot on a metal gantry stand (suspended legs) when testing new joint commands.",
-          "Emergency Stop: Map an easily accessible key or button to send zero-torque or emergency-stop commands immediately.",
-          "Safe Recovery: Ensure your node handles exceptions gracefully and resets joint commands to neutral on exit."
-        ],
-        "bottom_band": "Safety Rule: Keep hands away from the joints when the robot's low-level motors are active."
-      },
-      {
-        "title": "Quadruped Kinematics Naming Discipline",
-        "thesis": "Standardizing joint and frame naming is essential for writing clean, reusable kinematic formulas.",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Leg Abbreviation",
-            "Joint Name",
-            "Physical Function"
-          ],
-          "rows": [
-            [
-              "FL / FR",
-              "Front Left / Front Right",
-              "Responsible for forward traction, steering, and obstacle clearance."
-            ],
-            [
-              "RL / RR",
-              "Rear Left / Rear Right",
-              "Responsible for propulsion, load-bearing, and body pitch adjustment."
-            ],
-            [
-              "Hip Roll (0)",
-              "Abduction / Adduction",
-              "Controls side-to-side leg swing. Range: -1.04 to 1.04 rad."
-            ],
-            [
-              "Hip Pitch (1)",
-              "Thigh Rotation",
-              "Controls forward/backward thigh movement. Range: -1.57 to 3.49 rad."
-            ],
-            [
-              "Knee Pitch (2)",
-              "Calf Rotation",
-              "Controls leg extension and retraction. Range: -2.72 to -0.83 rad."
-            ]
-          ]
-        },
-        "bottom_band": "Naming Rule: Always use the standard [Leg]_[Joint] convention in URDF and software."
-      },
-      {
-        "title": "Forward Kinematics (FK) Formulation",
-        "thesis": "Forward Kinematics calculates the exact 3D coordinates (X, Y, Z) of the foot relative to the hip frame, given the joint angles.",
+        "title": "10 ---",
+        "thesis": "rty",
         "board_type": "math",
         "board_data": {
-          "equation": "Foot_Position = FK(q_roll, q_pitch, q_knee)",
+          "equation": "Formula",
           "steps": [
-            "1. Read joint encoder values (q_0, q_1, q_2) from the High-State message.",
-            "2. Define link lengths: Thigh link (L1 = 0.213m) and Calf link (L2 = 0.213m).",
-            "3. Apply homogeneous transformation matrices representing the leg geometry.",
-            "4. Output the 3D position of the foot center relative to the base hip frame."
+            "NETWORKED ROBOT MENTAL MODEL",
+            "Two Computers Must Agree",
+            "Stu d en t PC",
+            "192.168.123.X"
           ]
         },
-        "bottom_band": "Verification: Run the 'lowstate_listener' lab to verify joint angle readings match physical leg positions."
+        "bottom_band": "Sources: Unitree Go2 SDK 2 Quick Start; Unitree ROS 2 Services Interface"
       },
       {
-        "title": "Inverse Kinematics (IK) Formulation",
-        "thesis": "Inverse Kinematics solves the inverse problem: given a target foot coordinate (X, Y, Z), what joint angles must the motors command?",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Joint_Angles = IK(X_target, Y_target, Z_target)",
-          "steps": [
-            "1. Define the desired foot trajectory or static target relative to the hip.",
-            "2. Check if the target is within the leg's physical workspace envelope.",
-            "3. Solve trigonometric or geometric equations to find q_roll, q_pitch, q_knee.",
-            "4. Guard against imaginary numbers: an unreachable target produces math errors!"
-          ]
-        },
-        "bottom_band": "Debugging Habit: Always clamp IK outputs to physical joint limits before sending them to the motors."
-      },
-      {
-        "title": "ROS 2 Communication Vocabulary",
-        "thesis": "ROS 2 provides four primary communication paradigms. Choosing the right one is essential for robot performance.",
+        "title": "11 ---",
+        "thesis": "rty",
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Paradigm",
-            "Data Flow",
-            "Best Use Case"
+            "Concept",
+            "Description"
           ],
           "rows": [
             [
-              "Topics",
-              "Continuous, Unidirectional, Many-to-Many",
-              "High-frequency sensor data, joint states, camera streams."
+              "GO2 SAFETY BEFORE MOTION",
+              ""
             ],
             [
-              "Services",
-              "Synchronous, Request-Response, One-to-One",
-              "Quick configuration changes, triggering state transitions."
+              "Command Authority Must Be Explicit",
+              ""
             ],
             [
-              "Actions",
-              "Asynchronous, Goal-Feedback-Result",
-              "Long-running tasks like navigation goals or complex gaits."
+              "UNSAFE PATTERN",
+              ""
             ],
             [
-              "Parameters",
-              "Dynamic Node Configuration",
-              "Setting PID gains, safety thresholds, or network ports."
+              "Two controllers can fight",
+              ""
+            ],
+            [
+              "the same robot.",
+              ""
+            ],
+            [
+              "If multiple p r o g r ams send motion requests",
+              ""
             ]
           ]
         },
-        "bottom_band": "Design Rule: Never use Services for high-frequency data streams. Use Topics instead."
+        "bottom_band": "Source: Unitree Go2 SDK 2 safety guidance on disabling competing motion services before low-level control"
       },
       {
-        "title": "ROS 2 Quality of Service (QoS)",
-        "thesis": "QoS profiles decide how messages are buffered, retried, and delivered across the network.",
-        "board_type": "grid",
-        "board_data": [
-          {
-            "label": "Reliable vs Best Effort",
-            "value": "Reliable guarantees delivery (best for commands). Best Effort drops lost packets to maintain speed (best for high-frequency sensors)."
-          },
-          {
-            "label": "History & Depth",
-            "value": "Keep Last (with depth N) buffers the last N messages. Keep All buffers everything until memory is full."
-          },
-          {
-            "label": "Transient Local Durability",
-            "value": "Allows late-joining subscribers to receive the last published message (essential for static maps or robot URDF)."
-          }
-        ],
-        "bottom_band": "Debugging Habit: Incompatible QoS profiles between publishers and subscribers will cause topics to show 0 active messages."
-      },
-      {
-        "title": "Understanding ROS 2 Message Arrays",
-        "thesis": "Robotic state data is inherently repetitive. We use typed, structured arrays to handle bulk sensor and motor values.",
+        "title": "12 ---",
+        "thesis": "rty",
         "board_type": "list",
         "board_data": [
-          "Repetitive Structure: A quadruped has 12 joints, 4 feet, and multiple IMU axes. Storing these as individual variables is inefficient.",
-          "Typed Arrays: Standard ROS 2 messages (like sensor_msgs/JointState) use float64[] arrays for position, velocity, and effort.",
-          "Index Mapping: You must strictly follow the index mapping (e.g., index 0 = FL_hip, index 1 = FL_thigh) to avoid commanding the wrong motor.",
-          "Array Safety: Always verify that the array size matches your expected size before accessing elements to prevent runtime segmentation faults."
+          "Students now c onne c t join t m otion , body f r ame s ,",
+          "f oot targets, and array ordering before any robot",
+          "c ommand is trusted.",
+          "WHAT THIS SECTION",
+          "four legs, three joints each"
         ],
-        "bottom_band": "Array Rule: Never hardcode array indices in multiple places. Define clear constant mappings or enums."
+        "bottom_band": "m o ves , and why index discipline m a t t ers ."
       },
       {
-        "title": "RViz 2 Visualization Mental Model",
-        "thesis": "RViz is not a simulator; it is a 3D visualization window that displays what the robot believes is happening based on active TF frames.",
-        "board_type": "grid",
-        "board_data": [
-          {
-            "label": "Robot Model Display",
-            "value": "Loads the URDF file to render the robot's physical links and joint positions in 3D space."
-          },
-          {
-            "label": "Coordinate Frames (TF)",
-            "value": "Displays the transform tree (base_link, odom, map, hip, foot) and how they move relative to each other."
-          },
-          {
-            "label": "Sensor Visualizations",
-            "value": "Overlays laser scans (LaserScan), point clouds (PointCloud2), and camera feeds directly into the 3D scene."
-          }
-        ],
-        "bottom_band": "Mental Model: If RViz shows the robot drifting, check the Odometry (odom) publisher, not the physical motors."
-      },
-      {
-        "title": "Coordinate Transforms (TF) & Frames",
-        "thesis": "The TF tree is the spatial backbone of the robot. Every sensor reading must be transformed into a common frame to be useful.",
+        "title": "13 ---",
+        "thesis": "rty",
         "board_type": "math",
         "board_data": {
-          "equation": "P_map = T_map_to_odom * T_odom_to_base * P_robot",
+          "equation": "=12",
           "steps": [
-            "1. Read sensor point P_robot relative to the camera or LiDAR frame.",
-            "2. Lookup transform T from sensor frame to base_link (defined in URDF).",
-            "3. Lookup transform T from base_link to odom (published by state estimator).",
-            "4. Lookup transform T from odom to map (published by SLAM node)."
+            "QUADRUPED KINEMATICS",
+            "Go2 Has Twelve Main Leg DOF",
+            "Twelve variables",
+            "describe the main leg"
           ]
         },
-        "bottom_band": "TF Rule: A healthy TF tree must have a single, unbroken path from any child frame back to the root frame (map)."
+        "bottom_band": "Student checkpoint"
       },
       {
-        "title": "RViz Diagnostic Habits",
-        "thesis": "When RViz displays errors or warnings, follow a structured diagnostic flow instead of randomly changing configurations.",
+        "title": "14 ---",
+        "thesis": "rty",
         "board_type": "table",
         "board_data": {
           "headers": [
-            "RViz Error/Warning",
-            "Probable Root Cause",
-            "Actionable Fix"
+            "Concept",
+            "Description"
           ],
           "rows": [
             [
-              "Global Status: Error",
-              "Fixed Frame does not exist in the active TF tree.",
-              "Change 'Fixed Frame' in RViz global options to 'odom' or 'base_link'."
+              "QUADRUPED NAMING DISCIPLINE",
+              ""
             ],
             [
-              "RobotModel: No link data",
-              "The robot_description parameter was not published.",
-              "Verify that the 'robot_state_publisher' node is running and active."
+              "Leg Names Prevent Confusion",
+              ""
             ],
             [
-              "LaserScan: Transform Error",
-              "No transform from lidar_frame to Fixed Frame.",
-              "Check if static_transform_publisher is running or if URDF is missing the link."
+              "ROBOT",
+              "RELATIVE ORIENTATION"
             ],
             [
-              "No messages received",
-              "QoS mismatch or incorrect topic name subscribed.",
-              "Run 'ros2 topic info' to verify publisher and subscriber QoS settings."
+              "I m po r tan t",
+              "left and right are from the robot\u02bcs vie wp o in t , n o t from"
+            ],
+            [
+              "the vie we r standing in front of it.",
+              ""
+            ],
+            [
+              "STABLE SOFTWARE MAPPING",
+              ""
             ]
           ]
         },
-        "bottom_band": "Diagnostic Rule: Always check the terminal logs of your launch file alongside the RViz UI warnings."
+        "bottom_band": "Student checkpoint"
+      },
+      {
+        "title": "15 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "QUADRUPED KINEMATICS VOCABULARY",
+            "Joint Names Carry Meaning",
+            "Names tell students",
+            "what a number"
+          ]
+        },
+        "bottom_band": "safety limits."
+      },
+      {
+        "title": "16 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "KINEMATICS READING SKILL",
+              ""
+            ],
+            [
+              "Axes De\u0000ne Positive Motion",
+              ""
+            ],
+            [
+              "A number is",
+              ""
+            ],
+            [
+              "meaningless until its",
+              ""
+            ],
+            [
+              "axis is known.",
+              ""
+            ],
+            [
+              "A joint angle may be positive or negative, but",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Student checkpoint"
+      },
+      {
+        "title": "17 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "= body-frame foot position",
+          "steps": [
+            "QUADRUPED KINEMATICS",
+            "Forward Kinematics Predicts Foot Position",
+            "KNOWN INPUT",
+            "Sta r t with joint angles"
+          ]
+        },
+        "bottom_band": "Student checkpoint"
+      },
+      {
+        "title": "18 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Important: an IK answer is only u s efu l if it res p ec t s",
+          "steps": [
+            "QUADRUPED KINEMATICS",
+            "Inverse Kinematics Starts From a Desired Foot",
+            "angles reach this foot",
+            "target?"
+          ]
+        },
+        "bottom_band": "Never send IK results blindly. First check the frame, units, reachability, joint limits, and whether the"
+      },
+      {
+        "title": "19 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "FRAMES AND MEASUREMENTS",
+              ""
+            ],
+            [
+              "Body Frames Make Measurements Useful",
+              ""
+            ],
+            [
+              "Coordinates need a",
+              ""
+            ],
+            [
+              "reference.",
+              ""
+            ],
+            [
+              "A f oot p osi t i on suc h as \u00000.18, \u00000.09, \u00000.28\u0000 is",
+              ""
+            ],
+            [
+              "not use f ul by itself. Students must k now",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "frame to the fixed"
+      },
+      {
+        "title": "20 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "KINEMATICS IN SOFTWARE",
+              ""
+            ],
+            [
+              "Arrays Represent Many Joints",
+              ""
+            ],
+            [
+              "One array can",
+              ""
+            ],
+            [
+              "describe the whole",
+              ""
+            ],
+            [
+              "leg system.",
+              ""
+            ],
+            [
+              "I nst e a d of sending twelve separate",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "If index 7 changes, students should be able to identify the physical joint before p l otti n g , debugging, or"
+      },
+      {
+        "title": "21 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "QUADRUPED MOTION TIMING",
+              ""
+            ],
+            [
+              "Gaits Are Timed Leg Patterns",
+              ""
+            ],
+            [
+              "A gait is coordination,",
+              ""
+            ],
+            [
+              "not four separate legs.",
+              ""
+            ],
+            [
+              "Each leg follows a trajectory, but use f ul",
+              ""
+            ],
+            [
+              "walking appears onl y when the trajectories",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "smooth motion?"
+      },
+      {
+        "title": "22 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "KINEMATICS AND SAFE MOTION",
+              ""
+            ],
+            [
+              "Kinematics Has Safety Limits",
+              ""
+            ],
+            [
+              "A reachable pose is not",
+              ""
+            ],
+            [
+              "automatically a safe",
+              ""
+            ],
+            [
+              "pose.",
+              ""
+            ],
+            [
+              "Kinematics can tell students whe t he r a f oot",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "robot before continuing."
+      },
+      {
+        "title": "23 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "SECTION 3",
+              ""
+            ],
+            [
+              "ROS 2",
+              ""
+            ],
+            [
+              "Communication",
+              ""
+            ],
+            [
+              "Students now learn how robot s of t war e str e a m s",
+              ""
+            ],
+            [
+              "p r og r ams visible on the ROS 2 graph.",
+              ""
+            ],
+            [
+              "WHAT THIS SECTION",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "delivery rules and discovery"
+      },
+      {
+        "title": "24 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "ROS 2 COMMUNICATION VOCABULARY",
+            "ROS 2 Organizes Robot Software",
+            "ROS 2 turns many",
+            "programs into one"
+          ]
+        },
+        "bottom_band": "Source: ROS 2 Humble documentation on nodes, topics, services, actions, parameters, and launch"
+      },
+      {
+        "title": "25 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "ROS 2 TOPICS",
+            "Topics Carry Continuous Streams",
+            "A topic is a named",
+            "channel for repeated"
+          ]
+        },
+        "bottom_band": "subscribes?"
+      },
+      {
+        "title": "26 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "ROS 2 MESSAGE DEFINITIONS",
+            "Messages Are Typed Contracts",
+            "WHAT A MESSAGE FILE PROMISES",
+            "A message says exactly"
+          ]
+        },
+        "bottom_band": "by the same index?"
+      },
+      {
+        "title": "27 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "ROS 2 SERVICE PATTERN",
+            "Services Are Short Conversations",
+            "A service is a question",
+            "with a typed answer."
+          ]
+        },
+        "bottom_band": "f e e d b ack ?"
+      },
+      {
+        "title": "28 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "ROS 2 SERVICES",
+              "CORRECT SCOPE"
+            ],
+            [
+              "Services Are Not Streaming Tools",
+              ""
+            ],
+            [
+              "Use a service when the",
+              ""
+            ],
+            [
+              "answer should come",
+              ""
+            ],
+            [
+              "back quickly.",
+              ""
+            ],
+            [
+              "TIMING COMPARISON",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Quick checks, mode requests,Continuous s tate , sensor"
+      },
+      {
+        "title": "29 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "UNITREE SDK2 AND ROS 2 THINKING",
+            "Unitree Uses Request Patterns Too",
+            "Robot commands",
+            "should feel like"
+          ]
+        },
+        "bottom_band": "Source: Unitree SDK 2 /unitree_ros2 documentation and ROS 2 Humble service concepts"
+      },
+      {
+        "title": "30 ---",
+        "thesis": "Actions Add Feedback and Cancellation",
+        "board_type": "list",
+        "board_data": [
+          "ROS 2 ACTIONS",
+          "Actions are for goals",
+          "that take time.",
+          "A ROS 2action lets s t ude nt s send a goal,",
+          "watch feedback,optionally r e que s t"
+        ],
+        "bottom_band": "Source: ROS 2 Humble documentation on actions, services, and topics"
+      },
+      {
+        "title": "31 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "ROS 2 PARAMETERS",
+              ""
+            ],
+            [
+              "Parameters Tune Node Behavior",
+              ""
+            ],
+            [
+              "A parameter is",
+              ""
+            ],
+            [
+              "con\u0000guration, not a",
+              ""
+            ],
+            [
+              "command stream.",
+              ""
+            ],
+            [
+              "S t ude nt s should think of a ROS 2parameter",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "or acti o n ?"
+      },
+      {
+        "title": "32 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "ROS 2 QUALITY OF SERVICE",
+            "QoS Changes What Data Arrives",
+            "QoS is the delivery",
+            "agreement behind a"
+          ]
+        },
+        "bottom_band": "Source: ROS 2 Humble documentation on Quality of Service policies"
+      },
+      {
+        "title": "33 ---",
+        "thesis": "DDS Makes Nodes Discover Each Other",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "ROS 2 DISCOVERY LAYER",
+              ""
+            ],
+            [
+              "need a central master.",
+              ""
+            ],
+            [
+              "In ROS 2,nodes can run on the robot,on a",
+              ""
+            ],
+            [
+              "s t ude nt laptop,or on another c o m put e r . T he",
+              ""
+            ],
+            [
+              "m i ddl e w a r e helps them d i s c ove r",
+              ""
+            ],
+            [
+              "c omp a ti b l e publishers, subscribers,",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Source: ROS 2 Humble DDS concepts and Unitree ROS 2 Cy c l o n e DDS setup guidance"
+      },
+      {
+        "title": "34 ---",
+        "thesis": "rty",
+        "board_type": "list",
+        "board_data": [
+          "DAY 1 LECTURE TRANSITION",
+          "Rob ots ra rel y sen d one value at a time.",
+          "Stu d en ts now learn how ordered repeated",
+          "data rep resen ts joints, p oses , ma rk ers , point",
+          "clouds, and maps."
+        ],
+        "bottom_band": "sensor data."
+      },
+      {
+        "title": "35 ---",
+        "thesis": "Arrays Store Repeated Robot Data",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "ROS 2 MESSAGE ARRAYS",
+              ""
+            ],
+            [
+              "An array lets one",
+              ""
+            ],
+            [
+              "\u0000eld carry many",
+              ""
+            ],
+            [
+              "values.",
+              ""
+            ],
+            [
+              "Robots often describe groups of similar",
+              ""
+            ],
+            [
+              "things",
+              "joints,feet,poses,markers,or point"
+            ]
+          ]
+        },
+        "bottom_band": "Source: ROS 2 Humble interface definition guidance and robotics message patterns"
+      },
+      {
+        "title": "36 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "MESSAGE ARRAYS IN PRACTICE",
+            "JointState Is an Array Lesson",
+            "One index describes",
+            "one joint across"
+          ]
+        },
+        "bottom_band": "order."
+      },
+      {
+        "title": "37 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "UNITREE MESSAGE ARRAYS",
+            "Unitree State Uses Fixed Arrays",
+            "Fixed arrays match",
+            "\u0000xed robot structure."
+          ]
+        },
+        "bottom_band": "positive d i r ecti o n apply?"
+      },
+      {
+        "title": "38 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "ROS 2 MESSAGE ARRAYS",
+            "PoseArray Represents Many Poses",
+            "PoseArray is a group",
+            "of poses in one"
+          ]
+        },
+        "bottom_band": "index?"
+      },
+      {
+        "title": "39 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "RVIZ VISUALIZATION MESSAGES",
+            "MarkerArray Groups Visual Objects",
+            "One topic can carry",
+            "many visual hints."
+          ]
+        },
+        "bottom_band": "update, or get d el eted by ID?"
+      },
+      {
+        "title": "40 ---",
+        "thesis": "PointCloud2 Is Structured Bulk Data",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "BULK SENSOR MESSAGES",
+            "A point cloud is a",
+            "large 3D",
+            "measurement table."
+          ]
+        },
+        "bottom_band": "habit"
+      },
+      {
+        "title": "41 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "SAFE ARRAY INTERPRETATION",
+              ""
+            ],
+            [
+              "Index Discipline Prevents Bugs",
+              ""
+            ],
+            [
+              "until you know what",
+              ""
+            ],
+            [
+              "each index means.",
+              ""
+            ],
+            [
+              "Array bugs are da nge r o us because they",
+              ""
+            ],
+            [
+              "often look reasonable.A num be r may be",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "move hardware."
+      },
+      {
+        "title": "42 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "SECTION",
+              ""
+            ],
+            [
+              "RVIZ \u00b7 TF \u00b7 MAPPING",
+              ""
+            ],
+            [
+              "STUDENT VISUALIZATION BLOCK",
+              ""
+            ],
+            [
+              "RViz and Mapping",
+              ""
+            ],
+            [
+              "Now students move from m e s s age s t r uct ur e to v i s ual",
+              ""
+            ],
+            [
+              "unde r s t andi ng",
+              "h o w ROS 2 publishers f eed RViz displays,"
+            ]
+          ]
+        },
+        "bottom_band": "maps."
+      },
+      {
+        "title": "43 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "RVIZ MENTAL MODEL",
+            "RViz Is a Subscriber View",
+            "RViz watches ROS 2",
+            "data; it does not own"
+          ]
+        },
+        "bottom_band": "frame?"
+      },
+      {
+        "title": "44 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "RVIZ DISPLAY CROSSWALK",
+            "Displays Consume Speci\u0000c Messages",
+            "Choosing a display",
+            "is choosing a"
+          ]
+        },
+        "bottom_band": "frame to the fixed frame?"
+      },
+      {
+        "title": "45 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "RVIZ PUBLISHER/SUBSCRIBER MAPPING",
+            "Publishers Feed RViz Displays",
+            "RViz can only show",
+            "data that someone"
+          ]
+        },
+        "bottom_band": "frame."
+      },
+      {
+        "title": "46 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "x=1only has meaning inside a named frame.",
+          "steps": [
+            "RVIZ FRAMES AND TF",
+            "Fixed Frame Is the Visualization Anchor",
+            "RViz needs one",
+            "stable frame to draw"
+          ]
+        },
+        "bottom_band": "Source: ROS 2 Humble RViz user guide and tf2 frame transform concepts"
+      },
+      {
+        "title": "47 ---",
+        "thesis": "rty",
+        "board_type": "list",
+        "board_data": [
+          "RVIZ ROBOTMODEL DISPLAY",
+          "RobotModel Needs TF and URDF",
+          "The robot model is",
+          "built from shape",
+          "plus motion."
+        ],
+        "bottom_band": "Source: ROS 2 Humble RViz RobotModel display concepts, U RDF , and tf2 frame transform concepts"
+      },
+      {
+        "title": "48 ---",
+        "thesis": "Mapping Uses Point Clouds and Odometry",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "RVIZ MAPPING DATA FLOW",
+            "Mapping needs",
+            "shape and motion,",
+            "not just one topic."
+          ]
+        },
+        "bottom_band": "Source: ROS 2 sensor_msgs/PointCloud2, nav_msgs/Odometry, RViz display concepts, and Unitree ROS 2 SLAM wo r kfl o ws"
+      },
+      {
+        "title": "49 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "RVIZ MAP DISPLAY",
+              ""
+            ],
+            [
+              "Occupancy Grids Become Maps",
+              ""
+            ],
+            [
+              "A map can be stored",
+              ""
+            ],
+            [
+              "as a 2D array of",
+              ""
+            ],
+            [
+              "cells.",
+              ""
+            ],
+            [
+              "An Oc c u pan c y G r i d represents the world as",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Source: ROS 2 nav_msgs/OccupancyGrid message definition and ROS 2 Humble RViz Map display concepts"
+      },
+      {
+        "title": "50 ---",
+        "thesis": "RViz Status Teaches Troubleshooting",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "RVIZ DIAGNOSTIC HABIT",
+              ""
+            ],
+            [
+              "Status text is",
+              ""
+            ],
+            [
+              "evidence, not",
+              ""
+            ],
+            [
+              "decoration.",
+              ""
+            ],
+            [
+              "Each RViz dis play reports whether it is",
+              ""
+            ],
+            [
+              "e n able d , r e c e iv in g dat a , an d able to",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Source: ROS 2 Humble RViz user guide and display status wo r kfl o w"
+      },
+      {
+        "title": "51 ---",
+        "thesis": "rty",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "DAY 1 LECTURE TRANSITION",
+              ""
+            ],
+            [
+              "From Theory to Lab",
+              ""
+            ],
+            [
+              "S t ude nt s now t r ans l at e Go2system kno w l e dge , ROS 2 c o mmuni c at i o n",
+              ""
+            ],
+            [
+              "pat t e r ns , me s s age arrays, and RViz t r o ubl e s ho o t i ng into a su p e rvise d",
+              ""
+            ],
+            [
+              "hands",
+              "on work f low ."
+            ],
+            [
+              "FIRST",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "The next se que nc e is not about memorizing c o m m a nds . It is about bui l di ng a repeatable stude nt habit:"
+      },
+      {
+        "title": "52 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "FROM LECTURE TO SUPERVISED LAB",
+            "Your Day 1 Lab Checklist",
+            "Before touching the",
+            "robot, verify the"
+          ]
+        },
+        "bottom_band": "supervised lab authority."
+      },
+      {
+        "title": "53 ---",
+        "thesis": "rty",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "DAY 1 CLOSING",
+            "Thank Y ou",
+            "Qu est i o n s are welcome before we move into the su p er vi sed lab",
+            "seq u en ce . T h e goal is for students to co n n ect Go2system be hav i o r , R OS"
+          ]
+        },
+        "bottom_band": "N ext : s u p ervis ed hands-on practice with network checks,topic inspection,RViz setup,and safe Go2 in t era c t io n ."
       }
     ],
     "labs": [
