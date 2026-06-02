@@ -33,23 +33,21 @@
     ],
     "slides": [
       {
-        "title": "10 ---",
-        "thesis": "rty",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "NETWORKED ROBOT MENTAL MODEL",
-            "Two Computers Must Agree",
-            "Stu d en t PC",
-            "192.168.123.X"
-          ]
-        },
-        "bottom_band": "Sources: Unitree Go2 SDK 2 Quick Start; Unitree ROS 2 Services Interface"
+        "title": "Why This Lecture Matters",
+        "thesis": "Today Builds Your Robot Mental Model",
+        "board_type": "list",
+        "board_data": [
+          "See Go2 as a system",
+          "Students connect the robot body,onboard",
+          "computers,network,SDK,ROS 2 gr aph , an d",
+          "s afe t y process into one w o r kin g pic t u r e .",
+          "Predict data m o vem en t"
+        ],
+        "bottom_band": "The goal is not memorization;the goal is safe i n t erp ret a t i o n of robot data and software behavior."
       },
       {
-        "title": "11 ---",
-        "thesis": "rty",
+        "title": "Lecture Pacing",
+        "thesis": "Three Hours, Five Ideas",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -58,13 +56,225 @@
           ],
           "rows": [
             [
-              "GO2 SAFETY BEFORE MOTION",
+              "0",
+              "00\u20130:35"
+            ],
+            [
+              "Go2as a system",
               ""
             ],
             [
-              "Command Authority Must Be Explicit",
+              "S tud e nts map the body,",
               ""
             ],
+            [
+              "onb oa r d c om p ute , network,",
+              ""
+            ],
+            [
+              "SDK, and safety",
+              ""
+            ],
+            [
+              "b ound a r i e s .",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Teaching rhythm"
+      },
+      {
+        "title": "Go2 System View",
+        "thesis": "Go2 Is More Than a Robot Body",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "Students should see",
+              ""
+            ],
+            [
+              "layers, not just legs.",
+              ""
+            ],
+            [
+              "The Unitree Go2 is a cyb er",
+              "p h ys i ca l s ys tem ."
+            ],
+            [
+              "Motion only makes sense when the m ech a n i ca l",
+              ""
+            ],
+            [
+              "body, sensor data, onboard compute, n etw o r k",
+              ""
+            ],
+            [
+              "path, software i n ter f a ces , and s a f ety rules are",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "safe act i o n ."
+      },
+      {
+        "title": "Go2 Platform Reasoning",
+        "thesis": "Hardware Shapes Software Choices",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "PHYSICAL CAPABILITY",
+              ""
+            ],
+            [
+              "Motors and",
+              ""
+            ],
+            [
+              "joints",
+              ""
+            ],
+            [
+              "Twelve main leg j oi nts make command order,",
+              ""
+            ],
+            [
+              "update rate, and safety limits part of every",
+              ""
+            ],
+            [
+              "c ontr ol program.",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Student rule"
+      },
+      {
+        "title": "Go2 Platform Variants",
+        "thesis": "The EDU Variant Enables Development",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "EDU matters because",
+              ""
+            ],
+            [
+              "students need access,",
+              ""
+            ],
+            [
+              "not just operation.",
+              ""
+            ],
+            [
+              "The d ev el o p men t",
+              "f a c i n g configuration is the"
+            ],
+            [
+              "one students should a sso c i a t e with SDK work,",
+              ""
+            ],
+            [
+              "ROS 2 i n t eg r a t i o n , su p er v i sed ex p er i men t s ,",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Student checkpoint"
+      },
+      {
+        "title": "Go2 Onboard Computing",
+        "thesis": "Onboard Compute Has Boundaries",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "STUDENT WORKSTATION",
+            "Where you d e v e lop and",
+            "inspect",
+            "U n it ree reco m m en d s Go2 SDK d evelo p m en t"
+          ]
+        },
+        "bottom_band": "Student rule"
+      },
+      {
+        "title": "Go2 Networking",
+        "thesis": "Network Setup Is Part of Robotics",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
+            [
+              "ROBOT LOCAL NETWORK",
+              ""
+            ],
+            [
+              "192.168.123.x",
+              ""
+            ],
+            [
+              "Your computer must speak on the",
+              ""
+            ],
+            [
+              "robot\u02bcs subnet.",
+              ""
+            ],
+            [
+              "For Unitree SDK communication,students configure the",
+              ""
+            ],
+            [
+              "development workstation on the robot LAN so",
+              ""
+            ]
+          ]
+        },
+        "bottom_band": "Student rule"
+      },
+      {
+        "title": "Networked Robot Mental Model",
+        "thesis": "Two Computers Must Agree",
+        "board_type": "math",
+        "board_data": {
+          "equation": "Formula",
+          "steps": [
+            "Stu d en t PC",
+            "192.168.123.X",
+            "Runs student code, t erm in a ls , ROS",
+            "2 t ools , R Viz , SDK ex a m p les , and"
+          ]
+        },
+        "bottom_band": "Sources: Unitree Go2 SDK 2 Quick Start; Unitree ROS 2 Services Interface"
+      },
+      {
+        "title": "Go2 Safety Before Motion",
+        "thesis": "Command Authority Must Be Explicit",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Concept",
+            "Description"
+          ],
+          "rows": [
             [
               "UNSAFE PATTERN",
               ""
@@ -80,42 +290,37 @@
             [
               "If multiple p r o g r ams send motion requests",
               ""
+            ],
+            [
+              "at once,the robot may r e ce ive co n flict in g",
+              ""
+            ],
+            [
+              "co mman d s fas t e r than a person can",
+              ""
             ]
           ]
         },
         "bottom_band": "Source: Unitree Go2 SDK 2 safety guidance on disabling competing motion services before low-level control"
       },
       {
-        "title": "12 ---",
-        "thesis": "rty",
-        "board_type": "list",
-        "board_data": [
-          "Students now c onne c t join t m otion , body f r ame s ,",
-          "f oot targets, and array ordering before any robot",
-          "c ommand is trusted.",
-          "WHAT THIS SECTION",
-          "four legs, three joints each"
-        ],
-        "bottom_band": "m o ves , and why index discipline m a t t ers ."
-      },
-      {
-        "title": "13 ---",
-        "thesis": "rty",
+        "title": "Quadruped Kinematics",
+        "thesis": "Go2 Has Twelve Main Leg DOF",
         "board_type": "math",
         "board_data": {
           "equation": "=12",
           "steps": [
-            "QUADRUPED KINEMATICS",
-            "Go2 Has Twelve Main Leg DOF",
             "Twelve variables",
-            "describe the main leg"
+            "describe the main leg",
+            "pose.",
+            "For a first kinematics model, students can think"
           ]
         },
         "bottom_band": "Student checkpoint"
       },
       {
-        "title": "14 ---",
-        "thesis": "rty",
+        "title": "Quadruped Naming Discipline",
+        "thesis": "Leg Names Prevent Confusion",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -123,14 +328,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "QUADRUPED NAMING DISCIPLINE",
-              ""
-            ],
-            [
-              "Leg Names Prevent Confusion",
-              ""
-            ],
             [
               "ROBOT",
               "RELATIVE ORIENTATION"
@@ -146,29 +343,37 @@
             [
               "STABLE SOFTWARE MAPPING",
               ""
+            ],
+            [
+              "Na mes beco me indices in arrays and logs.",
+              ""
+            ],
+            [
+              "Students should learn a fix e d leg order before reading state ar r ays , p lo t t in g",
+              ""
             ]
           ]
         },
         "bottom_band": "Student checkpoint"
       },
       {
-        "title": "15 ---",
-        "thesis": "rty",
+        "title": "Quadruped Kinematics Vocabulary",
+        "thesis": "Joint Names Carry Meaning",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "QUADRUPED KINEMATICS VOCABULARY",
-            "Joint Names Carry Meaning",
             "Names tell students",
-            "what a number"
+            "what a number",
+            "controls.",
+            "A joint angle is not j ust an entry in an array."
           ]
         },
         "bottom_band": "safety limits."
       },
       {
-        "title": "16 ---",
-        "thesis": "rty",
+        "title": "Kinematics Reading Skill",
+        "thesis": "Axes De\u0000ne Positive Motion",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -176,14 +381,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "KINEMATICS READING SKILL",
-              ""
-            ],
-            [
-              "Axes De\u0000ne Positive Motion",
-              ""
-            ],
             [
               "A number is",
               ""
@@ -199,44 +396,52 @@
             [
               "A joint angle may be positive or negative, but",
               ""
+            ],
+            [
+              "the sign only b eco m es useful when students",
+              ""
+            ],
+            [
+              "know the joint axis and the coordinate frame",
+              ""
             ]
           ]
         },
         "bottom_band": "Student checkpoint"
       },
       {
-        "title": "17 ---",
-        "thesis": "rty",
+        "title": "Quadruped Kinematics",
+        "thesis": "Forward Kinematics Predicts Foot Position",
         "board_type": "math",
         "board_data": {
           "equation": "= body-frame foot position",
           "steps": [
-            "QUADRUPED KINEMATICS",
-            "Forward Kinematics Predicts Foot Position",
             "KNOWN INPUT",
-            "Sta r t with joint angles"
+            "Sta r t with joint angles",
+            "Forward kinematics begins when the",
+            "robot a lrea d y knows the c u rren t hip,"
           ]
         },
         "bottom_band": "Student checkpoint"
       },
       {
-        "title": "18 ---",
-        "thesis": "rty",
+        "title": "Quadruped Kinematics",
+        "thesis": "Inverse Kinematics Starts From a Desired Foot",
         "board_type": "math",
         "board_data": {
           "equation": "Important: an IK answer is only u s efu l if it res p ec t s",
           "steps": [
-            "QUADRUPED KINEMATICS",
-            "Inverse Kinematics Starts From a Desired Foot",
             "angles reach this foot",
-            "target?"
+            "target?",
+            "Forward kinematics starts with joint angles and",
+            "predicts the f oot p osi t i on . Inverse kinematics"
           ]
         },
         "bottom_band": "Never send IK results blindly. First check the frame, units, reachability, joint limits, and whether the"
       },
       {
-        "title": "19 ---",
-        "thesis": "rty",
+        "title": "Frames and Measurements",
+        "thesis": "Body Frames Make Measurements Useful",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -244,14 +449,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "FRAMES AND MEASUREMENTS",
-              ""
-            ],
-            [
-              "Body Frames Make Measurements Useful",
-              ""
-            ],
             [
               "Coordinates need a",
               ""
@@ -267,14 +464,22 @@
             [
               "not use f ul by itself. Students must k now",
               ""
+            ],
+            [
+              "whi c h c oor d i na t e frame gives that numb e r",
+              ""
+            ],
+            [
+              "meaning.",
+              ""
             ]
           ]
         },
         "bottom_band": "frame to the fixed"
       },
       {
-        "title": "20 ---",
-        "thesis": "rty",
+        "title": "Kinematics in Software",
+        "thesis": "Arrays Represent Many Joints",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -282,14 +487,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "KINEMATICS IN SOFTWARE",
-              ""
-            ],
-            [
-              "Arrays Represent Many Joints",
-              ""
-            ],
             [
               "One array can",
               ""
@@ -305,14 +502,22 @@
             [
               "I nst e a d of sending twelve separate",
               ""
+            ],
+            [
+              "variables, robot sof t w a r e often packs",
+              ""
+            ],
+            [
+              "repeated joint data into an ordered array.",
+              ""
             ]
           ]
         },
         "bottom_band": "If index 7 changes, students should be able to identify the physical joint before p l otti n g , debugging, or"
       },
       {
-        "title": "21 ---",
-        "thesis": "rty",
+        "title": "Quadruped Motion Timing",
+        "thesis": "Gaits Are Timed Leg Patterns",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -320,14 +525,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "QUADRUPED MOTION TIMING",
-              ""
-            ],
-            [
-              "Gaits Are Timed Leg Patterns",
-              ""
-            ],
             [
               "A gait is coordination,",
               ""
@@ -343,14 +540,22 @@
             [
               "walking appears onl y when the trajectories",
               ""
+            ],
+            [
+              "are timed together.",
+              ""
+            ],
+            [
+              "Students shoul d read a gait as a repeated",
+              ""
             ]
           ]
         },
         "bottom_band": "smooth motion?"
       },
       {
-        "title": "22 ---",
-        "thesis": "rty",
+        "title": "Kinematics and Safe Motion",
+        "thesis": "Kinematics Has Safety Limits",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -358,14 +563,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "KINEMATICS AND SAFE MOTION",
-              ""
-            ],
-            [
-              "Kinematics Has Safety Limits",
-              ""
-            ],
             [
               "A reachable pose is not",
               ""
@@ -381,178 +578,123 @@
             [
               "Kinematics can tell students whe t he r a f oot",
               ""
+            ],
+            [
+              "p osi t i on or joint angle is g e ome t r i c a l l y p ossi b l e ,",
+              ""
+            ],
+            [
+              "but the robot still has physical limits.",
+              ""
             ]
           ]
         },
         "bottom_band": "robot before continuing."
       },
       {
-        "title": "23 ---",
-        "thesis": "rty",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "SECTION 3",
-              ""
-            ],
-            [
-              "ROS 2",
-              ""
-            ],
-            [
-              "Communication",
-              ""
-            ],
-            [
-              "Students now learn how robot s of t war e str e a m s",
-              ""
-            ],
-            [
-              "p r og r ams visible on the ROS 2 graph.",
-              ""
-            ],
-            [
-              "WHAT THIS SECTION",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "delivery rules and discovery"
-      },
-      {
-        "title": "24 ---",
-        "thesis": "rty",
+        "title": "ROS 2 Communication Vocabulary",
+        "thesis": "ROS 2 Organizes Robot Software",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "ROS 2 COMMUNICATION VOCABULARY",
-            "ROS 2 Organizes Robot Software",
             "ROS 2 turns many",
-            "programs into one"
+            "programs into one",
+            "inspectable robot",
+            "system."
           ]
         },
         "bottom_band": "Source: ROS 2 Humble documentation on nodes, topics, services, actions, parameters, and launch"
       },
       {
-        "title": "25 ---",
-        "thesis": "rty",
+        "title": "ROS 2 topics",
+        "thesis": "Topics Carry Continuous Streams",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "ROS 2 TOPICS",
-            "Topics Carry Continuous Streams",
             "A topic is a named",
-            "channel for repeated"
+            "channel for repeated",
+            "data.",
+            "S t ude nt s shoul d think of a ROS 2 t opi c as a"
           ]
         },
         "bottom_band": "subscribes?"
       },
       {
-        "title": "26 ---",
-        "thesis": "rty",
+        "title": "ROS 2 Message Definitions",
+        "thesis": "Messages Are Typed Contracts",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "ROS 2 MESSAGE DEFINITIONS",
-            "Messages Are Typed Contracts",
             "WHAT A MESSAGE FILE PROMISES",
-            "A message says exactly"
+            "A message says exactly",
+            "what data can travel.",
+            "on a topic name.They must also agree on the"
           ]
         },
         "bottom_band": "by the same index?"
       },
       {
-        "title": "27 ---",
-        "thesis": "rty",
+        "title": "ROS 2 Service Pattern",
+        "thesis": "Services Are Short Conversations",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "ROS 2 SERVICE PATTERN",
-            "Services Are Short Conversations",
             "A service is a question",
-            "with a typed answer."
+            "with a typed answer.",
+            "In ROS 2, a client se nds a r e que st to a",
+            "named service, and a server returns one"
           ]
         },
         "bottom_band": "f e e d b ack ?"
       },
       {
-        "title": "28 ---",
-        "thesis": "rty",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "ROS 2 SERVICES",
-              "CORRECT SCOPE"
-            ],
-            [
-              "Services Are Not Streaming Tools",
-              ""
-            ],
-            [
-              "Use a service when the",
-              ""
-            ],
-            [
-              "answer should come",
-              ""
-            ],
-            [
-              "back quickly.",
-              ""
-            ],
-            [
-              "TIMING COMPARISON",
-              ""
-            ]
-          ]
-        },
+        "title": "ROS 2 Services: Correct Scope",
+        "thesis": "Services Are Not Streaming Tools",
+        "board_type": "list",
+        "board_data": [
+          "Use a service when the",
+          "answer should come",
+          "back quickly.",
+          "TIMING COMPARISON",
+          "s t a r t s h o r t r u n n i n g f eed b a c k f i n i s h"
+        ],
         "bottom_band": "Quick checks, mode requests,Continuous s tate , sensor"
       },
       {
-        "title": "29 ---",
-        "thesis": "rty",
+        "title": "Unitree SDK2 and ROS 2 Thinking",
+        "thesis": "Unitree Uses Request Patterns Too",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "UNITREE SDK2 AND ROS 2 THINKING",
-            "Unitree Uses Request Patterns Too",
             "Robot commands",
-            "should feel like"
+            "should feel like",
+            "deliberate requests.",
+            "Many Unitree SDK2examples mirror a simple"
           ]
         },
         "bottom_band": "Source: Unitree SDK 2 /unitree_ros2 documentation and ROS 2 Humble service concepts"
       },
       {
-        "title": "30 ---",
+        "title": "ROS 2 actions",
         "thesis": "Actions Add Feedback and Cancellation",
         "board_type": "list",
         "board_data": [
-          "ROS 2 ACTIONS",
           "Actions are for goals",
           "that take time.",
           "A ROS 2action lets s t ude nt s send a goal,",
-          "watch feedback,optionally r e que s t"
+          "watch feedback,optionally r e que s t",
+          "cancellation,and receive a final result."
         ],
         "bottom_band": "Source: ROS 2 Humble documentation on actions, services, and topics"
       },
       {
-        "title": "31 ---",
-        "thesis": "rty",
+        "title": "ROS 2 Parameters",
+        "thesis": "Parameters Tune Node Behavior",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -560,14 +702,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "ROS 2 PARAMETERS",
-              ""
-            ],
-            [
-              "Parameters Tune Node Behavior",
-              ""
-            ],
             [
               "A parameter is",
               ""
@@ -583,28 +717,36 @@
             [
               "S t ude nt s should think of a ROS 2parameter",
               ""
+            ],
+            [
+              "as a named value stored by a node.It c ha nge s",
+              ""
+            ],
+            [
+              "how that node be ha v e s , but it is not the r i ght",
+              ""
             ]
           ]
         },
         "bottom_band": "or acti o n ?"
       },
       {
-        "title": "32 ---",
-        "thesis": "rty",
+        "title": "ROS 2 Quality of Service",
+        "thesis": "QoS Changes What Data Arrives",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "ROS 2 QUALITY OF SERVICE",
-            "QoS Changes What Data Arrives",
             "QoS is the delivery",
-            "agreement behind a"
+            "agreement behind a",
+            "topic.",
+            "A topic name and message type are not the"
           ]
         },
         "bottom_band": "Source: ROS 2 Humble documentation on Quality of Service policies"
       },
       {
-        "title": "33 ---",
+        "title": "ROS 2 Discovery Layer",
         "thesis": "DDS Makes Nodes Discover Each Other",
         "board_type": "table",
         "board_data": {
@@ -613,10 +755,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "ROS 2 DISCOVERY LAYER",
-              ""
-            ],
             [
               "need a central master.",
               ""
@@ -636,26 +774,17 @@
             [
               "c omp a ti b l e publishers, subscribers,",
               ""
+            ],
+            [
+              "services, and actions.",
+              ""
             ]
           ]
         },
         "bottom_band": "Source: ROS 2 Humble DDS concepts and Unitree ROS 2 Cy c l o n e DDS setup guidance"
       },
       {
-        "title": "34 ---",
-        "thesis": "rty",
-        "board_type": "list",
-        "board_data": [
-          "DAY 1 LECTURE TRANSITION",
-          "Rob ots ra rel y sen d one value at a time.",
-          "Stu d en ts now learn how ordered repeated",
-          "data rep resen ts joints, p oses , ma rk ers , point",
-          "clouds, and maps."
-        ],
-        "bottom_band": "sensor data."
-      },
-      {
-        "title": "35 ---",
+        "title": "ROS 2 Message arrays",
         "thesis": "Arrays Store Repeated Robot Data",
         "board_type": "table",
         "board_data": {
@@ -664,10 +793,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "ROS 2 MESSAGE ARRAYS",
-              ""
-            ],
             [
               "An array lets one",
               ""
@@ -687,89 +812,93 @@
             [
               "things",
               "joints,feet,poses,markers,or point"
+            ],
+            [
+              "clouds.",
+              ""
             ]
           ]
         },
         "bottom_band": "Source: ROS 2 Humble interface definition guidance and robotics message patterns"
       },
       {
-        "title": "36 ---",
-        "thesis": "rty",
+        "title": "Message arrays in Practice",
+        "thesis": "JointState Is an Array Lesson",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "MESSAGE ARRAYS IN PRACTICE",
-            "JointState Is an Array Lesson",
             "One index describes",
-            "one joint across"
+            "one joint across",
+            "several arrays.",
+            "The ROS 2sensor_msgs/JointState"
           ]
         },
         "bottom_band": "order."
       },
       {
-        "title": "37 ---",
-        "thesis": "rty",
+        "title": "Unitree Message arrays",
+        "thesis": "Unitree State Uses Fixed Arrays",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "UNITREE MESSAGE ARRAYS",
-            "Unitree State Uses Fixed Arrays",
             "Fixed arrays match",
-            "\u0000xed robot structure."
+            "\u0000xed robot structure.",
+            "The Go2has a known body layout:four feet",
+            "and twelve leg motors.Unitree state"
           ]
         },
         "bottom_band": "positive d i r ecti o n apply?"
       },
       {
-        "title": "38 ---",
-        "thesis": "rty",
+        "title": "ROS 2 Message arrays",
+        "thesis": "PoseArray Represents Many Poses",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "ROS 2 MESSAGE ARRAYS",
-            "PoseArray Represents Many Poses",
             "PoseArray is a group",
-            "of poses in one"
+            "of poses in one",
+            "frame.",
+            "A s i ngl e g e om e tr y _ m sg s / P ose describes"
           ]
         },
         "bottom_band": "index?"
       },
       {
-        "title": "39 ---",
-        "thesis": "rty",
+        "title": "RViz Visualization Messages",
+        "thesis": "MarkerArray Groups Visual Objects",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "RVIZ VISUALIZATION MESSAGES",
-            "MarkerArray Groups Visual Objects",
             "One topic can carry",
-            "many visual hints."
+            "many visual hints.",
+            "A visualization_msgs/MarkerArray",
+            "message gr o ups multiple Marker"
           ]
         },
         "bottom_band": "update, or get d el eted by ID?"
       },
       {
-        "title": "40 ---",
+        "title": "Bulk Sensor Messages",
         "thesis": "PointCloud2 Is Structured Bulk Data",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "BULK SENSOR MESSAGES",
             "A point cloud is a",
             "large 3D",
-            "measurement table."
+            "measurement table.",
+            "s e n s or _ ms g s / P oi n tCl ou d 2 carries many"
           ]
         },
         "bottom_band": "habit"
       },
       {
-        "title": "41 ---",
-        "thesis": "rty",
+        "title": "Safe array interpretation",
+        "thesis": "Index Discipline Prevents Bugs",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -777,14 +906,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "SAFE ARRAY INTERPRETATION",
-              ""
-            ],
-            [
-              "Index Discipline Prevents Bugs",
-              ""
-            ],
             [
               "until you know what",
               ""
@@ -800,140 +921,110 @@
             [
               "often look reasonable.A num be r may be",
               ""
+            ],
+            [
+              "v a l i d , but it may belong to the wrong joint,",
+              ""
+            ],
+            [
+              "f oot , pose, marker, or frame.",
+              ""
             ]
           ]
         },
         "bottom_band": "move hardware."
       },
       {
-        "title": "42 ---",
-        "thesis": "rty",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "SECTION",
-              ""
-            ],
-            [
-              "RVIZ \u00b7 TF \u00b7 MAPPING",
-              ""
-            ],
-            [
-              "STUDENT VISUALIZATION BLOCK",
-              ""
-            ],
-            [
-              "RViz and Mapping",
-              ""
-            ],
-            [
-              "Now students move from m e s s age s t r uct ur e to v i s ual",
-              ""
-            ],
-            [
-              "unde r s t andi ng",
-              "h o w ROS 2 publishers f eed RViz displays,"
-            ]
-          ]
-        },
-        "bottom_band": "maps."
-      },
-      {
-        "title": "43 ---",
-        "thesis": "rty",
+        "title": "RViz Mental Model",
+        "thesis": "RViz Is a Subscriber View",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "RVIZ MENTAL MODEL",
-            "RViz Is a Subscriber View",
             "RViz watches ROS 2",
-            "data; it does not own"
+            "data; it does not own",
+            "the robot.",
+            "RViz is a visualization tool that subscribes"
           ]
         },
         "bottom_band": "frame?"
       },
       {
-        "title": "44 ---",
-        "thesis": "rty",
+        "title": "RViz Display Crosswalk",
+        "thesis": "Displays Consume Speci\u0000c Messages",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "RVIZ DISPLAY CROSSWALK",
-            "Displays Consume Speci\u0000c Messages",
             "Choosing a display",
-            "is choosing a"
+            "is choosing a",
+            "subscriber type.",
+            "RViz does not understand every topic in"
           ]
         },
         "bottom_band": "frame to the fixed frame?"
       },
       {
-        "title": "45 ---",
-        "thesis": "rty",
+        "title": "RViz Publisher/Subscriber Mapping",
+        "thesis": "Publishers Feed RViz Displays",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "RVIZ PUBLISHER/SUBSCRIBER MAPPING",
-            "Publishers Feed RViz Displays",
             "RViz can only show",
-            "data that someone"
+            "data that someone",
+            "publishes.",
+            "Every RViz display begins upstream.A"
           ]
         },
         "bottom_band": "frame."
       },
       {
-        "title": "46 ---",
-        "thesis": "rty",
+        "title": "RViz Frames and TF",
+        "thesis": "Fixed Frame Is the Visualization Anchor",
         "board_type": "math",
         "board_data": {
           "equation": "x=1only has meaning inside a named frame.",
           "steps": [
-            "RVIZ FRAMES AND TF",
-            "Fixed Frame Is the Visualization Anchor",
             "RViz needs one",
-            "stable frame to draw"
+            "stable frame to draw",
+            "everything together.",
+            "The fixed frame is the coordinate frame"
           ]
         },
         "bottom_band": "Source: ROS 2 Humble RViz user guide and tf2 frame transform concepts"
       },
       {
-        "title": "47 ---",
-        "thesis": "rty",
+        "title": "RViz Robotmodel Display",
+        "thesis": "RobotModel Needs TF and URDF",
         "board_type": "list",
         "board_data": [
-          "RVIZ ROBOTMODEL DISPLAY",
-          "RobotModel Needs TF and URDF",
           "The robot model is",
           "built from shape",
-          "plus motion."
+          "plus motion.",
+          "In R V i z , R o bo tMo de l is not a camera view",
+          "of the robot.It is a rendered model"
         ],
         "bottom_band": "Source: ROS 2 Humble RViz RobotModel display concepts, U RDF , and tf2 frame transform concepts"
       },
       {
-        "title": "48 ---",
+        "title": "RViz Mapping Data Flow",
         "thesis": "Mapping Uses Point Clouds and Odometry",
         "board_type": "math",
         "board_data": {
           "equation": "Formula",
           "steps": [
-            "RVIZ MAPPING DATA FLOW",
             "Mapping needs",
             "shape and motion,",
-            "not just one topic."
+            "not just one topic.",
+            "PointCloud2 giv e s the m appe r geometric"
           ]
         },
         "bottom_band": "Source: ROS 2 sensor_msgs/PointCloud2, nav_msgs/Odometry, RViz display concepts, and Unitree ROS 2 SLAM wo r kfl o ws"
       },
       {
-        "title": "49 ---",
-        "thesis": "rty",
+        "title": "RViz Map Display",
+        "thesis": "Occupancy Grids Become Maps",
         "board_type": "table",
         "board_data": {
           "headers": [
@@ -941,14 +1032,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "RVIZ MAP DISPLAY",
-              ""
-            ],
-            [
-              "Occupancy Grids Become Maps",
-              ""
-            ],
             [
               "A map can be stored",
               ""
@@ -964,13 +1047,21 @@
             [
               "An Oc c u pan c y G r i d represents the world as",
               ""
+            ],
+            [
+              "rows and co lu mn s . E ach cell stores",
+              ""
+            ],
+            [
+              "e vid e n ce about whether that part of the",
+              ""
             ]
           ]
         },
         "bottom_band": "Source: ROS 2 nav_msgs/OccupancyGrid message definition and ROS 2 Humble RViz Map display concepts"
       },
       {
-        "title": "50 ---",
+        "title": "RViz Diagnostic Habit",
         "thesis": "RViz Status Teaches Troubleshooting",
         "board_type": "table",
         "board_data": {
@@ -979,10 +1070,6 @@
             "Description"
           ],
           "rows": [
-            [
-              "RVIZ DIAGNOSTIC HABIT",
-              ""
-            ],
             [
               "Status text is",
               ""
@@ -1002,78 +1089,14 @@
             [
               "e n able d , r e c e iv in g dat a , an d able to",
               ""
+            ],
+            [
+              "transform that dat a into the fixe d frame.",
+              ""
             ]
           ]
         },
         "bottom_band": "Source: ROS 2 Humble RViz user guide and display status wo r kfl o w"
-      },
-      {
-        "title": "51 ---",
-        "thesis": "rty",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "DAY 1 LECTURE TRANSITION",
-              ""
-            ],
-            [
-              "From Theory to Lab",
-              ""
-            ],
-            [
-              "S t ude nt s now t r ans l at e Go2system kno w l e dge , ROS 2 c o mmuni c at i o n",
-              ""
-            ],
-            [
-              "pat t e r ns , me s s age arrays, and RViz t r o ubl e s ho o t i ng into a su p e rvise d",
-              ""
-            ],
-            [
-              "hands",
-              "on work f low ."
-            ],
-            [
-              "FIRST",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "The next se que nc e is not about memorizing c o m m a nds . It is about bui l di ng a repeatable stude nt habit:"
-      },
-      {
-        "title": "52 ---",
-        "thesis": "rty",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "FROM LECTURE TO SUPERVISED LAB",
-            "Your Day 1 Lab Checklist",
-            "Before touching the",
-            "robot, verify the"
-          ]
-        },
-        "bottom_band": "supervised lab authority."
-      },
-      {
-        "title": "53 ---",
-        "thesis": "rty",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "DAY 1 CLOSING",
-            "Thank Y ou",
-            "Qu est i o n s are welcome before we move into the su p er vi sed lab",
-            "seq u en ce . T h e goal is for students to co n n ect Go2system be hav i o r , R OS"
-          ]
-        },
-        "bottom_band": "N ext : s u p ervis ed hands-on practice with network checks,topic inspection,RViz setup,and safe Go2 in t era c t io n ."
       }
     ],
     "labs": [
