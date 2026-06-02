@@ -17,7 +17,9 @@ import {
   Award,
   FileText,
   Activity,
-  Maximize2
+  Maximize2,
+  Minimize2,
+  Volume2
 } from "lucide-react";
 import syllabusData from "../data/syllabus.json";
 
@@ -65,6 +67,7 @@ export default function Home() {
   const [activeLabFile, setActiveLabFile] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"lecture" | "labs">("lecture");
   const [copied, setCopied] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const currentDayData = (syllabusData as Record<string, DaySyllabus>)[activeDay];
 
@@ -83,6 +86,26 @@ export default function Home() {
       setActiveLabFile("");
     }
   }, [activeDay]);
+
+  // Handle keyboard controls for slides
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (activeTab !== "lecture" || !currentDayData?.slides) return;
+      
+      if (e.key === "ArrowRight" || e.key === "Space") {
+        e.preventDefault();
+        setActiveSlideIndex(prev => Math.min(currentDayData.slides.length - 1, prev + 1));
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setActiveSlideIndex(prev => Math.max(0, prev - 1));
+      } else if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeTab, currentDayData, isFullscreen]);
 
   // Handle active lab change
   const handleLabChange = (labId: string) => {
@@ -114,6 +137,8 @@ export default function Home() {
     }
     return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/humanoid_schematic-PwYwUQShDyDdHD5XrBQURm.webp";
   };
+
+  const currentSlide = currentDayData?.slides?.[activeSlideIndex];
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden">
@@ -281,6 +306,17 @@ export default function Home() {
             {activeTab === "lecture" && currentDayData.slides && currentDayData.slides.length > 0 && (
               <div className="flex-1 flex flex-col justify-between max-w-5xl mx-auto w-full gap-8">
                 
+                {/* Fullscreen Presentation Trigger */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => setIsFullscreen(true)}
+                    className="flex items-center gap-2 px-4 py-2 border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary text-xs font-bold rounded transition-all"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                    Launch Fullscreen Lecture Mode
+                  </button>
+                </div>
+
                 {/* PPT Slide Wrapper (Styled exactly after Day 1 PPT design) */}
                 <div className="border border-border bg-card rounded-lg shadow-xl overflow-hidden relative flex flex-col min-h-[480px]">
                   
@@ -308,14 +344,14 @@ export default function Home() {
                       <div>
                         <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2">Concept Pillar</span>
                         <h3 className="text-2xl font-serif font-bold text-foreground leading-tight mb-4">
-                          {currentDayData.slides[activeSlideIndex].title}
+                          {currentSlide.title}
                         </h3>
                         <div className="h-0.5 w-16 bg-primary mb-6" />
                       </div>
                       <div className="bg-primary/5 border border-primary/10 rounded p-4">
                         <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2 font-bold">Thesis Statement</span>
                         <p className="text-xs font-serif text-muted-foreground leading-relaxed italic">
-                          "{currentDayData.slides[activeSlideIndex].thesis}"
+                          "{currentSlide.thesis}"
                         </p>
                       </div>
                     </div>
@@ -324,18 +360,18 @@ export default function Home() {
                     <div className="md:col-span-7 flex flex-col justify-center">
                       
                       {/* Render Table Board */}
-                      {currentDayData.slides[activeSlideIndex].board_type === "table" && (
-                        <div className="border border-border/80 rounded overflow-hidden shadow-sm">
+                      {currentSlide.board_type === "table" && (
+                        <div className="border border-border/80 rounded overflow-hidden shadow-sm bg-card">
                           <table className="w-full text-left text-xs border-collapse">
                             <thead>
                               <tr className="bg-primary/10 text-primary uppercase font-mono tracking-wider text-[10px] border-b border-border">
-                                {currentDayData.slides[activeSlideIndex].board_data.headers.map((h: string, idx: number) => (
+                                {currentSlide.board_data.headers.map((h: string, idx: number) => (
                                   <th key={idx} className="p-3 font-semibold">{h}</th>
                                 ))}
                               </tr>
                             </thead>
                             <tbody>
-                              {currentDayData.slides[activeSlideIndex].board_data.rows.map((row: string[], rIdx: number) => (
+                              {currentSlide.board_data.rows.map((row: string[], rIdx: number) => (
                                 <tr key={rIdx} className="border-b border-border/40 last:border-0 hover:bg-muted/30">
                                   {row.map((cell: string, cIdx: number) => (
                                     <td key={cIdx} className="p-3 text-muted-foreground">
@@ -350,9 +386,9 @@ export default function Home() {
                       )}
 
                       {/* Render Grid Board */}
-                      {currentDayData.slides[activeSlideIndex].board_type === "grid" && (
+                      {currentSlide.board_type === "grid" && (
                         <div className="grid grid-cols-1 gap-4">
-                          {currentDayData.slides[activeSlideIndex].board_data.map((item: any, idx: number) => (
+                          {currentSlide.board_data.map((item: any, idx: number) => (
                             <div key={idx} className="border border-border/60 rounded p-4 hover:border-primary/40 transition-all bg-card/50">
                               <span className="text-[10px] uppercase tracking-widest font-mono text-primary font-bold block mb-1">
                                 {item.label}
@@ -366,10 +402,12 @@ export default function Home() {
                       )}
 
                       {/* Render List Board */}
-                      {currentDayData.slides[activeSlideIndex].board_type === "list" && (
+                      {currentSlide.board_type === "list" && (
                         <div className="space-y-4">
-                          {currentDayData.slides[activeSlideIndex].board_data.map((item: string, idx: number) => {
-                            const [title, desc] = item.split(":");
+                          {currentSlide.board_data.map((item: string, idx: number) => {
+                            const hasColon = item.includes(":");
+                            const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
+                            const desc = hasColon ? item.split(":")[1] : item;
                             return (
                               <div key={idx} className="flex gap-3">
                                 <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-mono font-bold mt-0.5">
@@ -386,17 +424,17 @@ export default function Home() {
                       )}
 
                       {/* Render Math/Equation Board */}
-                      {currentDayData.slides[activeSlideIndex].board_type === "math" && (
+                      {currentSlide.board_type === "math" && (
                         <div className="space-y-6">
                           <div className="bg-muted/40 border border-border rounded p-6 text-center shadow-inner">
                             <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block mb-2">Mathematical Formulation</span>
                             <code className="text-sm font-mono text-primary font-bold block bg-card py-2 px-4 rounded border border-border inline-block">
-                              {currentDayData.slides[activeSlideIndex].board_data.equation}
+                              {currentSlide.board_data.equation}
                             </code>
                           </div>
                           <div className="space-y-2">
                             <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block">Execution Steps</span>
-                            {currentDayData.slides[activeSlideIndex].board_data.steps.map((step: string, idx: number) => (
+                            {currentSlide.board_data.steps.map((step: string, idx: number) => (
                               <div key={idx} className="text-xs text-muted-foreground pl-4 border-l border-primary/40">
                                 {step}
                               </div>
@@ -414,7 +452,7 @@ export default function Home() {
                       <AlertTriangle className="h-4 w-4" />
                     </div>
                     <p className="text-[11px] font-mono text-muted-foreground leading-relaxed">
-                      <strong className="text-foreground">Debugging Habit:</strong> {currentDayData.slides[activeSlideIndex].bottom_band}
+                      <strong className="text-foreground">Debugging Habit:</strong> {currentSlide.bottom_band}
                     </p>
                   </div>
 
@@ -434,7 +472,7 @@ export default function Home() {
                     {currentDayData.slides.map((_, idx) => (
                       <div 
                         key={idx} 
-                        className={`h-1.5 w-6 rounded-full transition-all ${
+                        className={`h-1.5 w-4 rounded-full transition-all ${
                           idx === activeSlideIndex ? "bg-primary" : "bg-border"
                         }`}
                       />
@@ -579,17 +617,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Fallback if no content */}
-            {(!currentDayData.slides || currentDayData.slides.length === 0) && activeTab === "lecture" && (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-12 border border-dashed border-border rounded-lg bg-card/20">
-                <AlertTriangle className="h-8 w-8 text-amber-500 mb-3" />
-                <h3 className="text-lg font-serif font-bold text-foreground">Slide Material Unreleased</h3>
-                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                  This session is structured as a hands-on lab session. Switch to the "Lab Workspaces" tab to explore detailed lab tasks and source code.
-                </p>
-              </div>
-            )}
-
           </div>
 
           {/* Footer Copyright Placement (Bottom-Left Rule) */}
@@ -608,6 +635,186 @@ export default function Home() {
         </main>
 
       </div>
+
+      {/* FULLSCREEN PRESENTATION MODE MODAL */}
+      {isFullscreen && currentSlide && (
+        <div className="fixed inset-0 bg-[#0a1128] text-white z-[9999] flex flex-col justify-between p-12 select-none animate-fade-in">
+          
+          {/* Subtle Background Watermark for Cinematic Lecture Feel */}
+          <div className="vinci-watermark opacity-10" />
+
+          {/* Fullscreen Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-6">
+            <div className="flex items-center gap-4">
+              <img 
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663722418623/TWbZYCYEmoxfCJuQ.png" 
+                alt="Vinci AI Logo" 
+                className="h-8 object-contain"
+              />
+              <div className="h-6 w-px bg-white/20" />
+              <span className="font-mono text-xs uppercase tracking-widest text-blue-400">
+                Day {activeDay} Lecture — {currentDayData.title}
+              </span>
+            </div>
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="flex items-center gap-2 px-3 py-1.5 border border-white/10 hover:bg-white/10 rounded text-xs font-semibold font-mono transition-all text-white/70 hover:text-white"
+            >
+              <Minimize2 className="h-4 w-4" />
+              Exit [ESC]
+            </button>
+          </div>
+
+          {/* Fullscreen Body (Cinematic Lecture Layout) */}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-12 max-w-7xl mx-auto w-full">
+            
+            {/* Left Column (Big Bold Titles) */}
+            <div className="lg:col-span-5 flex flex-col gap-6">
+              <span className="font-mono text-xs uppercase tracking-widest text-blue-400 font-bold">
+                Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
+              </span>
+              <h2 className="text-4xl lg:text-5xl font-serif font-bold leading-tight tracking-tight text-white">
+                {currentSlide.title}
+              </h2>
+              <div className="h-1 w-24 bg-blue-500" />
+              <div className="bg-white/5 border border-white/10 rounded-lg p-6 mt-4">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-blue-400 block mb-2 font-bold">Thesis Statement</span>
+                <p className="text-sm lg:text-base font-serif text-white/80 leading-relaxed italic">
+                  "{currentSlide.thesis}"
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column (Huge Board Data for High-Impact Reading) */}
+            <div className="lg:col-span-7 bg-white/[0.02] border border-white/10 rounded-xl p-8 shadow-2xl">
+              
+              {/* Render Table Board */}
+              {currentSlide.board_type === "table" && (
+                <div className="border border-white/10 rounded-lg overflow-hidden bg-[#0e1736]">
+                  <table className="w-full text-left text-sm border-collapse">
+                    <thead>
+                      <tr className="bg-blue-900/40 text-blue-300 uppercase font-mono tracking-wider text-xs border-b border-white/10">
+                        {currentSlide.board_data.headers.map((h: string, idx: number) => (
+                          <th key={idx} className="p-4 font-semibold">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentSlide.board_data.rows.map((row: string[], rIdx: number) => (
+                        <tr key={rIdx} className="border-b border-white/5 last:border-0 hover:bg-white/5">
+                          {row.map((cell: string, cIdx: number) => (
+                            <td key={cIdx} className="p-4 text-white/70">
+                              {cIdx === 0 ? <strong className="text-white font-serif text-base">{cell}</strong> : cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Render Grid Board */}
+              {currentSlide.board_type === "grid" && (
+                <div className="grid grid-cols-1 gap-6">
+                  {currentSlide.board_data.map((item: any, idx: number) => (
+                    <div key={idx} className="border border-white/10 rounded-lg p-6 bg-white/[0.02] hover:border-blue-500/50 transition-all">
+                      <span className="text-xs uppercase tracking-widest font-mono text-blue-400 font-bold block mb-2">
+                        {item.label}
+                      </span>
+                      <p className="text-sm lg:text-base text-white/80 leading-relaxed">
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Render List Board */}
+              {currentSlide.board_type === "list" && (
+                <div className="space-y-6">
+                  {currentSlide.board_data.map((item: string, idx: number) => {
+                    const hasColon = item.includes(":");
+                    const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
+                    const desc = hasColon ? item.split(":")[1] : item;
+                    return (
+                      <div key={idx} className="flex gap-4">
+                        <div className="h-7 w-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-mono font-bold mt-0.5">
+                          {idx + 1}
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-base font-bold text-white font-serif block mb-1">{title}</span>
+                          <span className="text-sm lg:text-base text-white/70 leading-relaxed">{desc}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Render Math/Equation Board */}
+              {currentSlide.board_type === "math" && (
+                <div className="space-y-8">
+                  <div className="bg-blue-950/40 border border-blue-500/30 rounded-lg p-8 text-center shadow-inner">
+                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block mb-3">Mathematical Formulation</span>
+                    <code className="text-lg lg:text-xl font-mono text-blue-400 font-bold block bg-[#0e1736] py-3 px-6 rounded-lg border border-white/10 inline-block">
+                      {currentSlide.board_data.equation}
+                    </code>
+                  </div>
+                  <div className="space-y-3">
+                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block">Execution Steps</span>
+                    {currentSlide.board_data.steps.map((step: string, idx: number) => (
+                      <div key={idx} className="text-sm lg:text-base text-white/70 pl-4 border-l-2 border-blue-500">
+                        {step}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+          </div>
+
+          {/* Fullscreen Footer */}
+          <div className="border-t border-white/10 pt-6 flex items-center justify-between">
+            
+            {/* Debugging Band */}
+            <div className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 px-4 py-2.5 rounded-lg max-w-2xl">
+              <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0" />
+              <p className="text-xs lg:text-sm font-mono text-amber-300 leading-relaxed">
+                <strong>Debugging Habit:</strong> {currentSlide.bottom_band}
+              </p>
+            </div>
+
+            {/* Navigation Controls */}
+            <div className="flex items-center gap-6">
+              <button
+                disabled={activeSlideIndex === 0}
+                onClick={() => setActiveSlideIndex(prev => Math.max(0, prev - 1))}
+                className="flex items-center gap-2 px-4 py-2 border border-white/10 hover:bg-white/10 rounded-lg text-sm font-semibold disabled:opacity-30 disabled:pointer-events-none transition-all"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Previous
+              </button>
+              <span className="font-mono text-xs text-white/60">
+                {activeSlideIndex + 1} / {currentDayData.slides.length}
+              </span>
+              <button
+                disabled={activeSlideIndex === currentDayData.slides.length - 1}
+                onClick={() => setActiveSlideIndex(prev => Math.min(currentDayData.slides.length - 1, prev + 1))}
+                className="flex items-center gap-2 px-4 py-2 border border-blue-500 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-semibold disabled:opacity-30 disabled:pointer-events-none transition-all"
+              >
+                Next
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
