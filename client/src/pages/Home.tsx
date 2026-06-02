@@ -361,21 +361,21 @@ export default function Home() {
                       
                       {/* Render Table Board */}
                       {currentSlide.board_type === "table" && (
-                        <div className="border border-border/80 rounded overflow-hidden shadow-sm bg-card">
+                        <div className="border border-border/80 rounded-lg overflow-hidden shadow-md bg-card/60 backdrop-blur-sm">
                           <table className="w-full text-left text-xs border-collapse">
                             <thead>
-                              <tr className="bg-primary/10 text-primary uppercase font-mono tracking-wider text-[10px] border-b border-border">
+                              <tr className="bg-primary text-primary-foreground uppercase font-mono tracking-wider text-[9px] border-b border-border">
                                 {currentSlide.board_data.headers.map((h: string, idx: number) => (
-                                  <th key={idx} className="p-3 font-semibold">{h}</th>
+                                  <th key={idx} className="p-3.5 font-bold">{h}</th>
                                 ))}
                               </tr>
                             </thead>
                             <tbody>
                               {currentSlide.board_data.rows.map((row: string[], rIdx: number) => (
-                                <tr key={rIdx} className="border-b border-border/40 last:border-0 hover:bg-muted/30">
+                                <tr key={rIdx} className="border-b border-border/30 last:border-0 hover:bg-primary/5 transition-colors even:bg-muted/10">
                                   {row.map((cell: string, cIdx: number) => (
-                                    <td key={cIdx} className="p-3 text-muted-foreground">
-                                      {cIdx === 0 ? <strong className="text-foreground font-serif">{cell}</strong> : cell}
+                                    <td key={cIdx} className="p-3.5 text-muted-foreground font-sans leading-relaxed">
+                                      {cIdx === 0 ? <strong className="text-foreground font-serif text-sm font-bold block">{cell}</strong> : cell}
                                     </td>
                                   ))}
                                 </tr>
@@ -389,11 +389,12 @@ export default function Home() {
                       {currentSlide.board_type === "grid" && (
                         <div className="grid grid-cols-1 gap-4">
                           {currentSlide.board_data.map((item: any, idx: number) => (
-                            <div key={idx} className="border border-border/60 rounded p-4 hover:border-primary/40 transition-all bg-card/50">
-                              <span className="text-[10px] uppercase tracking-widest font-mono text-primary font-bold block mb-1">
+                            <div key={idx} className="border border-border/60 rounded-lg p-4 hover:border-primary/40 hover:shadow-md transition-all bg-card/60 backdrop-blur-sm relative overflow-hidden group">
+                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/40 group-hover:bg-primary transition-colors" />
+                              <span className="text-[10px] uppercase tracking-widest font-mono text-primary font-bold block mb-1.5 pl-2">
                                 {item.label}
                               </span>
-                              <p className="text-xs text-muted-foreground leading-relaxed">
+                              <p className="text-xs text-muted-foreground leading-relaxed pl-2">
                                 {item.value}
                               </p>
                             </div>
@@ -409,13 +410,13 @@ export default function Home() {
                             const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
                             const desc = hasColon ? item.split(":")[1] : item;
                             return (
-                              <div key={idx} className="flex gap-3">
-                                <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-mono font-bold mt-0.5">
+                              <div key={idx} className="flex gap-4 p-3 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all bg-card/30">
+                                <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-mono font-bold mt-0.5 shadow-sm shrink-0">
                                   {idx + 1}
                                 </div>
                                 <div className="flex-1">
-                                  <span className="text-xs font-bold text-foreground font-serif block">{title}</span>
-                                  <span className="text-xs text-muted-foreground leading-relaxed">{desc}</span>
+                                  <span className="text-sm font-bold text-foreground font-serif block mb-0.5">{title}</span>
+                                  <span className="text-xs text-muted-foreground leading-relaxed block">{desc}</span>
                                 </div>
                               </div>
                             );
@@ -426,19 +427,22 @@ export default function Home() {
                       {/* Render Math/Equation Board */}
                       {currentSlide.board_type === "math" && (
                         <div className="space-y-6">
-                          <div className="bg-muted/40 border border-border rounded p-6 text-center shadow-inner">
-                            <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block mb-2">Mathematical Formulation</span>
-                            <code className="text-sm font-mono text-primary font-bold block bg-card py-2 px-4 rounded border border-border inline-block">
+                          <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center shadow-inner relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-1.5 text-[9px] font-mono text-primary/60 bg-primary/10 rounded-bl-lg uppercase tracking-widest">Formulation</div>
+                            <span className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground block mb-2.5">Mathematical Representation</span>
+                            <code className="text-sm font-mono text-primary font-bold block bg-card py-2.5 px-5 rounded border border-primary/20 inline-block shadow-sm">
                               {currentSlide.board_data.equation}
                             </code>
                           </div>
-                          <div className="space-y-2">
-                            <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block">Execution Steps</span>
-                            {currentSlide.board_data.steps.map((step: string, idx: number) => (
-                              <div key={idx} className="text-xs text-muted-foreground pl-4 border-l border-primary/40">
-                                {step}
-                              </div>
-                            ))}
+                          <div className="space-y-3">
+                            <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block font-bold">Derivation & Execution Steps</span>
+                            <div className="space-y-2">
+                              {currentSlide.board_data.steps.map((step: string, idx: number) => (
+                                <div key={idx} className="text-xs text-muted-foreground pl-4 border-l-2 border-primary/40 py-0.5 hover:border-primary hover:text-foreground transition-all">
+                                  {step}
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -690,21 +694,21 @@ export default function Home() {
               
               {/* Render Table Board */}
               {currentSlide.board_type === "table" && (
-                <div className="border border-white/10 rounded-lg overflow-hidden bg-[#0e1736]">
+                <div className="border border-white/10 rounded-xl overflow-hidden bg-[#0d1533] shadow-2xl">
                   <table className="w-full text-left text-sm border-collapse">
                     <thead>
-                      <tr className="bg-blue-900/40 text-blue-300 uppercase font-mono tracking-wider text-xs border-b border-white/10">
+                      <tr className="bg-blue-600 text-white uppercase font-mono tracking-wider text-xs border-b border-white/10">
                         {currentSlide.board_data.headers.map((h: string, idx: number) => (
-                          <th key={idx} className="p-4 font-semibold">{h}</th>
+                          <th key={idx} className="p-4 font-bold">{h}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {currentSlide.board_data.rows.map((row: string[], rIdx: number) => (
-                        <tr key={rIdx} className="border-b border-white/5 last:border-0 hover:bg-white/5">
+                        <tr key={rIdx} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors even:bg-white/[0.01]">
                           {row.map((cell: string, cIdx: number) => (
-                            <td key={cIdx} className="p-4 text-white/70">
-                              {cIdx === 0 ? <strong className="text-white font-serif text-base">{cell}</strong> : cell}
+                            <td key={cIdx} className="p-4 text-white/70 font-sans leading-relaxed">
+                              {cIdx === 0 ? <strong className="text-white font-serif text-lg font-bold block">{cell}</strong> : cell}
                             </td>
                           ))}
                         </tr>
@@ -718,11 +722,12 @@ export default function Home() {
               {currentSlide.board_type === "grid" && (
                 <div className="grid grid-cols-1 gap-6">
                   {currentSlide.board_data.map((item: any, idx: number) => (
-                    <div key={idx} className="border border-white/10 rounded-lg p-6 bg-white/[0.02] hover:border-blue-500/50 transition-all">
-                      <span className="text-xs uppercase tracking-widest font-mono text-blue-400 font-bold block mb-2">
+                    <div key={idx} className="border border-white/10 rounded-xl p-6 bg-white/[0.02] hover:border-blue-500/50 hover:bg-white/[0.04] transition-all relative overflow-hidden group shadow-md">
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500/30 group-hover:bg-blue-500 transition-colors" />
+                      <span className="text-xs uppercase tracking-widest font-mono text-blue-400 font-bold block mb-2 pl-2">
                         {item.label}
                       </span>
-                      <p className="text-sm lg:text-base text-white/80 leading-relaxed">
+                      <p className="text-sm lg:text-base text-white/80 leading-relaxed pl-2">
                         {item.value}
                       </p>
                     </div>
@@ -732,19 +737,19 @@ export default function Home() {
 
               {/* Render List Board */}
               {currentSlide.board_type === "list" && (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {currentSlide.board_data.map((item: string, idx: number) => {
                     const hasColon = item.includes(":");
                     const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
                     const desc = hasColon ? item.split(":")[1] : item;
                     return (
-                      <div key={idx} className="flex gap-4">
-                        <div className="h-7 w-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-mono font-bold mt-0.5">
+                      <div key={idx} className="flex gap-4 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-transparent hover:border-white/10 transition-all shadow-md">
+                        <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-mono font-bold mt-0.5 shadow-sm shrink-0">
                           {idx + 1}
                         </div>
                         <div className="flex-1">
-                          <span className="text-base font-bold text-white font-serif block mb-1">{title}</span>
-                          <span className="text-sm lg:text-base text-white/70 leading-relaxed">{desc}</span>
+                          <span className="text-lg font-bold text-white font-serif block mb-1">{title}</span>
+                          <span className="text-sm lg:text-base text-white/70 leading-relaxed block">{desc}</span>
                         </div>
                       </div>
                     );
@@ -755,19 +760,22 @@ export default function Home() {
               {/* Render Math/Equation Board */}
               {currentSlide.board_type === "math" && (
                 <div className="space-y-8">
-                  <div className="bg-blue-950/40 border border-blue-500/30 rounded-lg p-8 text-center shadow-inner">
-                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block mb-3">Mathematical Formulation</span>
-                    <code className="text-lg lg:text-xl font-mono text-blue-400 font-bold block bg-[#0e1736] py-3 px-6 rounded-lg border border-white/10 inline-block">
+                  <div className="bg-blue-950/30 border border-blue-500/30 rounded-xl p-8 text-center shadow-inner relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-2 text-[10px] font-mono text-blue-300 bg-blue-500/20 rounded-bl-xl uppercase tracking-widest">Formulation</div>
+                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block mb-3">Mathematical Representation</span>
+                    <code className="text-lg lg:text-xl font-mono text-blue-400 font-bold block bg-[#0c1533] py-3.5 px-6 rounded-lg border border-blue-500/30 inline-block shadow-lg">
                       {currentSlide.board_data.equation}
                     </code>
                   </div>
-                  <div className="space-y-3">
-                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block">Execution Steps</span>
-                    {currentSlide.board_data.steps.map((step: string, idx: number) => (
-                      <div key={idx} className="text-sm lg:text-base text-white/70 pl-4 border-l-2 border-blue-500">
-                        {step}
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block font-bold">Derivation & Execution Steps</span>
+                    <div className="space-y-2">
+                      {currentSlide.board_data.steps.map((step: string, idx: number) => (
+                        <div key={idx} className="text-sm lg:text-base text-white/70 pl-4 border-l-2 border-blue-500/50 py-0.5 hover:border-blue-500 hover:text-white transition-all">
+                          {step}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

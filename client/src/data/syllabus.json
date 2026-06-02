@@ -35,15 +35,22 @@
       {
         "title": "Why This Lecture Matters",
         "thesis": "Today Builds Your Robot Mental Model",
-        "board_type": "list",
+        "board_type": "grid",
         "board_data": [
-          "See Go2 as a system",
-          "Students connect the robot body,onboard",
-          "computers,network,SDK,ROS 2 gr aph , an d",
-          "s afe t y process into one w o r kin g pic t u r e .",
-          "Predict data m o vem en t"
+          {
+            "label": "01. See Go2 as a System",
+            "value": "Connect the robot body, onboard computers, network, SDK, ROS 2 graph, and safety process into one unified mental model."
+          },
+          {
+            "label": "02. Predict Data Movement",
+            "value": "Understand exactly when information should flow as a topic stream, a service request, an action goal, or a dynamic parameter."
+          },
+          {
+            "label": "03. Debug Before Control",
+            "value": "Utilize arrays, frames, TF, RViz displays, and active message inspection to verify robot state before commanding physical motors."
+          }
         ],
-        "bottom_band": "The goal is not memorization;the goal is safe i n t erp ret a t i o n of robot data and software behavior."
+        "bottom_band": "Teaching Rhythm: Pause, inspect commands, and ask questions before moving to the physical hardware."
       },
       {
         "title": "Lecture Pacing",
@@ -51,113 +58,70 @@
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Concept",
-            "Description"
+            "Time",
+            "Session Topic",
+            "Learning Goal"
           ],
           "rows": [
             [
-              "0",
-              "00\u20130:35"
+              "00:00 - 00:35",
+              "Go2 as a System",
+              "Map the physical body, onboard compute, networks, SDK, and safety boundaries."
             ],
             [
-              "Go2as a system",
-              ""
+              "00:35 - 01:10",
+              "Quadruped Kinematics",
+              "Connect joint motion, body frames, and foot trajectories with mathematical models."
             ],
             [
-              "S tud e nts map the body,",
-              ""
+              "01:10 - 01:45",
+              "ROS 2 & CycloneDDS",
+              "Understand nodes, topics, service calls, action goals, and QoS policies."
             ],
             [
-              "onb oa r d c om p ute , network,",
-              ""
+              "01:45 - 02:20",
+              "Message Arrays",
+              "Deconstruct sensor arrays, JointState messages, and index mapping rules."
             ],
             [
-              "SDK, and safety",
-              ""
-            ],
-            [
-              "b ound a r i e s .",
-              ""
+              "02:20 - 03:00",
+              "RViz & TF Mapping",
+              "Learn how coordinate transform trees enable 3D spatial visualization."
             ]
           ]
         },
-        "bottom_band": "Teaching rhythm"
+        "bottom_band": "Rhythm: 35 minutes of theory followed by hands-on verification in the lab workspace."
       },
       {
         "title": "Go2 System View",
         "thesis": "Go2 Is More Than a Robot Body",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "Students should see",
-              ""
-            ],
-            [
-              "layers, not just legs.",
-              ""
-            ],
-            [
-              "The Unitree Go2 is a cyb er",
-              "p h ys i ca l s ys tem ."
-            ],
-            [
-              "Motion only makes sense when the m ech a n i ca l",
-              ""
-            ],
-            [
-              "body, sensor data, onboard compute, n etw o r k",
-              ""
-            ],
-            [
-              "path, software i n ter f a ces , and s a f ety rules are",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "safe act i o n ."
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Physical Layer",
+            "value": "12 joint motors, battery pack, sensors, and structural frames that interact directly with the environment."
+          },
+          {
+            "label": "Compute Layer",
+            "value": "Built-in low-level real-time controllers separated from high-level user expansion PCs (Jetson Orin)."
+          },
+          {
+            "label": "Network Layer",
+            "value": "Local subnets, Ethernet, and Wi-Fi interfaces running DDS discovery protocols for inter-node communication."
+          }
+        ],
+        "bottom_band": "Mental Model: Always see layers, not just legs."
       },
       {
         "title": "Go2 Platform Reasoning",
         "thesis": "Hardware Shapes Software Choices",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "PHYSICAL CAPABILITY",
-              ""
-            ],
-            [
-              "Motors and",
-              ""
-            ],
-            [
-              "joints",
-              ""
-            ],
-            [
-              "Twelve main leg j oi nts make command order,",
-              ""
-            ],
-            [
-              "update rate, and safety limits part of every",
-              ""
-            ],
-            [
-              "c ontr ol program.",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "Student rule"
+        "board_type": "list",
+        "board_data": [
+          "Dynamic Balance: Legs must actively adjust torque to support the body, unlike wheels which are statically stable.",
+          "High-Frequency Loop: Joint states must be read and commanded at high rates (up to 1000Hz) to prevent falling.",
+          "Underactuated System: The robot body's 6 DOF position is controlled indirectly through 12 joint motor inputs."
+        ],
+        "bottom_band": "Reasoning: Quadruped control requires deep integration of kinematics and real-time networking."
       },
       {
         "title": "Go2 Platform Variants",
@@ -165,158 +129,116 @@
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Concept",
-            "Description"
+            "Feature",
+            "Go2 Air/Pro (Consumer)",
+            "Go2 EDU (Academic/Research)"
           ],
           "rows": [
             [
-              "EDU matters because",
-              ""
+              "SDK Access",
+              "Restricted / Read-Only",
+              "Full low-level joint command access enabled."
             ],
             [
-              "students need access,",
-              ""
+              "Expansion PC",
+              "None / Optional",
+              "Built-in Jetson Orin running Ubuntu and ROS 2."
             ],
             [
-              "not just operation.",
-              ""
-            ],
-            [
-              "The d ev el o p men t",
-              "f a c i n g configuration is the"
-            ],
-            [
-              "one students should a sso c i a t e with SDK work,",
-              ""
-            ],
-            [
-              "ROS 2 i n t eg r a t i o n , su p er v i sed ex p er i men t s ,",
-              ""
+              "Connectivity",
+              "Wi-Fi / Bluetooth only",
+              "Physical Ethernet ports and custom payload mounts."
             ]
           ]
         },
-        "bottom_band": "Student checkpoint"
+        "bottom_band": "Important: Only the EDU variant allows running custom joint controllers and custom SLAM."
       },
       {
         "title": "Go2 Onboard Computing",
         "thesis": "Onboard Compute Has Boundaries",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "STUDENT WORKSTATION",
-            "Where you d e v e lop and",
-            "inspect",
-            "U n it ree reco m m en d s Go2 SDK d evelo p m en t"
-          ]
-        },
-        "bottom_band": "Student rule"
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Low-Level RTOS",
+            "value": "Handles real-time leg control, gait generation, and basic safety limits. Closed-source, high-frequency (1kHz)."
+          },
+          {
+            "label": "High-Level Jetson Orin",
+            "value": "Runs Ubuntu Linux + ROS 2. Where you deploy SLAM, perception, and custom high-level joint commands."
+          },
+          {
+            "label": "Student Workstation",
+            "value": "Where you develop code, run RViz visualization, and monitor robot topics over the local network."
+          }
+        ],
+        "bottom_band": "Boundary Rule: Never run heavy algorithms on the RTOS. Keep student code on Jetson or Workstation."
       },
       {
         "title": "Go2 Networking",
         "thesis": "Network Setup Is Part of Robotics",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "ROBOT LOCAL NETWORK",
-              ""
-            ],
-            [
-              "192.168.123.x",
-              ""
-            ],
-            [
-              "Your computer must speak on the",
-              ""
-            ],
-            [
-              "robot\u02bcs subnet.",
-              ""
-            ],
-            [
-              "For Unitree SDK communication,students configure the",
-              ""
-            ],
-            [
-              "development workstation on the robot LAN so",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "Student rule"
+        "board_type": "list",
+        "board_data": [
+          "Robot Local Subnet: Go2 defaults to the 192.168.123.x subnet. The robot is always at 192.168.123.161.",
+          "Workstation Setup: Set a static IP on your Ethernet port (e.g., 192.168.123.99) with netmask 255.255.255.0.",
+          "Ping Verification: Always run 'ping 192.168.123.161' to verify physical connection before launching ROS 2."
+        ],
+        "bottom_band": "Safety: Never connect multiple workstations with the same static IP to the robot subnet."
       },
       {
         "title": "Networked Robot Mental Model",
         "thesis": "Two Computers Must Agree",
-        "board_type": "math",
+        "board_type": "table",
         "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "Stu d en t PC",
-            "192.168.123.X",
-            "Runs student code, t erm in a ls , ROS",
-            "2 t ools , R Viz , SDK ex a m p les , and"
+          "headers": [
+            "Computer",
+            "Primary Role",
+            "Key Software & Tools"
+          ],
+          "rows": [
+            [
+              "Onboard Jetson PC",
+              "Runs the Unitree SDK, ROS 2 nodes, and communicates directly with the low-level controller.",
+              "Unitree SDK 2, ROS 2 Humble, CycloneDDS."
+            ],
+            [
+              "Student Workstation",
+              "Runs visualization, monitoring tools, and compiles student-written ROS 2 nodes.",
+              "RViz 2, ros2 CLI tools, custom python/C++ scripts."
+            ]
           ]
         },
-        "bottom_band": "Sources: Unitree Go2 SDK 2 Quick Start; Unitree ROS 2 Services Interface"
+        "bottom_band": "Rule: Both computers must use the same ROS_DOMAIN_ID and bind to the correct network interface."
       },
       {
         "title": "Go2 Safety Before Motion",
         "thesis": "Command Authority Must Be Explicit",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "UNSAFE PATTERN",
-              ""
-            ],
-            [
-              "Two controllers can fight",
-              ""
-            ],
-            [
-              "the same robot.",
-              ""
-            ],
-            [
-              "If multiple p r o g r ams send motion requests",
-              ""
-            ],
-            [
-              "at once,the robot may r e ce ive co n flict in g",
-              ""
-            ],
-            [
-              "co mman d s fas t e r than a person can",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "Source: Unitree Go2 SDK 2 safety guidance on disabling competing motion services before low-level control"
+        "board_type": "list",
+        "board_data": [
+          "Unsafe Pattern: Multiple nodes trying to publish joint commands to the same robot simultaneously.",
+          "Physical stand: Always place the robot on a metal gantry stand (suspended legs) when testing new controllers.",
+          "Emergency Stop: Keep the Unitree remote controller nearby to trigger emergency motor cut-off instantly."
+        ],
+        "bottom_band": "Safety Habit: Disable competing motion services before sending custom low-level commands."
       },
       {
         "title": "Quadruped Kinematics",
         "thesis": "Go2 Has Twelve Main Leg DOF",
-        "board_type": "math",
-        "board_data": {
-          "equation": "=12",
-          "steps": [
-            "Twelve variables",
-            "describe the main leg",
-            "pose.",
-            "For a first kinematics model, students can think"
-          ]
-        },
-        "bottom_band": "Student checkpoint"
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Hip Roll (Abduction)",
+            "value": "Joint 0: Controls the side-to-side leg swing. Vital for lateral balance and turning."
+          },
+          {
+            "label": "Hip Pitch (Thigh)",
+            "value": "Joint 1: Controls the forward and backward leg swing. Generates primary propulsion."
+          },
+          {
+            "label": "Knee Pitch (Calf)",
+            "value": "Joint 2: Controls leg extension and retraction. Determines foot clearance height."
+          }
+        ],
+        "bottom_band": "Kinematics: 3 joints per leg * 4 legs = 12 main degrees of freedom (DOF) for locomotion."
       },
       {
         "title": "Quadruped Naming Discipline",
@@ -324,779 +246,699 @@
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Concept",
-            "Description"
+            "Abbreviation",
+            "Full Name",
+            "Index in SDK Arrays"
           ],
           "rows": [
             [
-              "ROBOT",
-              "RELATIVE ORIENTATION"
+              "FL",
+              "Front Left Leg",
+              "Indices 0, 1, 2"
             ],
             [
-              "I m po r tan t",
-              "left and right are from the robot\u02bcs vie wp o in t , n o t from"
+              "FR",
+              "Front Right Leg",
+              "Indices 3, 4, 5"
             ],
             [
-              "the vie we r standing in front of it.",
-              ""
+              "RL",
+              "Rear Left Leg",
+              "Indices 6, 7, 8"
             ],
             [
-              "STABLE SOFTWARE MAPPING",
-              ""
-            ],
-            [
-              "Na mes beco me indices in arrays and logs.",
-              ""
-            ],
-            [
-              "Students should learn a fix e d leg order before reading state ar r ays , p lo t t in g",
-              ""
+              "RR",
+              "Rear Right Leg",
+              "Indices 9, 10, 11"
             ]
           ]
         },
-        "bottom_band": "Student checkpoint"
+        "bottom_band": "Important: Left and right are from the robot's viewpoint, not the student's perspective."
       },
       {
         "title": "Quadruped Kinematics Vocabulary",
         "thesis": "Joint Names Carry Meaning",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "Names tell students",
-            "what a number",
-            "controls.",
-            "A joint angle is not j ust an entry in an array."
-          ]
-        },
-        "bottom_band": "safety limits."
+        "board_type": "list",
+        "board_data": [
+          "Abduction/Adduction (AbDu): Side-to-side rotation around the roll axis.",
+          "Hip/Thigh: Forward-backward rotation around the pitch axis.",
+          "Knee/Calf: Extension-retraction rotation around the pitch axis."
+        ],
+        "bottom_band": "Standardization: Always use [Leg]_[Joint] naming (e.g., FL_calf) in URDF and code."
       },
       {
         "title": "Kinematics Reading Skill",
-        "thesis": "Axes De\u0000ne Positive Motion",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "A number is",
-              ""
-            ],
-            [
-              "meaningless until its",
-              ""
-            ],
-            [
-              "axis is known.",
-              ""
-            ],
-            [
-              "A joint angle may be positive or negative, but",
-              ""
-            ],
-            [
-              "the sign only b eco m es useful when students",
-              ""
-            ],
-            [
-              "know the joint axis and the coordinate frame",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "Student checkpoint"
+        "thesis": "Axes Define Positive Motion",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Roll Axis (X)",
+            "value": "Positive roll rotates the leg outward (abduction). Negative roll rotates it inward (adduction)."
+          },
+          {
+            "label": "Pitch Axis (Y)",
+            "value": "Positive pitch rotates the leg forward. Negative pitch rotates the leg backward."
+          },
+          {
+            "label": "Knee Axis (Y)",
+            "value": "Positive knee angle extends the leg. Negative knee angle retracts/bends the knee."
+          }
+        ],
+        "bottom_band": "Check: Always verify joint directions in URDF before writing inverse kinematics."
       },
       {
-        "title": "Quadruped Kinematics",
+        "title": "Forward Kinematics",
         "thesis": "Forward Kinematics Predicts Foot Position",
         "board_type": "math",
         "board_data": {
-          "equation": "= body-frame foot position",
+          "equation": "Foot_XYZ = FK(q_roll, q_pitch, q_knee)",
           "steps": [
-            "KNOWN INPUT",
-            "Sta r t with joint angles",
-            "Forward kinematics begins when the",
-            "robot a lrea d y knows the c u rren t hip,"
+            "1. Read the joint angle sensors (encoders) from the robot's state feedback.",
+            "2. Define link lengths: Thigh link (L1 = 0.213m) and Calf link (L2 = 0.213m).",
+            "3. Apply trigonometric formulas to calculate the foot coordinate relative to the hip.",
+            "4. Output the 3D position (X, Y, Z) of the foot center."
           ]
         },
-        "bottom_band": "Student checkpoint"
+        "bottom_band": "Verification: Run the 'lowstate_listener' node and manually move a leg to check if calculations match."
       },
       {
-        "title": "Quadruped Kinematics",
-        "thesis": "Inverse Kinematics Starts From a Desired Foot",
+        "title": "Inverse Kinematics",
+        "thesis": "Inverse Kinematics Solves Joint Commands",
         "board_type": "math",
         "board_data": {
-          "equation": "Important: an IK answer is only u s efu l if it res p ec t s",
+          "equation": "q_joint = IK(X_target, Y_target, Z_target)",
           "steps": [
-            "angles reach this foot",
-            "target?",
-            "Forward kinematics starts with joint angles and",
-            "predicts the f oot p osi t i on . Inverse kinematics"
+            "1. Define the desired foot position (X, Y, Z) in 3D space relative to the hip.",
+            "2. Verify if the target coordinate is within the leg's physical workspace reach.",
+            "3. Solve geometric equations to calculate the roll, thigh, and calf angles.",
+            "4. Clamp the calculated angles to the robot's physical joint limits."
           ]
         },
-        "bottom_band": "Never send IK results blindly. First check the frame, units, reachability, joint limits, and whether the"
+        "bottom_band": "Safety: An unreachable target (out of workspace) will produce NaN or math errors, causing motor failure."
       },
       {
-        "title": "Frames and Measurements",
-        "thesis": "Body Frames Make Measurements Useful",
+        "title": "Locomotion Gaits",
+        "thesis": "Gaits Coordinate Foot Contact Patterns",
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Concept",
-            "Description"
+            "Gait Type",
+            "Contact Pattern",
+            "Primary Use Case"
           ],
           "rows": [
             [
-              "Coordinates need a",
-              ""
+              "Trot",
+              "Diagonal leg pairs move together (FL+RR, FR+RL).",
+              "Standard locomotion, stable and efficient."
             ],
             [
-              "reference.",
-              ""
+              "Pace",
+              "Lateral leg pairs move together (FL+RL, FR+RR).",
+              "Faster speeds on flat, even terrain."
             ],
             [
-              "A f oot p osi t i on suc h as \u00000.18, \u00000.09, \u00000.28\u0000 is",
-              ""
+              "Bound",
+              "Front leg pair and rear leg pair alternate contact.",
+              "Jumping over obstacles or rough terrain."
             ],
             [
-              "not use f ul by itself. Students must k now",
-              ""
-            ],
-            [
-              "whi c h c oor d i na t e frame gives that numb e r",
-              ""
-            ],
-            [
-              "meaning.",
-              ""
+              "Walk",
+              "One leg moves at a time, keeping 3 legs on the ground.",
+              "Slow, high-stability precision navigation."
             ]
           ]
         },
-        "bottom_band": "frame to the fixed"
+        "bottom_band": "Mental Model: Locomotion is the art of moving the center of mass while coordinating foot contact."
       },
       {
-        "title": "Kinematics in Software",
-        "thesis": "Arrays Represent Many Joints",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "One array can",
-              ""
-            ],
-            [
-              "describe the whole",
-              ""
-            ],
-            [
-              "leg system.",
-              ""
-            ],
-            [
-              "I nst e a d of sending twelve separate",
-              ""
-            ],
-            [
-              "variables, robot sof t w a r e often packs",
-              ""
-            ],
-            [
-              "repeated joint data into an ordered array.",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "If index 7 changes, students should be able to identify the physical joint before p l otti n g , debugging, or"
+        "title": "Locomotion State Estimation",
+        "thesis": "The Robot Must Know Where It Is",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "IMU Fusion",
+            "value": "Measures body orientation (roll, pitch, yaw) and linear accelerations at high frequencies (up to 500Hz)."
+          },
+          {
+            "label": "Leg Odometry",
+            "value": "Combines joint velocities and foot contact sensors to estimate how fast the robot is moving over the ground."
+          },
+          {
+            "label": "Extended Kalman Filter (EKF)",
+            "value": "Fuses IMU and leg odometry to produce a stable, drift-free estimate of the robot's 3D velocity and position."
+          }
+        ],
+        "bottom_band": "Rule: If state estimation drifts, high-level navigation and path planning will fail immediately."
       },
       {
-        "title": "Quadruped Motion Timing",
-        "thesis": "Gaits Are Timed Leg Patterns",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "A gait is coordination,",
-              ""
-            ],
-            [
-              "not four separate legs.",
-              ""
-            ],
-            [
-              "Each leg follows a trajectory, but use f ul",
-              ""
-            ],
-            [
-              "walking appears onl y when the trajectories",
-              ""
-            ],
-            [
-              "are timed together.",
-              ""
-            ],
-            [
-              "Students shoul d read a gait as a repeated",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "smooth motion?"
-      },
-      {
-        "title": "Kinematics and Safe Motion",
-        "thesis": "Kinematics Has Safety Limits",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "A reachable pose is not",
-              ""
-            ],
-            [
-              "automatically a safe",
-              ""
-            ],
-            [
-              "pose.",
-              ""
-            ],
-            [
-              "Kinematics can tell students whe t he r a f oot",
-              ""
-            ],
-            [
-              "p osi t i on or joint angle is g e ome t r i c a l l y p ossi b l e ,",
-              ""
-            ],
-            [
-              "but the robot still has physical limits.",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "robot before continuing."
-      },
-      {
-        "title": "ROS 2 Communication Vocabulary",
-        "thesis": "ROS 2 Organizes Robot Software",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "ROS 2 turns many",
-            "programs into one",
-            "inspectable robot",
-            "system."
-          ]
-        },
-        "bottom_band": "Source: ROS 2 Humble documentation on nodes, topics, services, actions, parameters, and launch"
-      },
-      {
-        "title": "ROS 2 topics",
-        "thesis": "Topics Carry Continuous Streams",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "A topic is a named",
-            "channel for repeated",
-            "data.",
-            "S t ude nt s shoul d think of a ROS 2 t opi c as a"
-          ]
-        },
-        "bottom_band": "subscribes?"
-      },
-      {
-        "title": "ROS 2 Message Definitions",
-        "thesis": "Messages Are Typed Contracts",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "WHAT A MESSAGE FILE PROMISES",
-            "A message says exactly",
-            "what data can travel.",
-            "on a topic name.They must also agree on the"
-          ]
-        },
-        "bottom_band": "by the same index?"
-      },
-      {
-        "title": "ROS 2 Service Pattern",
-        "thesis": "Services Are Short Conversations",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "A service is a question",
-            "with a typed answer.",
-            "In ROS 2, a client se nds a r e que st to a",
-            "named service, and a server returns one"
-          ]
-        },
-        "bottom_band": "f e e d b ack ?"
-      },
-      {
-        "title": "ROS 2 Services: Correct Scope",
-        "thesis": "Services Are Not Streaming Tools",
+        "title": "ROS 2 Architecture",
+        "thesis": "ROS 2 Is the Robotic Middleware",
         "board_type": "list",
         "board_data": [
-          "Use a service when the",
-          "answer should come",
-          "back quickly.",
-          "TIMING COMPARISON",
-          "s t a r t s h o r t r u n n i n g f eed b a c k f i n i s h"
+          "Nodes: Modular software processes that perform specific tasks (e.g., LiDAR driver, SLAM, motor controller).",
+          "Publish/Subscribe: Asynchronous communication pattern where nodes exchange message streams.",
+          "Client/Service: Synchronous request-response pattern for quick, discrete commands.",
+          "Action: Asynchronous goal-oriented pattern with continuous feedback for long-running tasks."
         ],
-        "bottom_band": "Quick checks, mode requests,Continuous s tate , sensor"
+        "bottom_band": "Vocabulary: A 'Graph' is the network of all active nodes and their communication links."
       },
       {
-        "title": "Unitree SDK2 and ROS 2 Thinking",
-        "thesis": "Unitree Uses Request Patterns Too",
-        "board_type": "math",
+        "title": "ROS 2 Topic Communication",
+        "thesis": "Topics Handle Continuous Data Streams",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Many-to-Many",
+            "value": "Multiple nodes can publish to a topic, and multiple nodes can subscribe to receive the data."
+          },
+          {
+            "label": "Asynchronous Flow",
+            "value": "Publishers send data without waiting for subscribers to receive it, ensuring maximum speed."
+          },
+          {
+            "label": "Best Use Cases",
+            "value": "LiDAR point clouds, joint states, IMU data, and continuous motor command streams."
+          }
+        ],
+        "bottom_band": "Rule: Always match topic names and message types exactly between publishers and subscribers."
+      },
+      {
+        "title": "ROS 2 Service Communication",
+        "thesis": "Services Execute Quick Requests",
+        "board_type": "table",
         "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "Robot commands",
-            "should feel like",
-            "deliberate requests.",
-            "Many Unitree SDK2examples mirror a simple"
+          "headers": [
+            "Feature",
+            "Topics (Continuous)",
+            "Services (Discrete)"
+          ],
+          "rows": [
+            [
+              "Pattern",
+              "Publish / Subscribe (One-way)",
+              "Request / Response (Two-way)"
+            ],
+            [
+              "Execution",
+              "Asynchronous",
+              "Synchronous (usually blocking)"
+            ],
+            [
+              "Best Use Case",
+              "Sensor data streams, constant state updates.",
+              "Triggering a camera snapshot, resetting odometry."
+            ]
           ]
         },
-        "bottom_band": "Source: Unitree SDK 2 /unitree_ros2 documentation and ROS 2 Humble service concepts"
+        "bottom_band": "Design Rule: Never use services for high-frequency data streams. It will stall the ROS 2 graph."
       },
       {
-        "title": "ROS 2 actions",
-        "thesis": "Actions Add Feedback and Cancellation",
+        "title": "ROS 2 Action Communication",
+        "thesis": "Actions Manage Long-Running Goals",
         "board_type": "list",
         "board_data": [
-          "Actions are for goals",
-          "that take time.",
-          "A ROS 2action lets s t ude nt s send a goal,",
-          "watch feedback,optionally r e que s t",
-          "cancellation,and receive a final result."
+          "Goal Service: Client sends a goal request (e.g., 'Navigate to Coordinate X, Y').",
+          "Feedback Stream: Server sends continuous updates (e.g., 'Current distance to goal: 1.5m').",
+          "Result Service: Server sends final result when task is complete (e.g., 'Goal reached successfully').",
+          "Preemption: Clients can cancel or replace active goals at any time during execution."
         ],
-        "bottom_band": "Source: ROS 2 Humble documentation on actions, services, and topics"
+        "bottom_band": "Action: Perfect for navigation, complex gaits, and long-running autonomous tasks."
       },
       {
         "title": "ROS 2 Parameters",
-        "thesis": "Parameters Tune Node Behavior",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "A parameter is",
-              ""
-            ],
-            [
-              "con\u0000guration, not a",
-              ""
-            ],
-            [
-              "command stream.",
-              ""
-            ],
-            [
-              "S t ude nt s should think of a ROS 2parameter",
-              ""
-            ],
-            [
-              "as a named value stored by a node.It c ha nge s",
-              ""
-            ],
-            [
-              "how that node be ha v e s , but it is not the r i ght",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "or acti o n ?"
+        "thesis": "Parameters Configure Node Settings",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Dynamic Tuning",
+            "value": "Allows changing node settings (like PID gains or speed limits) at runtime without restarting the node."
+          },
+          {
+            "label": "Key-Value Store",
+            "value": "Parameters are defined as named values (e.g., 'max_speed': 1.2) associated with a specific node."
+          },
+          {
+            "label": "YAML Configuration",
+            "value": "Parameters can be loaded from YAML files during node startup to maintain persistent settings."
+          }
+        ],
+        "bottom_band": "Tip: Use 'ros2 param list' and 'ros2 param set' to tune controllers during live testing."
       },
       {
-        "title": "ROS 2 Quality of Service",
-        "thesis": "QoS Changes What Data Arrives",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "QoS is the delivery",
-            "agreement behind a",
-            "topic.",
-            "A topic name and message type are not the"
-          ]
-        },
-        "bottom_band": "Source: ROS 2 Humble documentation on Quality of Service policies"
-      },
-      {
-        "title": "ROS 2 Discovery Layer",
-        "thesis": "DDS Makes Nodes Discover Each Other",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "need a central master.",
-              ""
-            ],
-            [
-              "In ROS 2,nodes can run on the robot,on a",
-              ""
-            ],
-            [
-              "s t ude nt laptop,or on another c o m put e r . T he",
-              ""
-            ],
-            [
-              "m i ddl e w a r e helps them d i s c ove r",
-              ""
-            ],
-            [
-              "c omp a ti b l e publishers, subscribers,",
-              ""
-            ],
-            [
-              "services, and actions.",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "Source: ROS 2 Humble DDS concepts and Unitree ROS 2 Cy c l o n e DDS setup guidance"
-      },
-      {
-        "title": "ROS 2 Message arrays",
-        "thesis": "Arrays Store Repeated Robot Data",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "An array lets one",
-              ""
-            ],
-            [
-              "\u0000eld carry many",
-              ""
-            ],
-            [
-              "values.",
-              ""
-            ],
-            [
-              "Robots often describe groups of similar",
-              ""
-            ],
-            [
-              "things",
-              "joints,feet,poses,markers,or point"
-            ],
-            [
-              "clouds.",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "Source: ROS 2 Humble interface definition guidance and robotics message patterns"
-      },
-      {
-        "title": "Message arrays in Practice",
-        "thesis": "JointState Is an Array Lesson",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "One index describes",
-            "one joint across",
-            "several arrays.",
-            "The ROS 2sensor_msgs/JointState"
-          ]
-        },
-        "bottom_band": "order."
-      },
-      {
-        "title": "Unitree Message arrays",
-        "thesis": "Unitree State Uses Fixed Arrays",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "Fixed arrays match",
-            "\u0000xed robot structure.",
-            "The Go2has a known body layout:four feet",
-            "and twelve leg motors.Unitree state"
-          ]
-        },
-        "bottom_band": "positive d i r ecti o n apply?"
-      },
-      {
-        "title": "ROS 2 Message arrays",
-        "thesis": "PoseArray Represents Many Poses",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "PoseArray is a group",
-            "of poses in one",
-            "frame.",
-            "A s i ngl e g e om e tr y _ m sg s / P ose describes"
-          ]
-        },
-        "bottom_band": "index?"
-      },
-      {
-        "title": "RViz Visualization Messages",
-        "thesis": "MarkerArray Groups Visual Objects",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "One topic can carry",
-            "many visual hints.",
-            "A visualization_msgs/MarkerArray",
-            "message gr o ups multiple Marker"
-          ]
-        },
-        "bottom_band": "update, or get d el eted by ID?"
-      },
-      {
-        "title": "Bulk Sensor Messages",
-        "thesis": "PointCloud2 Is Structured Bulk Data",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "A point cloud is a",
-            "large 3D",
-            "measurement table.",
-            "s e n s or _ ms g s / P oi n tCl ou d 2 carries many"
-          ]
-        },
-        "bottom_band": "habit"
-      },
-      {
-        "title": "Safe array interpretation",
-        "thesis": "Index Discipline Prevents Bugs",
-        "board_type": "table",
-        "board_data": {
-          "headers": [
-            "Concept",
-            "Description"
-          ],
-          "rows": [
-            [
-              "until you know what",
-              ""
-            ],
-            [
-              "each index means.",
-              ""
-            ],
-            [
-              "Array bugs are da nge r o us because they",
-              ""
-            ],
-            [
-              "often look reasonable.A num be r may be",
-              ""
-            ],
-            [
-              "v a l i d , but it may belong to the wrong joint,",
-              ""
-            ],
-            [
-              "f oot , pose, marker, or frame.",
-              ""
-            ]
-          ]
-        },
-        "bottom_band": "move hardware."
-      },
-      {
-        "title": "RViz Mental Model",
-        "thesis": "RViz Is a Subscriber View",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "RViz watches ROS 2",
-            "data; it does not own",
-            "the robot.",
-            "RViz is a visualization tool that subscribes"
-          ]
-        },
-        "bottom_band": "frame?"
-      },
-      {
-        "title": "RViz Display Crosswalk",
-        "thesis": "Displays Consume Speci\u0000c Messages",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "Choosing a display",
-            "is choosing a",
-            "subscriber type.",
-            "RViz does not understand every topic in"
-          ]
-        },
-        "bottom_band": "frame to the fixed frame?"
-      },
-      {
-        "title": "RViz Publisher/Subscriber Mapping",
-        "thesis": "Publishers Feed RViz Displays",
-        "board_type": "math",
-        "board_data": {
-          "equation": "Formula",
-          "steps": [
-            "RViz can only show",
-            "data that someone",
-            "publishes.",
-            "Every RViz display begins upstream.A"
-          ]
-        },
-        "bottom_band": "frame."
-      },
-      {
-        "title": "RViz Frames and TF",
-        "thesis": "Fixed Frame Is the Visualization Anchor",
-        "board_type": "math",
-        "board_data": {
-          "equation": "x=1only has meaning inside a named frame.",
-          "steps": [
-            "RViz needs one",
-            "stable frame to draw",
-            "everything together.",
-            "The fixed frame is the coordinate frame"
-          ]
-        },
-        "bottom_band": "Source: ROS 2 Humble RViz user guide and tf2 frame transform concepts"
-      },
-      {
-        "title": "RViz Robotmodel Display",
-        "thesis": "RobotModel Needs TF and URDF",
+        "title": "CycloneDDS Middleware",
+        "thesis": "DDS Handles Network Message Routing",
         "board_type": "list",
         "board_data": [
-          "The robot model is",
-          "built from shape",
-          "plus motion.",
-          "In R V i z , R o bo tMo de l is not a camera view",
-          "of the robot.It is a rendered model"
+          "Data Distribution Service (DDS): The underlying network standard used by ROS 2 for zero-copy message sharing.",
+          "CycloneDDS: The default, high-performance DDS implementation pre-installed on the Go2 robot.",
+          "Discovery: DDS nodes automatically find each other on the local network without needing a master server.",
+          "Network Interface: You must set CYCLONEDDS_URI to force ROS 2 to bind to your Ethernet static IP port."
         ],
-        "bottom_band": "Source: ROS 2 Humble RViz RobotModel display concepts, U RDF , and tf2 frame transform concepts"
+        "bottom_band": "Debugging: If nodes on different PCs cannot see each other, check your DDS network configuration."
       },
       {
-        "title": "RViz Mapping Data Flow",
-        "thesis": "Mapping Uses Point Clouds and Odometry",
+        "title": "ROS 2 Quality of Service (QoS)",
+        "thesis": "QoS Decides How Messages Are Delivered",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "QoS Policy",
+            "Reliable (Command Default)",
+            "Best Effort (Sensor Default)"
+          ],
+          "rows": [
+            [
+              "Delivery",
+              "Guarantees message arrival. Retries lost packets.",
+              "Fastest delivery. Drops lost packets to prevent lag."
+            ],
+            [
+              "History Buffer",
+              "Buffers messages up to a defined queue depth.",
+              "Keeps only the most recent message, discarding old ones."
+            ],
+            [
+              "Durability",
+              "Can store and deliver historical messages to late subscribers.",
+              "Volatile. Only delivers messages published after subscription."
+            ]
+          ]
+        },
+        "bottom_band": "Rule: Incompatible QoS profiles between publishers and subscribers will cause topics to show 0 active messages."
+      },
+      {
+        "title": "Understanding ROS 2 Message Arrays",
+        "thesis": "Robotic State Data Is Inherently Repetitive",
+        "board_type": "list",
+        "board_data": [
+          "Array Structure: Storing 12 joint positions as individual variables is messy. We use typed, structured arrays.",
+          "Index Mapping: Joint positions are stored in a float64[] array. You must strictly follow the index mapping.",
+          "Array Safety: Always verify that the array size matches your expected size before accessing elements to prevent segmentation faults."
+        ],
+        "bottom_band": "Array Rule: Never hardcode array indices. Define clear constant mappings or enums."
+      },
+      {
+        "title": "sensor_msgs/JointState",
+        "thesis": "The Standard ROS 2 Joint Message",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "header",
+            "value": "Contains timestamp and coordinate frame ID (typically 'base_link') for spatial tracking."
+          },
+          {
+            "label": "name[]",
+            "value": "String array listing joint names in order (e.g., ['FL_hip', 'FL_thigh', 'FL_calf', ...])."
+          },
+          {
+            "label": "position[]",
+            "value": "Float64 array of joint angles in radians. Must align exactly with the name array."
+          }
+        ],
+        "bottom_band": "Check: Use 'ros2 topic echo /joint_states' to inspect the active joint positions in real-time."
+      },
+      {
+        "title": "Joint State Index Mapping",
+        "thesis": "Index Order Must Match Joint Names",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Array Index",
+            "Joint Name",
+            "Physical Motor"
+          ],
+          "rows": [
+            [
+              "0, 1, 2",
+              "FL_hip, FL_thigh, FL_calf",
+              "Front Left Abduction, Thigh, and Calf motors."
+            ],
+            [
+              "3, 4, 5",
+              "FR_hip, FR_thigh, FR_calf",
+              "Front Right Abduction, Thigh, and Calf motors."
+            ],
+            [
+              "6, 7, 8",
+              "RL_hip, RL_thigh, RL_calf",
+              "Rear Left Abduction, Thigh, and Calf motors."
+            ],
+            [
+              "9, 10, 11",
+              "RR_hip, RR_thigh, RR_calf",
+              "Rear Right Abduction, Thigh, and Calf motors."
+            ]
+          ]
+        },
+        "bottom_band": "Warning: Sending joint commands in the wrong index order will cause severe physical damage to the robot."
+      },
+      {
+        "title": "RViz 2 Visualization Mental Model",
+        "thesis": "RViz Displays What the Robot Believes",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Not a Simulator",
+            "value": "RViz does not simulate physics. It only renders active sensor feeds and transform coordinate frames in 3D."
+          },
+          {
+            "label": "Robot Model",
+            "value": "Loads the URDF (Unified Robot Description Format) file to render the robot's physical links and joint angles."
+          },
+          {
+            "label": "Sensor Overlays",
+            "value": "Displays LiDAR point clouds, camera feeds, static maps, and navigation paths directly in the 3D scene."
+          }
+        ],
+        "bottom_band": "Rule: If RViz shows the robot drifting, check your Odometry publisher, not the physical motors."
+      },
+      {
+        "title": "Coordinate Transforms (TF) & Frames",
+        "thesis": "The TF Tree Is the Spatial Backbone",
         "board_type": "math",
         "board_data": {
-          "equation": "Formula",
+          "equation": "P_map = T_map_to_odom * T_odom_to_base * P_lidar",
           "steps": [
-            "Mapping needs",
-            "shape and motion,",
-            "not just one topic.",
-            "PointCloud2 giv e s the m appe r geometric"
+            "1. Read a laser point P_lidar relative to the LiDAR sensor frame.",
+            "2. Lookup the static transform from lidar_frame to base_link (defined in URDF).",
+            "3. Lookup the dynamic transform from base_link to odom (published by state estimator).",
+            "4. Lookup the dynamic transform from odom to map (published by SLAM node)."
           ]
         },
-        "bottom_band": "Source: ROS 2 sensor_msgs/PointCloud2, nav_msgs/Odometry, RViz display concepts, and Unitree ROS 2 SLAM wo r kfl o ws"
+        "bottom_band": "TF Rule: A healthy TF tree must have a single, unbroken path from any child frame back to the root frame (map)."
       },
       {
-        "title": "RViz Map Display",
-        "thesis": "Occupancy Grids Become Maps",
+        "title": "RViz Diagnostic Habits",
+        "thesis": "Structured Diagnostics Save Development Time",
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Concept",
-            "Description"
+            "RViz Error",
+            "Probable Cause",
+            "Actionable Fix"
           ],
           "rows": [
             [
-              "A map can be stored",
-              ""
+              "Fixed Frame: Error",
+              "The selected fixed frame does not exist in the active TF tree.",
+              "Change 'Fixed Frame' in RViz global options to 'odom' or 'base_link'."
             ],
             [
-              "as a 2D array of",
-              ""
+              "RobotModel: No link data",
+              "The robot_description parameter was not published.",
+              "Verify that the 'robot_state_publisher' node is running and active."
             ],
             [
-              "cells.",
-              ""
-            ],
-            [
-              "An Oc c u pan c y G r i d represents the world as",
-              ""
-            ],
-            [
-              "rows and co lu mn s . E ach cell stores",
-              ""
-            ],
-            [
-              "e vid e n ce about whether that part of the",
-              ""
+              "LaserScan: Transform Error",
+              "No transform path from lidar_frame to Fixed Frame.",
+              "Check if static_transform_publisher is running or if URDF is missing the link."
             ]
           ]
         },
-        "bottom_band": "Source: ROS 2 nav_msgs/OccupancyGrid message definition and ROS 2 Humble RViz Map display concepts"
+        "bottom_band": "Diagnostic Habit: Always check terminal logs alongside RViz warnings to pinpoint TF failures."
       },
       {
-        "title": "RViz Diagnostic Habit",
-        "thesis": "RViz Status Teaches Troubleshooting",
+        "title": "Unitree SDK 2 Overview",
+        "thesis": "The SDK Interfaces User Code with Hardware",
+        "board_type": "list",
+        "board_data": [
+          "Low-Level Control: Directly commands joint torques, positions, and damping factors at high frequencies (up to 1kHz).",
+          "High-Level Control: Commands velocity vectors (e.g., 'Move forward at 0.5m/s') and pre-built gaits.",
+          "State Feedback: Reads joint angles, velocities, IMU orientation, and foot contact sensors.",
+          "C++ and Python: Official bindings are provided for both high-performance and rapid prototyping."
+        ],
+        "bottom_band": "Rule: Always start with High-Level control to verify safety before attempting Low-Level joint torque control."
+      },
+      {
+        "title": "Low-Level Sport RPC",
+        "thesis": "Direct Joint Torque Command Interface",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Torque Control",
+            "value": "Directly commands motor current (torque) for each joint, allowing custom force controllers."
+          },
+          {
+            "label": "PID Control",
+            "value": "Allows sending target joint positions and velocities along with Kp/Kd gains for onboard joint-level control."
+          },
+          {
+            "label": "High Frequency",
+            "value": "Requires sending commands continuously at 200Hz - 1000Hz. If commands stop, the motors will disarm."
+          }
+        ],
+        "bottom_band": "Safety: Always clamp joint commands to safe limits to prevent violent motor joint collisions."
+      },
+      {
+        "title": "Unitree SDK 2 Installation",
+        "thesis": "Setting Up the Development Environment",
+        "board_type": "list",
+        "board_data": [
+          "Prerequisites: Install Ubuntu Linux 22.04 and ROS 2 Humble on your workstation.",
+          "Dependencies: Install build-essential, cmake, and network library dependencies.",
+          "Clone Repository: Clone the official unitree_sdk2 repository from GitHub.",
+          "Build SDK: Run 'mkdir build && cd build && cmake .. && make' to compile the SDK libraries."
+        ],
+        "bottom_band": "Tip: Add the compiled SDK library path to your LD_LIBRARY_PATH environment variable."
+      },
+      {
+        "title": "Unitree SDK 2 Python Bindings",
+        "thesis": "Rapid Prototyping with Python",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Easy Integration",
+            "value": "Allows writing robot control nodes in Python, perfect for quick testing and research."
+          },
+          {
+            "label": "Performance",
+            "value": "Under the hood, Python calls compiled C++ libraries, maintaining high execution speeds."
+          },
+          {
+            "label": "Examples",
+            "value": "The SDK includes pre-built Python scripts for reading state feedback and sending velocity commands."
+          }
+        ],
+        "bottom_band": "Rule: Ensure the Python bindings are compiled with the correct Python version (typically 3.10)."
+      },
+      {
+        "title": "Unitree ROS 2 Services Interface",
+        "thesis": "ROS 2 Wrappers for SDK Functions",
         "board_type": "table",
         "board_data": {
           "headers": [
-            "Concept",
-            "Description"
+            "Service Name",
+            "Request Type",
+            "Action performed"
           ],
           "rows": [
             [
-              "Status text is",
-              ""
+              "/rt/sport/gait",
+              "unitree_api/msg/SportModeCmd",
+              "Changes the active locomotion gait (e.g., Trot, Walk)."
             ],
             [
-              "evidence, not",
-              ""
+              "/rt/sport/stand",
+              "unitree_api/msg/SportModeCmd",
+              "Commands the robot to stand up or sit down."
             ],
             [
-              "decoration.",
-              ""
-            ],
-            [
-              "Each RViz dis play reports whether it is",
-              ""
-            ],
-            [
-              "e n able d , r e c e iv in g dat a , an d able to",
-              ""
-            ],
-            [
-              "transform that dat a into the fixe d frame.",
-              ""
+              "/rt/sport/move",
+              "unitree_api/msg/SportModeCmd",
+              "Sends linear and angular velocity commands to the robot."
             ]
           ]
         },
-        "bottom_band": "Source: ROS 2 Humble RViz user guide and display status wo r kfl o w"
+        "bottom_band": "Tip: Use 'ros2 service call' from the terminal to manually trigger these basic behaviors."
+      },
+      {
+        "title": "Unitree ROS 2 Topics Interface",
+        "thesis": "Continuous State Feedback Topics",
+        "board_type": "list",
+        "board_data": [
+          "/rt/lowstate: High-frequency low-level joint states, IMU data, and motor temperatures.",
+          "/rt/highstate: Fused high-level state estimation, body velocity, and foot contact states.",
+          "/rt/lidar/points: Raw LiDAR 3D point cloud streams for SLAM and obstacle avoidance.",
+          "/rt/camera/image: Front-facing camera video streams for perception and inspection."
+        ],
+        "bottom_band": "Habit: Always echo state topics first to verify sensor health before launching control nodes."
+      },
+      {
+        "title": "Low-State Listener Lab",
+        "thesis": "Reading Raw Joint Angles",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Objective",
+            "value": "Write a ROS 2 node that subscribes to '/rt/lowstate' and prints active joint positions."
+          },
+          {
+            "label": "Index Mapping",
+            "value": "Extract joint angles from the feedback array and map them to standard joint names."
+          },
+          {
+            "label": "Verification",
+            "value": "Manually move the robot's leg and verify that the printed angles change accordingly."
+          }
+        ],
+        "bottom_band": "Lab Rule: Keep the robot suspended on its stand during state listener testing."
+      },
+      {
+        "title": "High-State Listener Lab",
+        "thesis": "Reading Fused State Estimation",
+        "board_type": "list",
+        "board_data": [
+          "Objective: Subscribe to '/rt/highstate' to read the robot's estimated body position and velocity.",
+          "Orientation: Extract roll, pitch, and yaw values from the fused IMU orientation quaternion.",
+          "Foot Contact: Read contact sensor values to detect which feet are currently touching the ground.",
+          "Velocity: Print the estimated forward speed (X velocity) during physical walking."
+        ],
+        "bottom_band": "Check: Fused state estimation is essential for closed-loop navigation and balance control."
+      },
+      {
+        "title": "Low-Level Sport RPC Lab",
+        "thesis": "Sending Direct Joint Commands",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Objective",
+            "value": "Write a high-frequency node to command joint angles using joint-level PID gains."
+          },
+          {
+            "label": "Safety Limits",
+            "value": "Strictly clamp target joint angles and Kp/Kd gains in your code before publishing."
+          },
+          {
+            "label": "High Frequency",
+            "value": "Your control loop must publish commands at 500Hz to maintain motor engagement."
+          }
+        ],
+        "bottom_band": "Warning: Incorrect Kp/Kd gains will cause joint oscillations, motor overheating, or joint collisions."
+      },
+      {
+        "title": "Unitree ROS 2 Services Lab",
+        "thesis": "Triggering Basic Locomotion",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Step",
+            "Action",
+            "Expected Behavior"
+          ],
+          "rows": [
+            [
+              "1",
+              "Call the '/rt/sport/stand' service with stand=True.",
+              "The robot will stand up and balance in place."
+            ],
+            [
+              "2",
+              "Call '/rt/sport/gait' to change gait to Trot.",
+              "The robot prepares its gait generator for trotting."
+            ],
+            [
+              "3",
+              "Publish velocity commands to '/rt/sport/move'.",
+              "The robot walks forward at the commanded velocity."
+            ]
+          ]
+        },
+        "bottom_band": "Tip: Use services to verify basic robot motion before writing custom joint-level controllers."
+      },
+      {
+        "title": "RViz 2 Visualization Lab",
+        "thesis": "Visualizing Robot State in 3D",
+        "board_type": "list",
+        "board_data": [
+          "Launch RViz: Start RViz 2 on your workstation over the local network.",
+          "Load URDF: Add the 'RobotModel' display to load the Go2 physical model description.",
+          "Add TF Display: Add the 'TF' display to visualize the active coordinate frames.",
+          "Overlay Sensors: Add 'LaserScan' to overlay LiDAR point clouds onto the robot model."
+        ],
+        "bottom_band": "Habit: If the robot model is white or missing links, verify 'robot_state_publisher' is running."
+      },
+      {
+        "title": "Coordinate Transforms Lab",
+        "thesis": "Debugging Spatial Transforms",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "TF Echo",
+            "value": "Run 'ros2 run tf2_ros tf2_echo base_link lidar_frame' to print coordinate transforms."
+          },
+          {
+            "label": "Verify Links",
+            "value": "Check that static transforms match the physical dimensions defined in the URDF."
+          },
+          {
+            "label": "Dynamic Transforms",
+            "value": "Verify that the transform from odom to base_link changes as the robot walks."
+          }
+        ],
+        "bottom_band": "TF Rule: A broken TF tree link will prevent SLAM and navigation nodes from functioning."
+      },
+      {
+        "title": "Troubleshooting QoS Lab",
+        "thesis": "Fixing Missing Topic Messages",
+        "board_type": "table",
+        "board_data": {
+          "headers": [
+            "Diagnostic Step",
+            "Command",
+            "Expected Output / Fix"
+          ],
+          "rows": [
+            [
+              "1. Check active topics",
+              "ros2 topic list",
+              "Verify topic name exists on the ROS 2 graph."
+            ],
+            [
+              "2. Inspect QoS profile",
+              "ros2 topic info --verbose /topic_name",
+              "Identify publisher and subscriber QoS settings."
+            ],
+            [
+              "3. Match QoS profiles",
+              "Update subscription code",
+              "Set subscriber durability and reliability to match publisher."
+            ]
+          ]
+        },
+        "bottom_band": "Rule: Durability and Reliability must match exactly for ROS 2 nodes to exchange messages."
+      },
+      {
+        "title": "Go2 Low-Level Control Lab",
+        "thesis": "Advanced Custom Force Control",
+        "board_type": "list",
+        "board_data": [
+          "Objective: Write a custom joint torque controller using direct SDK low-level access.",
+          "Force Control: Calculate joint torques based on desired foot force vectors (Jacobian transpose).",
+          "Safety Watchdog: Your node must implement a watchdog that disarms motors if feedback stops.",
+          "Testing: Run your controller on the stand first, then test on a soft, high-friction floor."
+        ],
+        "bottom_band": "Warning: Low-level torque control has no safety net. A single code bug can damage the robot."
+      },
+      {
+        "title": "Day 1 Lab Pacing & Deliverables",
+        "thesis": "Translating Theory into Working Code",
+        "board_type": "grid",
+        "board_data": [
+          {
+            "label": "Lab 1: Low-State Listener",
+            "value": "Deliverable: Working ROS 2 python/C++ node that prints clean, calibrated joint angles."
+          },
+          {
+            "label": "Lab 2: ROS 2 Services",
+            "value": "Deliverable: Launch file that commands the robot to stand, change gait, and walk 1m forward."
+          },
+          {
+            "label": "Lab 3: RViz Visualization",
+            "value": "Deliverable: Configured RViz workspace displaying the robot model and LiDAR point clouds."
+          }
+        ],
+        "bottom_band": "Deadline: All lab deliverables must be compiled, tested, and verified on physical hardware."
       }
     ],
     "labs": [
