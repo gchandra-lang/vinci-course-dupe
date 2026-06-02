@@ -337,32 +337,26 @@ export default function Home() {
                   </div>
 
                   {/* PPT Slide Body */}
-                  <div className="flex-1 p-8 grid grid-cols-1 md:grid-cols-12 gap-8 z-10">
-                    
-                    {/* Slide Left Column (Thesis & Title) */}
-                    <div className="md:col-span-5 flex flex-col justify-between border-r border-border/40 pr-6">
-                      <div>
-                        <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2">Concept Pillar</span>
-                        <h3 className="text-2xl font-serif font-bold text-foreground leading-tight mb-4">
-                          {currentSlide.title}
-                        </h3>
-                        <div className="h-0.5 w-16 bg-primary mb-6" />
-                      </div>
-                      <div className="bg-primary/5 border border-primary/10 rounded p-4">
-                        <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2 font-bold">Thesis Statement</span>
-                        <p className="text-xs font-serif text-muted-foreground leading-relaxed italic">
-                          "{currentSlide.thesis}"
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Slide Right Column (Technical Board) */}
-                    <div className="md:col-span-7 flex flex-col justify-center">
-                      
-                      {/* Render Table Board */}
-                      {currentSlide.board_type === "table" && (
-                        <div className="border border-border/80 rounded-lg overflow-hidden shadow-md bg-card/60 backdrop-blur-sm">
-                          <table className="w-full text-left text-xs border-collapse">
+                  <div className="flex-1 p-8 z-10">
+                    {currentSlide.board_type === "table" ? (
+                      /* Table Slide: Full-Width Layout */
+                      <div className="space-y-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/40 pb-4">
+                          <div>
+                            <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-1">Concept Pillar</span>
+                            <h3 className="text-2xl font-serif font-bold text-foreground leading-tight">
+                              {currentSlide.title}
+                            </h3>
+                          </div>
+                          <div className="bg-primary/5 border border-primary/10 rounded px-4 py-2 max-w-md md:text-right">
+                            <span className="text-[9px] uppercase tracking-widest font-mono text-primary block mb-0.5 font-bold">Thesis Statement</span>
+                            <p className="text-xs font-serif text-muted-foreground italic">
+                              "{currentSlide.thesis}"
+                            </p>
+                          </div>
+                        </div>
+                        <div className="border border-border/80 rounded-lg overflow-hidden shadow-md bg-card/60 backdrop-blur-sm overflow-x-auto">
+                          <table className="w-full text-left text-xs border-collapse min-w-[600px]">
                             <thead>
                               <tr className="bg-primary text-primary-foreground uppercase font-mono tracking-wider text-[9px] border-b border-border">
                                 {currentSlide.board_data.headers.map((h: string, idx: number) => (
@@ -383,71 +377,93 @@ export default function Home() {
                             </tbody>
                           </table>
                         </div>
-                      )}
-
-                      {/* Render Grid Board */}
-                      {currentSlide.board_type === "grid" && (
-                        <div className="grid grid-cols-1 gap-4">
-                          {currentSlide.board_data.map((item: any, idx: number) => (
-                            <div key={idx} className="border border-border/60 rounded-lg p-4 hover:border-primary/40 hover:shadow-md transition-all bg-card/60 backdrop-blur-sm relative overflow-hidden group">
-                              <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/40 group-hover:bg-primary transition-colors" />
-                              <span className="text-[10px] uppercase tracking-widest font-mono text-primary font-bold block mb-1.5 pl-2">
-                                {item.label}
-                              </span>
-                              <p className="text-xs text-muted-foreground leading-relaxed pl-2">
-                                {item.value}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Render List Board */}
-                      {currentSlide.board_type === "list" && (
-                        <div className="space-y-4">
-                          {currentSlide.board_data.map((item: string, idx: number) => {
-                            const hasColon = item.includes(":");
-                            const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
-                            const desc = hasColon ? item.split(":")[1] : item;
-                            return (
-                              <div key={idx} className="flex gap-4 p-3 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all bg-card/30">
-                                <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-mono font-bold mt-0.5 shadow-sm shrink-0">
-                                  {idx + 1}
-                                </div>
-                                <div className="flex-1">
-                                  <span className="text-sm font-bold text-foreground font-serif block mb-0.5">{title}</span>
-                                  <span className="text-xs text-muted-foreground leading-relaxed block">{desc}</span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Render Math/Equation Board */}
-                      {currentSlide.board_type === "math" && (
-                        <div className="space-y-6">
-                          <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center shadow-inner relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-1.5 text-[9px] font-mono text-primary/60 bg-primary/10 rounded-bl-lg uppercase tracking-widest">Formulation</div>
-                            <span className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground block mb-2.5">Mathematical Representation</span>
-                            <code className="text-sm font-mono text-primary font-bold block bg-card py-2.5 px-5 rounded border border-primary/20 inline-block shadow-sm">
-                              {currentSlide.board_data.equation}
-                            </code>
+                      </div>
+                    ) : (
+                      /* Non-Table Slide: Balanced 2-Column Layout */
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center h-full">
+                        {/* Slide Left Column (Thesis & Title) */}
+                        <div className="md:col-span-4 flex flex-col justify-between border-r border-border/40 pr-6 h-full min-h-[300px]">
+                          <div>
+                            <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2">Concept Pillar</span>
+                            <h3 className="text-2xl font-serif font-bold text-foreground leading-tight mb-4">
+                              {currentSlide.title}
+                            </h3>
+                            <div className="h-0.5 w-16 bg-primary mb-6" />
                           </div>
-                          <div className="space-y-3">
-                            <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block font-bold">Derivation & Execution Steps</span>
-                            <div className="space-y-2">
-                              {currentSlide.board_data.steps.map((step: string, idx: number) => (
-                                <div key={idx} className="text-xs text-muted-foreground pl-4 border-l-2 border-primary/40 py-0.5 hover:border-primary hover:text-foreground transition-all">
-                                  {step}
+                          <div className="bg-primary/5 border border-primary/10 rounded p-4">
+                            <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2 font-bold">Thesis Statement</span>
+                            <p className="text-xs font-serif text-muted-foreground leading-relaxed italic">
+                              "{currentSlide.thesis}"
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Slide Right Column (Technical Board) */}
+                        <div className="md:col-span-8 flex flex-col justify-center">
+                          {/* Render Grid Board */}
+                          {currentSlide.board_type === "grid" && (
+                            <div className="grid grid-cols-1 gap-4">
+                              {currentSlide.board_data.map((item: any, idx: number) => (
+                                <div key={idx} className="border border-border/60 rounded-lg p-4 hover:border-primary/40 hover:shadow-md transition-all bg-card/60 backdrop-blur-sm relative overflow-hidden group">
+                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/40 group-hover:bg-primary transition-colors" />
+                                  <span className="text-[10px] uppercase tracking-widest font-mono text-primary font-bold block mb-1.5 pl-2">
+                                    {item.label}
+                                  </span>
+                                  <p className="text-xs text-muted-foreground leading-relaxed pl-2">
+                                    {item.value}
+                                  </p>
                                 </div>
                               ))}
                             </div>
-                          </div>
-                        </div>
-                      )}
+                          )}
 
-                    </div>
+                          {/* Render List Board */}
+                          {currentSlide.board_type === "list" && (
+                            <div className="space-y-4">
+                              {currentSlide.board_data.map((item: string, idx: number) => {
+                                const hasColon = item.includes(":");
+                                const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
+                                const desc = hasColon ? item.split(":")[1] : item;
+                                return (
+                                  <div key={idx} className="flex gap-4 p-3 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all bg-card/30">
+                                    <div className="h-6 w-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-mono font-bold mt-0.5 shadow-sm shrink-0">
+                                      {idx + 1}
+                                    </div>
+                                    <div className="flex-1">
+                                      <span className="text-sm font-bold text-foreground font-serif block mb-0.5">{title}</span>
+                                      <span className="text-xs text-muted-foreground leading-relaxed block">{desc}</span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Render Math/Equation Board */}
+                          {currentSlide.board_type === "math" && (
+                            <div className="space-y-6">
+                              <div className="bg-primary/5 border border-primary/20 rounded-lg p-6 text-center shadow-inner relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-1.5 text-[9px] font-mono text-primary/60 bg-primary/10 rounded-bl-lg uppercase tracking-widest">Formulation</div>
+                                <span className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground block mb-2.5">Mathematical Representation</span>
+                                <code className="text-sm font-mono text-primary font-bold block bg-card py-2.5 px-5 rounded border border-primary/20 inline-block shadow-sm">
+                                  {currentSlide.board_data.equation}
+                                </code>
+                              </div>
+                              <div className="space-y-3">
+                                <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground block font-bold">Derivation & Execution Steps</span>
+                                <div className="space-y-2">
+                                  {currentSlide.board_data.steps.map((step: string, idx: number) => (
+                                    <div key={idx} className="text-xs text-muted-foreground pl-4 border-l-2 border-primary/40 py-0.5 hover:border-primary hover:text-foreground transition-all">
+                                      {step}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* PPT Slide Bottom Band */}
@@ -669,33 +685,29 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Fullscreen Body (Cinematic Lecture Layout) */}
-          <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-12 max-w-7xl mx-auto w-full">
-            
-            {/* Left Column (Big Bold Titles) */}
-            <div className="lg:col-span-5 flex flex-col gap-6">
-              <span className="font-mono text-xs uppercase tracking-widest text-blue-400 font-bold">
-                Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
-              </span>
-              <h2 className="text-4xl lg:text-5xl font-serif font-bold leading-tight tracking-tight text-white">
-                {currentSlide.title}
-              </h2>
-              <div className="h-1 w-24 bg-blue-500" />
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6 mt-4">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-blue-400 block mb-2 font-bold">Thesis Statement</span>
-                <p className="text-sm lg:text-base font-serif text-white/80 leading-relaxed italic">
-                  "{currentSlide.thesis}"
-                </p>
-              </div>
-            </div>
-
-            {/* Right Column (Huge Board Data for High-Impact Reading) */}
-            <div className="lg:col-span-7 bg-white/[0.02] border border-white/10 rounded-xl p-8 shadow-2xl">
-              
-              {/* Render Table Board */}
-              {currentSlide.board_type === "table" && (
-                <div className="border border-white/10 rounded-xl overflow-hidden bg-[#0d1533] shadow-2xl">
-                  <table className="w-full text-left text-sm border-collapse">
+                    {/* Fullscreen Body (Cinematic Lecture Layout) */}
+          <div className="flex-1 my-8 max-w-7xl mx-auto w-full flex flex-col justify-center">
+            {currentSlide.board_type === "table" ? (
+              /* Fullscreen Table Slide: Full-Width Layout */
+              <div className="space-y-8 w-full">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/10 pb-6">
+                  <div className="space-y-2">
+                    <span className="font-mono text-xs uppercase tracking-widest text-blue-400 font-bold">
+                      Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
+                    </span>
+                    <h2 className="text-3xl lg:text-4xl font-serif font-bold leading-tight tracking-tight text-white">
+                      {currentSlide.title}
+                    </h2>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-5 max-w-xl md:text-right">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-blue-400 block mb-1 font-bold">Thesis Statement</span>
+                    <p className="text-sm lg:text-base font-serif text-white/80 leading-relaxed italic">
+                      "{currentSlide.thesis}"
+                    </p>
+                  </div>
+                </div>
+                <div className="border border-white/10 rounded-xl overflow-hidden bg-[#0d1533] shadow-2xl overflow-x-auto">
+                  <table className="w-full text-left text-sm border-collapse min-w-[750px]">
                     <thead>
                       <tr className="bg-blue-600 text-white uppercase font-mono tracking-wider text-xs border-b border-white/10">
                         {currentSlide.board_data.headers.map((h: string, idx: number) => (
@@ -716,72 +728,93 @@ export default function Home() {
                     </tbody>
                   </table>
                 </div>
-              )}
-
-              {/* Render Grid Board */}
-              {currentSlide.board_type === "grid" && (
-                <div className="grid grid-cols-1 gap-6">
-                  {currentSlide.board_data.map((item: any, idx: number) => (
-                    <div key={idx} className="border border-white/10 rounded-xl p-6 bg-white/[0.02] hover:border-blue-500/50 hover:bg-white/[0.04] transition-all relative overflow-hidden group shadow-md">
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500/30 group-hover:bg-blue-500 transition-colors" />
-                      <span className="text-xs uppercase tracking-widest font-mono text-blue-400 font-bold block mb-2 pl-2">
-                        {item.label}
-                      </span>
-                      <p className="text-sm lg:text-base text-white/80 leading-relaxed pl-2">
-                        {item.value}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Render List Board */}
-              {currentSlide.board_type === "list" && (
-                <div className="space-y-4">
-                  {currentSlide.board_data.map((item: string, idx: number) => {
-                    const hasColon = item.includes(":");
-                    const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
-                    const desc = hasColon ? item.split(":")[1] : item;
-                    return (
-                      <div key={idx} className="flex gap-4 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-transparent hover:border-white/10 transition-all shadow-md">
-                        <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-mono font-bold mt-0.5 shadow-sm shrink-0">
-                          {idx + 1}
-                        </div>
-                        <div className="flex-1">
-                          <span className="text-lg font-bold text-white font-serif block mb-1">{title}</span>
-                          <span className="text-sm lg:text-base text-white/70 leading-relaxed block">{desc}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Render Math/Equation Board */}
-              {currentSlide.board_type === "math" && (
-                <div className="space-y-8">
-                  <div className="bg-blue-950/30 border border-blue-500/30 rounded-xl p-8 text-center shadow-inner relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-2 text-[10px] font-mono text-blue-300 bg-blue-500/20 rounded-bl-xl uppercase tracking-widest">Formulation</div>
-                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block mb-3">Mathematical Representation</span>
-                    <code className="text-lg lg:text-xl font-mono text-blue-400 font-bold block bg-[#0c1533] py-3.5 px-6 rounded-lg border border-blue-500/30 inline-block shadow-lg">
-                      {currentSlide.board_data.equation}
-                    </code>
+              </div>
+            ) : (
+              /* Fullscreen Non-Table Slide: Balanced 2-Column Layout */
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
+                {/* Left Column (Big Bold Titles) */}
+                <div className="lg:col-span-4 flex flex-col gap-6">
+                  <span className="font-mono text-xs uppercase tracking-widest text-blue-400 font-bold">
+                    Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
+                  </span>
+                  <h2 className="text-4xl lg:text-5xl font-serif font-bold leading-tight tracking-tight text-white">
+                    {currentSlide.title}
+                  </h2>
+                  <div className="h-1 w-24 bg-blue-500" />
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-6 mt-4">
+                    <span className="font-mono text-[10px] uppercase tracking-widest text-blue-400 block mb-2 font-bold">Thesis Statement</span>
+                    <p className="text-sm lg:text-base font-serif text-white/80 leading-relaxed italic">
+                      "{currentSlide.thesis}"
+                    </p>
                   </div>
-                  <div className="space-y-4">
-                    <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block font-bold">Derivation & Execution Steps</span>
-                    <div className="space-y-2">
-                      {currentSlide.board_data.steps.map((step: string, idx: number) => (
-                        <div key={idx} className="text-sm lg:text-base text-white/70 pl-4 border-l-2 border-blue-500/50 py-0.5 hover:border-blue-500 hover:text-white transition-all">
-                          {step}
+                </div>
+
+                {/* Right Column (Huge Board Data for High-Impact Reading) */}
+                <div className="lg:col-span-8 bg-white/[0.02] border border-white/10 rounded-xl p-8 shadow-2xl">
+                  {/* Render Grid Board */}
+                  {currentSlide.board_type === "grid" && (
+                    <div className="grid grid-cols-1 gap-6">
+                      {currentSlide.board_data.map((item: any, idx: number) => (
+                        <div key={idx} className="border border-white/10 rounded-xl p-6 bg-white/[0.02] hover:border-blue-500/50 hover:bg-white/[0.04] transition-all relative overflow-hidden group shadow-md">
+                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500/30 group-hover:bg-blue-500 transition-colors" />
+                          <span className="text-xs uppercase tracking-widest font-mono text-blue-400 font-bold block mb-2 pl-2">
+                            {item.label}
+                          </span>
+                          <p className="text-sm lg:text-base text-white/80 leading-relaxed pl-2">
+                            {item.value}
+                          </p>
                         </div>
                       ))}
                     </div>
-                  </div>
+                  )}
+
+                  {/* Render List Board */}
+                  {currentSlide.board_type === "list" && (
+                    <div className="space-y-4">
+                      {currentSlide.board_data.map((item: string, idx: number) => {
+                        const hasColon = item.includes(":");
+                        const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
+                        const desc = hasColon ? item.split(":")[1] : item;
+                        return (
+                          <div key={idx} className="flex gap-4 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-transparent hover:border-white/10 transition-all shadow-md">
+                            <div className="h-8 w-8 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-mono font-bold mt-0.5 shadow-sm shrink-0">
+                              {idx + 1}
+                            </div>
+                            <div className="flex-1">
+                              <span className="text-lg font-bold text-white font-serif block mb-1">{title}</span>
+                              <span className="text-sm lg:text-base text-white/70 leading-relaxed block">{desc}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Render Math/Equation Board */}
+                  {currentSlide.board_type === "math" && (
+                    <div className="space-y-8">
+                      <div className="bg-blue-950/30 border border-blue-500/30 rounded-xl p-8 text-center shadow-inner relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-2 text-[10px] font-mono text-blue-300 bg-blue-500/20 rounded-bl-xl uppercase tracking-widest">Formulation</div>
+                        <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block mb-3">Mathematical Representation</span>
+                        <code className="text-lg lg:text-xl font-mono text-blue-400 font-bold block bg-[#0c1533] py-3.5 px-6 rounded-lg border border-blue-500/30 inline-block shadow-lg">
+                          {currentSlide.board_data.equation}
+                        </code>
+                      </div>
+                      <div className="space-y-4">
+                        <span className="text-xs uppercase tracking-widest font-mono text-blue-300 block font-bold">Derivation & Execution Steps</span>
+                        <div className="space-y-2">
+                          {currentSlide.board_data.steps.map((step: string, idx: number) => (
+                            <div key={idx} className="text-sm lg:text-base text-white/70 pl-4 border-l-2 border-blue-500/50 py-0.5 hover:border-blue-500 hover:text-white transition-all">
+                              {step}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-
-            </div>
-
+              </div>
+            )}
           </div>
 
           {/* Fullscreen Footer */}
