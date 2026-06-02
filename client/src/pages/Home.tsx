@@ -122,15 +122,19 @@ export default function Home() {
 
       {/* Header Bar */}
       <header className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary text-primary-foreground p-2 rounded">
-            <Cpu className="h-6 w-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
-              VINCI <span className="text-primary font-sans font-semibold text-sm px-2 py-0.5 bg-primary/10 rounded">UNITREE ROBOTICS</span>
+        <div className="flex items-center gap-4">
+          {/* User Provided Colored Logo */}
+          <img 
+            src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663722418623/nYapRyYFGgQxKLFC.png" 
+            alt="Vinci AI Logo" 
+            className="h-10 object-contain"
+          />
+          <div className="h-6 w-px bg-border hidden sm:block" />
+          <div className="hidden sm:block">
+            <h1 className="text-sm font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
+              UNITREE ROBOTICS <span className="text-primary font-sans font-semibold text-xs px-2 py-0.5 bg-primary/10 rounded">TRAINING CAMP</span>
             </h1>
-            <p className="text-xs text-muted-foreground font-mono">7-Day Technical Training Camp</p>
+            <p className="text-[10px] text-muted-foreground font-mono">7-Day Technical Curriculum</p>
           </div>
         </div>
 
@@ -138,9 +142,9 @@ export default function Home() {
         <div className="flex items-center gap-4">
           <div className="text-right hidden sm:block">
             <span className="text-xs uppercase tracking-widest font-mono text-primary font-bold">Academic Portal</span>
-            <p className="text-[10px] text-muted-foreground font-mono">Humble Humble / CycloneDDS</p>
+            <p className="text-[10px] text-muted-foreground font-mono">ROS 2 Humble / CycloneDDS</p>
           </div>
-          <div className="h-8 w-8 rounded-full border border-primary/20 flex items-center justify-center bg-primary/5 text-primary font-bold text-xs">
+          <div className="h-8 w-8 rounded-full border border-primary/20 flex items-center justify-center bg-primary/5 text-primary font-bold text-xs font-mono">
             V
           </div>
         </div>
@@ -591,7 +595,14 @@ export default function Home() {
           {/* Footer Copyright Placement (Bottom-Left Rule) */}
           <footer className="border-t border-border bg-card/40 px-6 py-4 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
             <span>© 2026 Vinci AI. All rights reserved.</span>
-            <span className="text-primary font-bold">Academic Technology Training Program</span>
+            <div className="flex items-center gap-2">
+              <img 
+                src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663722418623/TWbZYCYEmoxfCJuQ.png" 
+                alt="Vinci AI Logo" 
+                className="h-4 opacity-50"
+              />
+              <span className="text-primary font-bold">Academic Technology Training Program</span>
+            </div>
           </footer>
 
         </main>
