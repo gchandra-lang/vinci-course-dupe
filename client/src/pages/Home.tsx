@@ -385,7 +385,11 @@ export default function Home() {
                         <div className="md:col-span-4 flex flex-col justify-between border-r border-border/40 pr-6 h-full min-h-[300px]">
                           <div>
                             <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2">Concept Pillar</span>
-                            <h3 className="text-2xl font-serif font-bold text-foreground leading-tight mb-4">
+                            <h3 className={`font-serif font-bold leading-tight mb-4 text-foreground break-words ${
+                              currentSlide.title.length > 18 || !currentSlide.title.includes(" ")
+                                ? "text-lg md:text-xl"
+                                : "text-2xl"
+                            }`}>
                               {currentSlide.title}
                             </h3>
                             <div className="h-0.5 w-16 bg-primary mb-6" />
@@ -737,7 +741,11 @@ export default function Home() {
                   <span className="font-mono text-xs uppercase tracking-widest text-blue-400 font-bold">
                     Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
                   </span>
-                  <h2 className="text-4xl lg:text-5xl font-serif font-bold leading-tight tracking-tight text-white">
+                  <h2 className={`font-serif font-bold leading-tight tracking-tight text-white break-words ${
+                    currentSlide.title.length > 18 || !currentSlide.title.includes(" ")
+                      ? "text-2xl lg:text-3xl"
+                      : "text-4xl lg:text-5xl"
+                  }`}>
                     {currentSlide.title}
                   </h2>
                   <div className="h-1 w-24 bg-blue-500" />
