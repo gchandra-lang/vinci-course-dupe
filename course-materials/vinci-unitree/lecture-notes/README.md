@@ -1,13 +1,14 @@
 # Vinci Unitree Lecture Notes
 
-This folder contains the comprehensive 3-hour lecture notes for the Vinci Unitree robotics training sequence, covering Day 2 through Day 6. The Markdown files are the editable source versions, and the PDF files are the distribution-ready handouts.
+This folder contains comprehensive 3-hour lecture-note handouts for the Vinci Unitree robotics training sequence. Each day includes an editable Markdown source and, where available, a PDF handout for learner distribution.
 
-| Day | Topic | Markdown source | PDF handout |
-|---|---|---|---|
-| Day 2 | Go2 inspection autonomy, patrol planning, obstacle avoidance, run-folder evidence, and reporting | [`markdown/day-02-lecture-notes.md`](markdown/day-02-lecture-notes.md) | [`pdf/day-02-lecture-notes.pdf`](pdf/day-02-lecture-notes.pdf) |
-| Day 3 | B2 industrial fundamentals, SDK/DDS readiness, SportModeState observability, and high-level motion safety | [`markdown/day-03-lecture-notes.md`](markdown/day-03-lecture-notes.md) | [`pdf/day-03-lecture-notes.pdf`](pdf/day-03-lecture-notes.pdf) |
-| Day 4 | B2 advanced scenarios, inspection evidence, RTSP video capture, state logging, and field-run reporting | [`markdown/day-04-lecture-notes.md`](markdown/day-04-lecture-notes.md) | [`pdf/day-04-lecture-notes.pdf`](pdf/day-04-lecture-notes.pdf) |
-| Day 5 | G1 architecture, DDS communication, lowstate subscription, and safety readiness | [`markdown/day-05-lecture-notes.md`](markdown/day-05-lecture-notes.md) | [`pdf/day-05-lecture-notes.pdf`](pdf/day-05-lecture-notes.pdf) |
-| Day 6 | G1 safe locomotion, arm actions, arm SDK streaming, and command-path integration | [`markdown/day-06-lecture-notes.md`](markdown/day-06-lecture-notes.md) | [`pdf/day-06-lecture-notes.pdf`](pdf/day-06-lecture-notes.pdf) |
+| Day | Topic | Markdown | PDF |
+|---:|---|---|---|
+| 2 | Go2 inspection autonomy, patrol planning, obstacle avoidance, and field-trial reporting | [`day-02-lecture-notes.md`](day-02-lecture-notes.md) | [`day-02-lecture-notes.pdf`](day-02-lecture-notes.pdf) |
+| 3 | B2 industrial fundamentals, SDK/DDS readiness, SportModeState, and supervised SportClient control | [`day-03-lecture-notes.md`](day-03-lecture-notes.md) | [`day-03-lecture-notes.pdf`](day-03-lecture-notes.pdf) |
+| 4 | B2 advanced scenarios, camera/RTSP capture, SportModeState logging, and inspection evidence | [`day-04-lecture-notes.md`](day-04-lecture-notes.md) | [`day-04-lecture-notes.pdf`](day-04-lecture-notes.pdf) |
+| 5 | G1 architecture, DDS communication, `rt/lowstate`, FSM readiness, and safety inspection | [`day-05-lecture-notes.md`](day-05-lecture-notes.md) | [`day-05-lecture-notes.pdf`](day-05-lecture-notes.pdf) |
+| 6 | G1 safe locomotion, arm actions, `rt/arm_sdk` streaming, and integration policy | [`day-06-lecture-notes.md`](day-06-lecture-notes.md) | [`day-06-lecture-notes.pdf`](day-06-lecture-notes.pdf) |
+| 7 | G1 audio, speech, RGB LED signaling, and capstone integration | [`day-07-lecture-notes.md`](day-07-lecture-notes.md) | [`day-07-lecture-notes.pdf`](day-07-lecture-notes.pdf) |
 
-© Vinci AI. Internal training material.
+These notes were prepared as instructor-facing, Vinci-branded technical handouts. The Markdown files should be treated as the editable source of truth, while the PDF files are intended for convenient reading and classroom distribution.
