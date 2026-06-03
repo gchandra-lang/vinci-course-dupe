@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "team_name": "Team A",
+  "operator": "your.name",
+  "arena": {
+    "description": "Cleared 4m x 3m zone; cones at cp_A, cp_B, cp_C",
+    "floor": "flat indoor",
+    "hazards": "none — no cables, no people in arena during motion"
+  },
+  "checkpoints": [
+    {
+      "id": "cp_A",
+      "label": "Entry",
+      "marker": "red cone at start"
+    },
+    {
+      "id": "cp_B",
+      "label": "Mid corridor",
+      "marker": "yellow cone"
+    },
+    {
+      "id": "cp_C",
+      "label": "End",
+      "marker": "blue cone"
+    }
+  ],
+  "motion_limits": {
+    "max_forward_vx_mps": 0.25,
+    "max_increment_dx_m": 0.5,
+    "max_increment_dy_m": 0.3,
+    "max_vyaw_rad_s": 0.4,
+    "use_obstacle_avoid": true
+  },
+  "abort_rules": [
+    "Stop if remote override detected",
+    "Stop if bms_soc below 20 (Lab 5 optional)",
+    "Stop if spotter calls halt"
+  ],
+  "deliverables": [
+    "run folder with metadata.json and patrol_plan.json",
+    "frame.jpg at each checkpoint",
+    "sportmodestate.jsonl for full patrol"
+  ],
+  "notes": ""
+}

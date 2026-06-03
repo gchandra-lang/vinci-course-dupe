@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-05-26T10:00:00+00:00",
+  "operator": "fixture",
+  "team_name": "Lab 1 Sample",
+  "robot_id": "go2-fixture",
+  "host": "lab-fixture",
+  "interface": "en6",
+  "lab": "day-02-lab-01-fixture",
+  "check_mode": {
+    "code": 0,
+    "name": "mcf"
+  },
+  "artifacts": {
+    "patrol_plan": "patrol_plan.json",
+    "sportmodestate_log": "sportmodestate.jsonl"
+  },
+  "checkpoints": ["cp_A", "cp_B"]
+}
