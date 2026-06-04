@@ -1419,9 +1419,9 @@ DAY03 = {
 # ── Day 04: B2 Advanced Scenarios & Field Inspection ────────────────────────
 DAY04 = {
     "day": "04",
-    "title": "B2 Advanced Scenarios & Field Inspection",
-    "eyebrow": "B2 FIELD INSPECTION",
-    "thesis": "A field inspection is not successful merely because the robot moved. It is successful when the team can explain what scenario was attempted, what data were captured, what state the robot reported, which checkpoints were inspected, how artifacts were organized, and whether the run folder can be validated.",
+    "title": "B2 Rugged Inspection, Mock Scripts, Field Capture, Telemetry, Reporting, and Maintenance",
+    "eyebrow": "B2 RUGGED INSPECTION",
+    "thesis": "Day 4 converts the B2 from a robot that can be safely observed and commanded into an inspection evidence system. Every activity connects to one of four required outcomes: rugged navigation and multi-sensor reasoning, mock inspection scripts, supervised B2 field execution, or data visualization with reporting and maintenance.",
     "rules": [
         "Plan before motion: create the run folder and draft metadata before the robot moves — the run folder is the inspection contract.",
         "Every inspection run must produce traceable evidence: video stills, state logs, checkpoint mapping, and validation output — not just a 'successful walk.'",
@@ -1441,244 +1441,852 @@ DAY04 = {
     ],
     "slides": [
         {
-            "title": "Day 4 Purpose & Teaching Stance",
-            "thesis": "Day 4 converts the B2 from a robot that can be safely observed and commanded into an inspection evidence system — the bridge between robot operation and auditable robotics practice.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Teaching Priority", "What Students Should Learn", "Evidence That They Understand"],
-                "rows": [
-                    ["Inspection Framing", "A robot field run must produce traceable evidence, not just motion.", "Students can describe the run folder structure before touching the robot."],
-                    ["Video Capture", "Front/back cameras and RTSP streams are inspection assets.", "Students can save still images and recordings with meaningful, checkpoint-mapped names."],
-                    ["State Logging", "SportModeState is the runtime witness of motion and posture.", "Students can explain mode, gait, position, velocity, and body-height fields in context."],
-                    ["Supervised Mobility", "SportClient motion must remain bounded and human-supervised.", "Students can choose StopMove, Damp, StandDown, or RecoveryStand appropriately."],
-                    ["Reporting", "Validation and debrief convert raw files into engineering evidence.", "Students submit a coherent run package and explain warnings or failures with data."]
-                ]
-            },
-            "bottom_band": "Instructor thesis: Day 4 is the bridge between robot operation and auditable robotics practice. Students should leave able to defend a B2 inspection run with files, logs, timestamps, checkpoint evidence, and a short technical debrief."
-        },
-        {
-            "title": "From Day 3 Fundamentals to Day 4 Inspection Practice",
-            "thesis": "Day 3 established readiness, safety, state observation, and high-level control. Day 4 integrates these pieces into a field-inspection record — observability becomes auditability, commanding remains bounded and reversible.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Day 3 Capability", "Day 4 Extension", "Instructor Emphasis"],
-                "rows": [
-                    ["Observe SportModeState", "Save state evidence into a run package.", "Observability becomes auditability — state must be logged, not just viewed."],
-                    ["Use High-Level SportClient", "Move between inspection legs under supervision.", "Commanding remains bounded and reversible — one leg at a time, stop between."],
-                    ["Confirm DDS/Network Readiness", "Combine camera, RTSP, and state channels.", "A field run uses multiple data paths — all must be verified before motion."],
-                    ["Explain B2 Safety", "Apply safety to a 60 kg industrial robot near people and assets.", "Safe field inspection is procedural, not improvised — roles, exclusion zones, stop authority."]
-                ]
-            },
-            "bottom_band": "Day 4 is the final B2 day. A field engineer says: 'At checkpoint C2, front camera frame frame.jpg was captured; the state log shows the robot was stationary during dwell; the video covers the approach; the run passed validation except for a documented warning.'"
-        },
-        {
-            "title": "B2 Inspection Hardware Context",
-            "thesis": "Front and rear views answer different evidence questions — front documents approach and target inspection; rear documents retreat, operator context, or changes behind the robot.",
+            "title": "Day 4  --  B2 Rugged Inspection, Mock Scripts, Field Capture, Telemetry, Reporting, and Maintenance",
+            "thesis": "Day 4 is focused on four practical jobs. Students reason about rugged terrain and multi-sensor evidence, build mock <strong class=\"font-bold\">inspection</strong> scripts, execute a supervised <strong class=\"font-bold\">B2</strong> <strong class=\"font-bold\">inspection</strong> with camera capture and <strong class=\"font-bold\">telemetry</strong> logging, then parse data into reports and maintenance notes. Anything outside those jobs is intentionally minimized.",
             "board_type": "grid",
             "board_data": [
-                {"label": "Front Optical/Depth Perception", "value": "Capture approach view, target asset, and obstacle context. Use front stills for primary checkpoint evidence — frame.jpg under checkpoints/<id>/."},
-                {"label": "Rear Optical/Depth Perception", "value": "Capture retreat view, rear-side hazards, or alternate evidence. Use rear stills when turning around is unsafe or unnecessary — back_img_<timestamp>.jpg."},
-                {"label": "LiDAR Context", "value": "Wide-angle omnidirectional LiDAR on head supports spatial awareness and terrain interpretation. Discuss perception broadly even if the lab focuses on video."},
-                {"label": "60 kg Class Body", "value": "Motion risk is non-trivial in classrooms and corridors. Enforce wide exclusion zones, human stop authority, and no hot-swapping aviation plug interfaces during live operation."},
-                {"label": "4–6 h Nominal Operating Time", "value": "Long enough for field practice but not a reason to skip readiness. Check battery and thermal conditions before repeated runs — extended operation changes robot behavior."}
+                        {
+                                    "label": "Rugged Navigation",
+                                    "value": "Understand how terrain affects robot behavior and evidence quality  --  slope, gravel, glare, occlusion, vibration all change what the <strong class=\"font-bold\">B2</strong> can safely prove."
+                        },
+                        {
+                                    "label": "Mock Inspection Scripts",
+                                    "value": "Build procedural scripts that rehearse capture, logging, motion, packaging, and validation before the hardware run  --  simulation gates must pass first."
+                        },
+                        {
+                                    "label": "<strong class=\"font-bold\">B2</strong> Field Execution",
+                                    "value": "Execute a supervised <strong class=\"font-bold\">B2</strong> <strong class=\"font-bold\">inspection</strong> with camera capture and <strong class=\"font-bold\">telemetry</strong> logging  --  defined roles, observable readiness, stable-dwell capture, and immediate verification."
+                        },
+                        {
+                                    "label": "Logs, Reports, Maintenance",
+                                    "value": "Parse <strong class=\"font-bold\">telemetry</strong> into fields, visualize motion and capture, write artifact-backed reports, validate packages, debug failures, and complete <strong class=\"font-bold\">B2</strong> hardware maintenance."
+                        }
             ],
-            "bottom_band": "Classroom rule: Treat every B2 inspection run as a controlled engineering operation. Camera evidence is only valuable if the team can also demonstrate safe setup, stable networking, and controlled shutdown. Never hot-swap aviation plug interfaces — Unitree warns this may cause equipment failure not covered by warranty."
+            "bottom_band": "Day 4 rule: Every activity must connect to one of these four outcomes. If an activity does not produce evidence for rugged navigation, mock scripting, field capture, or reporting  --  it is not a Day 4 activity."
         },
         {
-            "title": "Day 4 Inspection Evidence Pipeline — 8 Stages",
-            "thesis": "A pipeline view prevents students from thinking of the lab as three disconnected tasks (folders, camera windows, driving). The pipeline begins with a scenario and ends with a reportable, debriefed package.",
-            "board_type": "grid",
-            "board_data": [
-                {"label": "1. Scenario", "value": "Defines what is being inspected and why. Artifact: scenario notes, checkpoint IDs, inspection target descriptions — written before the robot powers on."},
-                {"label": "2. Readiness", "value": "Confirms robot, space, network, and operator state. Artifact: metadata fields, readiness checklist, operator name, interface confirmation."},
-                {"label": "3. Video Capture", "value": "Records what the robot saw at checkpoints and during travel. Artifact: front_img_*.jpg, back_img_*.jpg, front_video_*.mp4, output.mp4."},
-                {"label": "4. State Logging", "value": "Records robot motion/posture context. Artifact: sportmodestate.jsonl with timestamp, mode, gait, position, velocity, yaw_speed, body_height."},
-                {"label": "5. Motion Between Legs", "value": "Moves the B2 between inspection areas under supervision. Artifact: SportClient command notes, plan leg records with return codes."},
-                {"label": "6. Checkpoint Packaging", "value": "Associates images and state slices with checkpoint IDs. Artifact: checkpoints/<id>/frame.jpg, optional state_slice.jsonl."},
-                {"label": "7. Validation", "value": "Checks that the package is structurally complete. Artifact: validator PASS, PASS-with-warning, or FAIL output with specific issue descriptions."},
-                {"label": "8. Debrief", "value": "Converts files into technical conclusions. Artifact: field_report.md with scenario, roles, command sequence, evidence table, validation result, and next improvement."}
-            ],
-            "bottom_band": "When a student asks 'Which script should I run?' answer with a pipeline question: 'Which evidence stage are you trying to complete?' This encourages engineering judgment rather than command memorization."
-        },
-        {
-            "title": "Lab 0: Run Folder as the Inspection Evidence Contract",
-            "thesis": "The folder contract is platform-agnostic enough to organize inspection data, while the scripts are platform-specific enough to acquire B2 camera and motion artifacts. Reuse the Day 2 validator with B2 adaptations.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Required Item", "Why It Exists", "B2-Specific Adaptation"],
-                "rows": [
-                    ["metadata.json", "Describes who ran the inspection, when, and under what conditions.", "Add robot_platform: \"Unitree B2\", robot_id, interface, camera_mode, and operator notes."],
-                    ["patrol_plan.json", "Declares checkpoint IDs and movement legs.", "Use conservative B2 legs (low speeds); document any manual movement between checkpoints."],
-                    ["sportmodestate.jsonl", "Provides the time-series state witness.", "Log mode, gait, position, velocity, yaw_speed, and body_height — one valid JSON line per sample."],
-                    ["checkpoints/", "Organizes evidence by inspection point.", "Place front or rear stills as frame.jpg; add optional state_slice.jsonl and notes.md per checkpoint."],
-                    ["Validator Output", "Confirms whether the package is structurally usable.", "Explain warnings instead of hiding them — PASS-with-warning is pedagogically useful."]
-                ]
-            },
-            "bottom_band": "Recommended B2 run folder: run_b2_day4_team_alpha_20260603_1030/ with metadata.json, patrol_plan.json, sportmodestate.jsonl, videos/ (raw front/back recordings), raw_images/ (original captures), checkpoints/cp01_entry/frame.jpg, and field_report.md."
-        },
-        {
-            "title": "Lab 1: Mock Inspection Video with B2 Cameras",
-            "thesis": "The camera script uses SDK clients for JPEG samples and OpenCV for display/recording — front and back VideoClients provide dual-perspective evidence with keyboard-controlled capture and RTSP recording.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Key", "Action", "Artifact", "Teaching Note"],
-                "rows": [
-                    ["Q / q", "Save front camera image.", "front_img_<timestamp>.jpg", "Use for primary checkpoint evidence — approach view and target inspection."],
-                    ["E / e", "Save back camera image.", "back_img_<timestamp>.jpg", "Use for reverse-view or context evidence — retreat, rear hazards."],
-                    ["A / a", "Start or stop front RTSP recording.", "front_video_<timestamp>.mp4", "Confirm stream opens before claiming video evidence — verify playable after run."],
-                    ["D / d", "Start or stop back RTSP recording.", "back_video_<timestamp>.mp4", "Useful for retreat or rear-side inspection context — continuous motion context."],
-                    ["ESC", "Exit.", "Releases active resources and closes windows.", "Always exit deliberately; do not kill windows blindly — resources must be released cleanly."]
-                ]
-            },
-            "bottom_band": "Camera specs: 1280×720 resolution, 15 Hz video frame rate, 100° horizontal FOV, 56° vertical FOV. Wide FOV helps document context but does not guarantee text labels, small defects, or distant details are readable — capture deliberate stills at dwell points and verify quality before leaving."
-        },
-        {
-            "title": "JPEG Samples, RTSP Streams & OpenCV — Under the Hood",
-            "thesis": "Students should understand the data path well enough to troubleshoot failures — DDS init → SDK image sample → JPEG decode → display window → RTSP capture → video writing → cleanup.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Layer", "What Happens", "Typical Failure", "Debugging Habit"],
-                "rows": [
-                    ["DDS/Channel Init", "ChannelFactoryInitialize binds communication to robot network.", "Wrong interface or disconnected cable.", "Confirm interface name and robot reachability before camera testing."],
-                    ["SDK Image Sample", "Front/back clients call GetImageSample.", "Return code nonzero or no frame appears.", "Test one camera at a time; watch terminal output for RC values."],
-                    ["JPEG Decoding", "Bytes → numpy → cv2.imdecode → BGR frame.", "Frame is None or corrupt.", "Confirm sample data exists and is non-empty before saving."],
-                    ["Display Window", "cv2.imshow shows live front/back view.", "No GUI or window does not update.", "Use GUI-capable host; avoid headless execution unless adapted."],
-                    ["RTSP Capture", "VideoCapture opens stream URL from robot.", "Stream cannot open.", "Confirm robot IP, port, network path, and firewall settings."]
-                ]
-            },
-            "bottom_band": "Demonstrate one controlled failure: show how an unopened RTSP stream produces a clear error rather than a valid video. This prevents the most common reporting mistake — assuming a file exists simply because a script was started."
-        },
-        {
-            "title": "SportModeState as the Field-Run Audit Trail",
-            "thesis": "A state log becomes more valuable when connected to checkpoints — a video alone shows what the camera saw; a state log alone shows what the robot estimated; together they answer whether the robot was moving or stationary during capture.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Field", "Meaning in Lecture", "Inspection Use"],
-                "rows": [
-                    ["mode", "Current high-level robot mode (idle, balance stand, locomotion, damping, recovery, sit).", "Confirms whether robot was standing, moving, or in another state during capture."],
-                    ["gait_type", "Locomotion pattern or gait category.", "Helps interpret motion behavior during approach or retreat legs."],
-                    ["position", "Estimated position vector.", "Supports checkpoint sequencing and relative movement discussion."],
-                    ["velocity", "Estimated translational velocity (vx, vy, vz).", "Helps prove dwell versus motion during image capture — near-zero = stationary."],
-                    ["yaw_speed", "Rotational speed around vertical axis.", "Helps explain blur, turning, or unstable target framing in captured images."],
-                    ["body_height", "Body height state.", "Helps explain camera perspective and clearance decisions."],
-                    ["foot_force", "Foot contact-related force information.", "Can support terrain/contact discussion in advanced analysis — asymmetric = potential issue."]
-                ]
-            },
-            "bottom_band": "Minimal JSONL entry: {\"t_utc\":\"2026-06-03T02:33:12.250Z\",\"mode\":1,\"gait_type\":1,\"position\":[0.00,0.00,0.00],\"velocity\":[0.00,0.00,0.00],\"yaw_speed\":0.00,\"body_height\":0.41,\"checkpoint\":\"cp01_entry\"}. Validator requires at least one non-empty valid JSON line."
-        },
-        {
-            "title": "Supervised Motion Between Inspection Legs",
-            "thesis": "Each command should be tied to an inspection-leg intention and a recovery plan — discourage 'menu experimentation.' The B2 is heavy and powerful; students should not enter commands merely to see what happens.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Command", "Day 4 Teaching Meaning", "Safe-Use Guidance"],
-                "rows": [
-                    ["Damp", "Emergency-priority damping stop.", "Use only when safety situation requires immediate damping; brief students beforehand."],
-                    ["StopMove", "Stop current high-level motion.", "Preferred first stop for normal supervised motion trials."],
-                    ["StandUp", "Stand high with joint locking.", "Use only after space and posture are verified; avoid prolonged locked posture."],
-                    ["StandDown", "Lie down / low stand state.", "Use for end-of-run or safe pause between inspection segments."],
-                    ["RecoveryStand", "Recover to standing from nonstandard posture.", "Use under instructor supervision after checking surroundings."],
-                    ["Move(vx, vy, vyaw)", "Body-frame velocity command.", "Keep speeds very low in class (≤0.15 m/s); define a short duration and always follow with StopMove."]
-                ]
-            },
-            "bottom_band": "Example choreography: 'We will issue a short forward Move at low speed for two seconds, then StopMove, then dwell and capture the front image.' Every command must have a purpose, boundary, and recovery plan — not 'let's see what this does.'"
-        },
-        {
-            "title": "Field Inspection Choreography — Roles & Sequence",
-            "thesis": "A Day 4 field run should be choreographed like a small production — operator manages commands, safety observer watches the robot, evidence lead watches files, instructor controls pace. This division of labor reduces cognitive load.",
+            "title": "One Flow Organizes Everything",
+            "thesis": "The whole day can be taught through one repeated workflow. Students plan the <strong class=\"font-bold\">inspection</strong>, capture sensor evidence, log robot state, package artifacts into the run folder, validate the structure, and write the report. This reduces redundancy because every activity must connect to one step in the same flow.",
             "board_type": "list",
             "board_data": [
-                "Role 1 — Operator: Executes only the agreed command sequence. Can stop immediately if command behavior is unexpected. One person, one terminal.",
-                "Role 2 — Safety Observer: Watches people, obstacles, robot posture, and exclusion zone. Has absolute stop authority at all times — can override operator.",
-                "Role 3 — Evidence Lead: Records filenames, checkpoint IDs, and validation notes. Can pause the run if evidence capture fails or filenames are ambiguous.",
-                "Role 4 — Instructor: Approves readiness, motion plan, and debrief standard. Can terminate the exercise at any point.",
-                "Step 1 — Create run folder and draft metadata before the robot moves. Folder name, metadata draft, checkpoint list.",
-                "Step 2 — Start state logging. Confirm non-empty sportmodestate.jsonl before proceeding.",
-                "Step 3 — Start video only when stream is confirmed. Verify video file path and visible frame in display window.",
-                "Step 4 — Dwell before capture. Place robot at checkpoint, dwell, capture still image — never capture during motion.",
-                "Step 5 — Move only for the approved leg. Execute one short supervised motion leg, then stop before next checkpoint.",
-                "Step 6 — Package immediately. Copy/move selected image to checkpoints/<id>/frame.jpg; record state slice.",
-                "Step 7 — Validate before debrief. Run validator; interpret PASS, FAIL, and WARNING output before writing the report."
+                        "Plan: Define the <strong class=\"font-bold\">inspection</strong> scenario  --  checkpoints, route, capture targets, and roles. Write metadata<strong class=\"font-bold\">.json</strong> and patrol_plan<strong class=\"font-bold\">.json</strong> before any robot motion.",
+                        "Capture: Execute camera stills and <strong class=\"font-bold\">RTSP</strong> clips at designated checkpoints. Verify every saved file opens and matches the intended scene.",
+                        "Log: Record <strong class=\"font-bold\">SportModeState</strong> <strong class=\"font-bold\">telemetry</strong> continuously from before motion through final notes. Each JSONL line is one inspectable state sample.",
+                        "Package: Organize raw captures, selected checkpoint frames, <strong class=\"font-bold\">telemetry</strong> logs, and metadata into the standard <strong class=\"font-bold\">run-folder</strong> schema.",
+                        "Validate: Run the validator against the completed package. Structural PASS is required before report writing. Warnings still need explanation.",
+                        "Report: Write artifact-backed claims using the pattern  --  claim, artifact, <strong class=\"font-bold\">telemetry</strong> context, limitation, confidence. The report is the final deliverable."
             ],
-            "bottom_band": "If a student approaches the robot during a live run, the safety observer must call STOP immediately. Only the operator, spotter, and instructor are in the exclusion zone during motion. Everyone else observes from a marked safe boundary."
+            "bottom_band": "Workflow check: Can you draw the six-box arrow  --  Plan → Capture → Log → Package → Validate → Report  --  and name one concrete artifact produced at each step? If not, drill that step before the field run."
         },
         {
-            "title": "Reporting: From Artifacts to Engineering Claims",
-            "thesis": "A field report should be a short engineering argument that links claims to specific, checkable files — avoid 'the robot worked well.' Cite exact file names, checkpoint IDs, and validator results.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Weak Claim", "Stronger Day 4 Claim"],
-                "rows": [
-                    ["\"The robot inspected the target.\"", "\"At cp02_asset_label, the front camera frame shows the target label, and the associated state slice indicates the robot was stationary (velocity ≈ 0) during capture.\""],
-                    ["\"The video recorded.\"", "\"The front RTSP recording front_video_20260603_103251.mp4 covers the approach from cp01_entry to cp02_asset_label and was verified playable after the run (file size: 14.2 MB).\""],
-                    ["\"The robot moved safely.\"", "\"The robot executed one low-speed supervised forward leg (vx=0.1 m/s, 2 s), then StopMove was issued before checkpoint capture; no person entered the exclusion zone.\""],
-                    ["\"Validation passed.\"", "\"The run folder passed structural validation; the only warning was 'missing optional rear-camera frame' — explained as rear camera unavailable during this run.\""]
-                ]
-            },
-            "bottom_band": "A concise field_report.md should include: scenario description, team roles, safety setup, command sequence with return codes, evidence table with file paths, validator result, issues/warnings with explanations, and one next improvement. Cite exact file names — evidence without traceability is not auditable."
-        },
-        {
-            "title": "Validator Interpretation & Common Day 4 Failures",
-            "thesis": "The validator is a teaching instrument, not merely a grading tool — it forces students to separate structural completeness from subjective success. A run can have beautiful video and still fail validation.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Validator Message Pattern", "Likely Cause", "Instructor Response"],
-                "rows": [
-                    ["missing file: metadata.json", "Students captured data before creating the run package.", "Ask them to reconstruct metadata and explain what may be uncertain — time, operator, mode."],
-                    ["metadata.json: missing 'operator'", "Metadata is incomplete or was generated without operator field.", "Reinforce that inspection evidence needs accountability — who ran this?"],
-                    ["patrol_plan.json: missing 'checkpoints'", "The plan lacks explicit checkpoint structure.", "Have students define checkpoint IDs in the plan before moving the robot again."],
-                    ["sportmodestate.jsonl: need at least 1 JSON line", "State logging was not saved, file is empty, or logging script was never started.", "Ask whether the run can be defended without runtime state evidence."],
-                    ["checkpoints/<id>/frame.jpg missing", "Raw images were not mapped into checkpoint folders.", "Require students to copy or rename the selected still image into the standard path."],
-                    ["frame.jpg too small (<100 bytes)", "Corrupt image, placeholder file, or capture failed without detection.", "Verify image can be opened with an image viewer; recapture if possible."]
-                ]
-            },
-            "bottom_band": "For a three-hour lecture, show at least one PASS and one FAIL example. Students learn faster when they see validation as immediate feedback rather than as an end-of-day penalty — failures during practice are learning, not grading."
-        },
-        {
-            "title": "Troubleshooting Guide for Day 4 Instructors",
-            "thesis": "Day 4 combines network communication, GUI display, OpenCV recording, robot state topics, and motion commands — failures should be expected and handled methodically as teaching opportunities.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Symptom", "Probable Source", "First Diagnostic Step", "Safe Fallback"],
-                "rows": [
-                    ["Camera window does not appear.", "No GUI, wrong interface, SDK client not receiving frames.", "Confirm interface name; run a minimal camera test on one camera only.", "Use previously saved sample frames for the reporting/validation exercise."],
-                    ["Front image saves but rear does not.", "Rear client or rear stream issue — return code from rear GetImageSample.", "Test rear capture independently; verify rear client initialization and RC.", "Mark rear camera as unavailable in metadata; continue with front-only evidence."],
-                    ["RTSP recording file is empty.", "Stream did not open or writer dimensions/codec failed.", "Check terminal message at stream open; verify file size and attempt playback.", "Use still images plus state log for checkpoint report — video is supplementary."],
-                    ["State subscriber prints nothing.", "Wrong DDS interface, topic unavailable, robot not publishing.", "Confirm robot network; verify rt/sportmodestate subscription with correct IDL type.", "Use instructor-provided or pre-recorded state log for schema/validator practice."],
-                    ["Robot moves but checkpoint image is blurred.", "Captured during motion or yaw turn — velocity was nonzero at capture moment.", "Check velocity/yaw_speed near capture time in state log.", "Repeat capture during stable dwell after StopMove with confirmed near-zero velocity."]
-                ]
-            },
-            "bottom_band": "Most important troubleshooting habit: preserve raw artifacts. Do not delete imperfect video, state logs, or images until the debrief is complete. A failed capture can still be useful evidence for diagnosing what went wrong — and for teaching."
-        },
-        {
-            "title": "Knowledge Checks — Day 4",
-            "thesis": "Use knowledge checks throughout the lecture rather than saving all assessment for the end. These prompts test whether students can reason about the evidence pipeline, not just recall script names.",
-            "board_type": "list",
-            "board_data": [
-                "Why does Day 4 reuse the Day 2 run-folder schema? — The schema provides a platform-independent evidence contract for metadata, plan, state logs, and checkpoint artifacts. The validator works for both Go2 and B2; only script contents change.",
-                "Why is video alone insufficient for an inspection report? — Video lacks structured metadata, checkpoint mapping, and runtime state context. Without checkpoint IDs and state slices, a video shows 'something happened' but not 'what, when, and under what conditions.'",
-                "What is the difference between a raw capture and checkpoint evidence? — A raw capture is an original file (front_img_<timestamp>.jpg) in the working directory. Checkpoint evidence is selected, named, and placed under checkpoints/<id>/frame.jpg with associated state context.",
-                "When should students capture a checkpoint still? — During a stable dwell or stopped state when velocity ≈ 0 and yaw_speed ≈ 0. Never during turning, translation, or immediately after a motion command without allowing settling time.",
-                "What does sportmodestate.jsonl contribute that images alone cannot? — It provides time-series robot state evidence: was the robot stationary during capture? What mode was active? Did the robot enter damping unexpectedly? Images show what; state shows how.",
-                "What should happen if RTSP recording fails? — Document the failure, preserve terminal output, use still images/state logs as fallback evidence, and explain the limitation in the field report. Never pretend a failed recording exists.",
-                "Why should optional OpenCV effects (face detection, color tracking, sketch) not replace raw frames? — Processed images are derived artifacts; raw frames preserve primary evidence integrity. Store processed outputs as checkpoints/<id>/processed_red_mask.jpg alongside the raw frame.jpg."
-            ],
-            "bottom_band": "Strongest Day 4 student statement: 'Our run folder is at run_b2_day4_team_alpha/. The validator returned PASS with one warning about a missing rear frame. The warning is explained in field_report.md — rear camera was unavailable. All three front checkpoint frames are present and reviewable.'"
-        },
-        {
-            "title": "Closing: Evidence-First Robotics — The Day 4 Equation",
-            "thesis": "Day 4 is successful when the team can hand its run folder to another engineer and that engineer can understand the scenario, evidence, robot state, safety context, and limitations without watching the live run.",
+            "title": "Evidence Is the Standard",
+            "thesis": "Students should not treat video, logs, or notes as separate assignments. They are parts of one evidence standard. A useful inspection claim should identify what was observed, where it happened, when it happened, and which artifact supports it. This standard guides navigation, scripting, field capture, and reporting.",
             "board_type": "grid",
             "board_data": [
-                {"label": "Scenario", "value": "What are we inspecting, and where are the checkpoints? Every run begins with a defined scenario and checkpoint IDs — not 'let's drive and see what happens.'"},
-                {"label": "Safety", "value": "Who can stop the robot, and what is the exclusion zone? Roles (operator, observer, evidence lead, instructor) are assigned and announced before power-on."},
-                {"label": "Video + State + Motion", "value": "Which camera files prove visual context? What did SportModeState report during capture? Which command moved the robot, for how long, and why? Each leg must have documented purpose."},
-                {"label": "Package + Validate + Debrief", "value": "Which frame.jpg belongs to each checkpoint ID? Did the folder pass, fail, or pass with warnings? What claim can we defend with the artifacts? The debrief converts files into engineering conclusions."}
+                        {
+                                    "label": "File",
+                                    "value": "The concrete artifact  --  frame<strong class=\"font-bold\">.jpg</strong>, sportmodestate<strong class=\"font-bold\">.jsonl</strong>, field_report<strong class=\"font-bold\">.md</strong>. A claim without a matching file is an opinion, not evidence."
+                        },
+                        {
+                                    "label": "Timestamp",
+                                    "value": "When the observation occurred  --  aligned across camera, telemetry, and operator notes. Timing connects multi-sensor evidence into one coherent moment."
+                        },
+                        {
+                                    "label": "Checkpoint",
+                                    "value": "Where the observation occurred  --  mapped to a named checkpoint ID such as cp01, cp02, or cp03. Location context makes evidence spatially meaningful."
+                        },
+                        {
+                                    "label": "Context Note",
+                                    "value": "What the file cannot show by itself: glare, occlusion, vibration, fallback decisions. Honest notes make the final inspection more credible, not weaker."
+                        }
             ],
-            "bottom_band": "Board equation: Inspection Run = Scenario + Safety + Video + State + Motion Notes + Checkpoint Package + Validation + Debrief. Each time students produce an artifact, place it under one term. This keeps the class focused on the professional goal: a run understandable by someone who was not present."
+            "bottom_band": "Evidence test: 'If someone disputes this <strong class=\"font-bold\">inspection</strong> claim, what specific file, timestamp, checkpoint, and note would I show to defend it?' If you cannot answer all four, the claim is not yet evidence-backed."
+        },
+        {
+            "title": "Section 1  --  Rugged Navigation and Multi-Sensor Arrays",
+            "thesis": "Understand terrain, sensing roles, and runtime evidence for inspection. This section covers rugged terrain effects, bounded navigation, costmaps, obstacle supervision, sensor roles, timing alignment, and telemetry context  --  everything needed to explain what the robot perceived and why the path was chosen.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "Terrain is not just background  --  it changes robot behavior and evidence quality. Slope, gravel, glare, occlusion, and vibration affect what the final report can honestly defend."
+                        },
+                        {
+                                    "label": "Key Principle",
+                                    "value": "Navigation for <strong class=\"font-bold\">inspection</strong> means bounded progress  --  know the checkpoint, choose a safe path, move in small steps, stop to prove. Not full autonomy, but explainable supervised motion."
+                        },
+                        {
+                                    "label": "Sensor Array",
+                                    "value": "Each sensor answers a different question  --  camera sees appearance, telemetry explains motion, payload measures condition, notes explain limits. Multi-sensor means multi-question, not just more data."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 5 -- 11: Rugged terrain, bounded navigation, costmaps, obstacle supervision, sensor roles, timing alignment, and SportModeState telemetry context."
+                        }
+            ],
+            "bottom_band": "Section framing: By the end of this section, you should be able to explain how terrain conditions affect evidence quality and what each sensor channel contributes to an <strong class=\"font-bold\">inspection</strong> claim."
+        },
+        {
+            "title": "Rugged Terrain Changes the Run",
+            "thesis": "Rugged terrain is important because it changes both robot behavior and evidence quality. A slope may alter posture, loose surface may affect traction, glare may hide inspection details, and vibration may blur images. Students should record these conditions because they influence what the final report can honestly defend.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Slope",
+                                    "value": "Alters robot posture and weight distribution. May change camera aim point and affect the appearance of captured inspection targets."
+                        },
+                        {
+                                    "label": "Loose Surface",
+                                    "value": "Reduces traction and increases odometry uncertainty. The robot may slip slightly  --  route accuracy degrades compared to hard floor."
+                        },
+                        {
+                                    "label": "Glare / Lighting",
+                                    "value": "Direct sunlight or reflections can wash out camera images. Inspection details become harder to verify  --  the report must note this limitation."
+                        },
+                        {
+                                    "label": "Vibration",
+                                    "value": "<strong class=\"font-bold\">B2</strong> gait vibration can blur still images and shake video. Stable-dwell capture becomes more important on rough terrain than on smooth floor."
+                        }
+            ],
+            "bottom_band": "Terrain recording habit: At each checkpoint, note one terrain condition that could affect evidence  --  slope angle, surface type, lighting direction, or vibration level. One sentence per checkpoint is enough."
+        },
+        {
+            "title": "Navigation Means Bounded Progress",
+            "thesis": "For Day 4, navigation means making safe, explainable progress toward <strong class=\"font-bold\">inspection</strong> checkpoints. Students do not need advanced autonomy theory to act professionally. They need a checkpoint goal, a visible hazard plan, bounded motion, a stop point, and evidence that the robot reached the <strong class=\"font-bold\">inspection</strong> view safely.",
+            "board_type": "list",
+            "board_data": [
+                        "Know the checkpoint: Identify the target <strong class=\"font-bold\">inspection</strong> position before motion begins. The destination should be marked, visible, and agreed by the team.",
+                        "Choose a safe path: Identify hazards between the current position and the checkpoint. Mark any slope, obstacle, or uncertain surface that the route must avoid.",
+                        "<strong class=\"font-bold\">Move</strong> in small steps: Use bounded velocity and short-duration commands. The first motion should be the smallest meaningful displacement  --  observe before increasing.",
+                        "Stop to prove: Dwell at the checkpoint until the robot is stable. Capture evidence only after motion has stopped. A blurred image during translation is not <strong class=\"font-bold\">inspection</strong> evidence."
+            ],
+            "bottom_band": "Navigation test: Before any <strong class=\"font-bold\">B2</strong> motion, ask aloud: 'What is the checkpoint? What hazards are between here and there? What is my first small command? When will I stop to capture?' If any answer is unclear, do not move."
+        },
+        {
+            "title": "Costmaps Turn Space into Risk",
+            "thesis": "A <strong class=\"font-bold\">costmap</strong> is a simple way to turn space into movement risk. Clear floor is low cost, blocked areas are not usable, and uncertain surfaces should increase caution. Students should use the <strong class=\"font-bold\">costmap</strong> idea to explain why the <strong class=\"font-bold\">B2</strong> path avoids hazards and where human supervision remains necessary.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Free Space (Low Cost)",
+                                    "value": "Clear, traversable floor  --  the planner can route through these cells freely. Confirmed by sensor data showing no obstacles and stable surface."
+                        },
+                        {
+                                    "label": "Obstacle (Blocked)",
+                                    "value": "Cells containing detected barriers  --  walls, equipment, cones. The path must never route through these. Marked as lethal cost."
+                        },
+                        {
+                                    "label": "Uncertain Terrain (Caution)",
+                                    "value": "Cells where sensor data is sparse, terrain type is ambiguous, or surface condition is unknown. Conservative planning treats these as high-cost or avoids them entirely."
+                        },
+                        {
+                                    "label": "Human Supervision Zone",
+                                    "value": "Areas where sensor confidence is low and human judgment is required. The operator decides whether the path is safe — the costmap advises, not guarantees."
+                        }
+            ],
+            "bottom_band": "Costmap exercise: Draw a simple grid. Mark one free cell, one obstacle cell, and one uncertain cell near your <strong class=\"font-bold\">B2</strong> arena. For each, explain what the robot should do and where the human must supervise."
+        },
+        {
+            "title": "Obstacle Avoidance Needs Supervision",
+            "thesis": "Obstacle avoidance is useful, but it is not a guarantee. Sensors can miss low, reflective, moving, transparent, or poorly lit hazards. The safe envelope still depends on field roles, slow motion, visible boundaries, and immediate stop authority. This keeps rugged navigation connected to practical field discipline.",
+            "board_type": "list",
+            "board_data": [
+                        "Sensor detection layer: Cameras and depth sensors identify obstacles within their field of view. Detection has blind spots  --  low objects, reflective surfaces, transparent materials, and dark areas.",
+                        "Software caution layer: The avoidance system adjusts velocity or stops when obstacles are detected within configured thresholds. Software cannot see what sensors miss.",
+                        "Human supervision layer: The spotter watches the full robot perimeter and arena. Human judgment catches what sensors and software miss  --  and has immediate stop authority."
+            ],
+            "bottom_band": "Safety envelope rule: The three layers  --  sensor, software, human  --  must all be active during <strong class=\"font-bold\">B2</strong> motion. If any layer is compromised (sensor blocked, software disabled, spotter distracted), stop immediately."
+        },
+        {
+            "title": "Each Sensor Has a Job",
+            "thesis": "A multi-sensor array should not be described as collecting more data. Each channel answers a different question. Camera frames show visual condition, telemetry explains how the robot moved, payload data may measure the target, and notes document uncertainty. The report improves when these roles are explicit.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Sensor",
+                                    "Question It Answers",
+                                    "Artifact It Produces",
+                                    "Report Use"
+                        ],
+                        "rows": [
+                                    [
+                                                "Camera (Front / Rear)",
+                                                "What does the inspection target look like?",
+                                                "Still image (frame<strong class=\"font-bold\">.jpg</strong>) or <strong class=\"font-bold\">RTSP</strong> video clip.",
+                                                "Primary visual evidence of target condition."
+                                    ],
+                                    [
+                                                "<strong class=\"font-bold\">SportModeState</strong> Telemetry",
+                                                "How did the robot move and stand?",
+                                                "sportmodestate<strong class=\"font-bold\">.jsonl</strong>  --  one JSON line per state sample.",
+                                                "Explains motion context: was the robot stable during capture?"
+                                    ],
+                                    [
+                                                "Payload Data",
+                                                "What does the target measure?",
+                                                "Sensor reading with timestamp and checkpoint label.",
+                                                "Adds quantitative measurement to visual inspection."
+                                    ],
+                                    [
+                                                "Operator Notes",
+                                                "What can the files not show?",
+                                                "Checkpoint notes  --  glare, occlusion, fallback decisions.",
+                                                "Documents limitations that affect claim confidence."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Sensor discipline: For every <strong class=\"font-bold\">inspection</strong> checkpoint, identify which sensors contributed evidence and which question each sensor answered. A checkpoint with camera-only evidence is weaker than one with camera + <strong class=\"font-bold\">telemetry</strong> + notes."
+        },
+        {
+            "title": "Timing Connects the Sensors",
+            "thesis": "Multi-sensor evidence is strongest when timing is clear. A camera frame, telemetry line, payload measurement, and operator note should all point to the same checkpoint moment. Beginners can start with checkpoint IDs and approximate timestamps, then improve synchronization as their scripting skills mature.",
+            "board_type": "list",
+            "board_data": [
+                        "Camera frame timestamp: The moment the image was captured. Compare with <strong class=\"font-bold\">telemetry</strong> to confirm the robot was stationary  --  a frame taken during motion may be blurred.",
+                        "<strong class=\"font-bold\">SportModeState</strong> line timestamp: The moment the robot reported its state. Align with camera timestamps to verify stable dwell before capture.",
+                        "Payload reading timestamp: The moment the sensor measurement was taken. Must be close to the camera timestamp for the data to describe the same <strong class=\"font-bold\">inspection</strong> moment.",
+                        "Operator note timestamp: The moment the observation was recorded. Should reference the same checkpoint ID as the automated logs for cross-referencing."
+            ],
+            "bottom_band": "Timing check: At checkpoint cp01, do your camera frame, <strong class=\"font-bold\">telemetry</strong> line, <strong class=\"font-bold\">payload</strong> reading, and note all reference the same checkpoint ID and similar timestamps? If not, the multi-sensor claim is weakened by timing misalignment."
+        },
+        {
+            "title": "Telemetry Is Runtime Context",
+            "thesis": "<strong class=\"font-bold\">SportModeState</strong> is the robot's runtime context. If a checkpoint frame is blurred, velocity or yaw speed may explain it. If posture looks unusual, body height or mode may help. Students should use <strong class=\"font-bold\">telemetry</strong> as supporting evidence, not as an isolated log file.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Motion Panel",
+                                    "value": "Velocity (vx, vy, vyaw)  --  was the robot moving or turning during capture? High velocity during a checkpoint frame explains blur and weakens the claim."
+                        },
+                        {
+                                    "label": "Posture Panel",
+                                    "value": "Body height, pitch, roll  --  was the robot level and stable? Slope or uneven footing changes the camera aim point and image composition."
+                        },
+                        {
+                                    "label": "Mode Panel",
+                                    "value": "Current <strong class=\"font-bold\">SportModeState</strong> mode  --  is the robot in a safe, expected state? Unexpected mode transitions during <strong class=\"font-bold\">inspection</strong> indicate a control or script problem."
+                        },
+                        {
+                                    "label": "Timing Panel",
+                                    "value": "Timestamp and sequence  --  does the telemetry record cover the full run window from before first motion through after final capture? Gaps create blind spots."
+                        }
+            ],
+            "bottom_band": "Telemetry habit: When reviewing a checkpoint frame, open the corresponding <strong class=\"font-bold\">SportModeState</strong> line. Ask: was velocity near zero? Was posture stable? Was mode as expected? If any answer is no, note it in the report."
+        },
+        {
+            "title": "Section 2  --  Mock Inspection Scripts",
+            "thesis": "Build the inspection workflow safely before the B2 field run. This section covers mock-first workflow, Gazebo rehearsal, procedural scripts, scenario files, camera capture, OpenCV-derived outputs, JSONL logging, bounded motion, channel-by-channel debugging, and validation readiness gates.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "Mock scenario passes → folder structure passes → instructor approves <strong class=\"font-bold\">B2</strong> handoff. Hardware begins only after the mock workflow and folder structure are understandable enough for instructor approval."
+                        },
+                        {
+                                    "label": "Key Principle",
+                                    "value": "A functional inspection script should make the run procedure visible  --  Setup, Capture, Log, Move, Package, Validate as separate steps. No black-box scripts that hide failures."
+                        },
+                        {
+                                    "label": "Validation Gate",
+                                    "value": "If the mock package fails validation, the <strong class=\"font-bold\">B2</strong> run should wait. Missing metadata, empty <strong class=\"font-bold\">telemetry</strong>, or absent checkpoint frames show the procedure is not ready."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 13 -- 22: Mock-first gate, Gazebo rehearsal, procedural scripts, scenario files, camera capture, OpenCV outputs, JSONL logging, bounded motion, debugging, and validation."
+                        }
+            ],
+            "bottom_band": "Section rule: The mock run is not optional practice  --  it is a required gate. Prove the workflow produces reviewable evidence before the <strong class=\"font-bold\">B2</strong> leaves its standby position."
+        },
+        {
+            "title": "Mock First, Then Hardware",
+            "thesis": "Students should prove the workflow before the hardware run. A mock scenario lets them define checkpoints, test capture placeholders, write metadata, and package the run folder. Hardware begins only after the mock workflow and folder structure are understandable enough for instructor approval.",
+            "board_type": "list",
+            "board_data": [
+                        "Mock Scenario: Define checkpoints, route, capture targets, and metadata. Create patrol_plan<strong class=\"font-bold\">.json</strong> and metadata<strong class=\"font-bold\">.json</strong>  --  these files set intent before any capture occurs.",
+                        "Run Folder Check: Build the folder structure  --  checkpoints/cp01/, raw_captures/, logs/. Confirm every required path exists and naming conventions are followed.",
+                        "Instructor Approval: Present the mock package. Instructor confirms: scenario is defined, folder structure is correct, capture plan is clear, validation rules are understood.",
+                        "<strong class=\"font-bold\">B2</strong> Handoff: Only after approval does the team proceed to hardware. The mock package becomes the template for the field run folder."
+            ],
+            "bottom_band": "Gate discipline: 'Our mock folder passed validation and the instructor approved handoff.' If you cannot say this sentence truthfully, the <strong class=\"font-bold\">B2</strong> should not move."
+        },
+        {
+            "title": "Gazebo Rehearses the Logic",
+            "thesis": "<strong class=\"font-bold\">Gazebo</strong> is useful because it lets students rehearse <strong class=\"font-bold\">inspection</strong> logic before field risk appears. It does not replace the <strong class=\"font-bold\">B2</strong> run, but it helps teams practice checkpoint sequencing, sensor thinking, timing, and recovery decisions. The lesson is rehearsal discipline, not simulation perfection.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "<strong class=\"font-bold\">Gazebo</strong> Rehearsal",
+                                    "value": "Practice checkpoint sequencing, sensor activation, timing, and recovery decisions in a risk-free environment. Errors in <strong class=\"font-bold\">Gazebo</strong> cost time, not hardware damage or safety incidents."
+                        },
+                        {
+                                    "label": "<strong class=\"font-bold\">B2</strong> Field Run",
+                                    "value": "Execute the rehearsed workflow on hardware with real terrain, lighting, network conditions, and sensor behavior. Compare field results with <strong class=\"font-bold\">Gazebo</strong> expectations."
+                        },
+                        {
+                                    "label": "Comparison",
+                                    "value": "Differences between <strong class=\"font-bold\">Gazebo</strong> rehearsal and <strong class=\"font-bold\">B2</strong> field run are engineering insights  --  they reveal real-world effects that simulation cannot fully capture (floor texture, lighting, latency)."
+                        }
+            ],
+            "bottom_band": "Rehearsal rule: '<strong class=\"font-bold\">Gazebo</strong> tells you whether your logic makes sense. The <strong class=\"font-bold\">B2</strong> tells you whether reality agrees.' Never skip the rehearsal  --  never assume the field will match simulation perfectly."
+        },
+        {
+            "title": "Scripts Should Show Procedure",
+            "thesis": "A functional inspection script should make the run procedure visible. Students should see setup, capture, logging, movement, packaging, and validation as separate steps. This prevents a black-box script from hiding failures and makes the workflow easier to debug when camera, telemetry, or folder paths break.",
+            "board_type": "list",
+            "board_data": [
+                        "Setup: Initialize SDK clients, verify network interface, confirm <strong class=\"font-bold\">SportModeState</strong> subscription, open output files. Print confirmation of each initialization step.",
+                        "Capture: Execute camera stills or <strong class=\"font-bold\">RTSP</strong> recording at designated moments. Verify each saved file  --  check file size, try to open, confirm scene matches checkpoint.",
+                        "Log: Write <strong class=\"font-bold\">SportModeState</strong> samples to sportmodestate<strong class=\"font-bold\">.jsonl</strong> continuously. Each line is one timestamped state record  --  mode, gait, velocity, position, body height.",
+                        "<strong class=\"font-bold\">Move</strong>: Send bounded motion commands through <strong class=\"font-bold\">SportClient</strong>. Small values, short duration, observed behavior. <strong class=\"font-bold\">StopMove</strong> after each leg.",
+                        "Package: Organize artifacts into the run folder  --  raw captures preserved, selected frames copied to checkpoints/<id>/frame<strong class=\"font-bold\">.jpg</strong>, logs in place.",
+                        "Validate: Run the validator against the completed package. PASS → proceed to report. FAIL → repair and re-validate before claiming readiness."
+            ],
+            "bottom_band": "Script transparency: Can another student read your script and understand what each section does without running it? If not, add print statements and section comments until the procedure is visible."
+        },
+        {
+            "title": "Scenario Files Set Intent",
+            "thesis": "The mock scenario should create intent before any capture occurs. Metadata identifies operator, date, robot, and run context. The patrol plan identifies checkpoint IDs and what each checkpoint should inspect. These files make the inspection script accountable and keep later report claims tied to planned targets.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "metadata<strong class=\"font-bold\">.json</strong>",
+                                    "value": "Operator name, date, robot ID, run scenario description, interface used. Says who ran the <strong class=\"font-bold\">inspection</strong>, when, and under what conditions  --  accountability before evidence."
+                        },
+                        {
+                                    "label": "patrol_plan<strong class=\"font-bold\">.json</strong>",
+                                    "value": "Checkpoint IDs, leg definitions, capture actions, speed limits, dwell requirements. Says what checkpoints matter and what evidence each should produce."
+                        },
+                        {
+                                    "label": "Checkpoint Folders",
+                                    "value": "checkpoints/cp01/, cp02/, cp03/  --  each contains frame<strong class=\"font-bold\">.jpg</strong>, the selected <strong class=\"font-bold\">inspection</strong> image. The folder path encodes the checkpoint identity."
+                        }
+            ],
+            "bottom_band": "Intent check: Before any capture, can you open metadata<strong class=\"font-bold\">.json</strong> and patrol_plan<strong class=\"font-bold\">.json</strong> and read exactly what <strong class=\"font-bold\">inspection</strong> targets are planned? If the plan is vague, the evidence will be vague."
+        },
+        {
+            "title": "Camera Scripts Capture Context",
+            "thesis": "Camera scripts produce visual context for inspection, but saved files should be checked before they are trusted. Students should confirm that a still image opens, a video plays, and the content matches the intended checkpoint. This keeps capture focused on usable evidence rather than file creation alone.",
+            "board_type": "list",
+            "board_data": [
+                        "Front / Rear Still Capture: Use <strong class=\"font-bold\">VideoClient</strong> to grab a single frame. Save as a timestamped or checkpoint-labeled .jpg file. Confirm the image opens and shows the expected scene.",
+                        "<strong class=\"font-bold\">RTSP</strong> Video Recording: Open the <strong class=\"font-bold\">RTSP</strong> stream, configure writer settings (codec, resolution, frame rate), record the approach and dwell, close the file. Verify playback before trusting the recording.",
+                        "File Verification: Check file size > minimum threshold, attempt to open with a standard viewer, confirm scene content matches checkpoint description. A file that cannot be opened is not evidence.",
+                        "Map to Checkpoint: Copy verified frame to checkpoints/<id>/frame<strong class=\"font-bold\">.jpg</strong>. The raw capture is preserved separately  --  the checkpoint folder holds the selected, verified evidence."
+            ],
+            "bottom_band": "Verification rule: 'The file saved successfully' is not the same as 'the file is usable evidence.' Open every capture before leaving the checkpoint. A corrupt or misaimed frame discovered during reporting is too late to fix."
+        },
+        {
+            "title": "OpenCV Outputs Are Derived",
+            "thesis": "<strong class=\"font-bold\">OpenCV</strong> can help demonstrate simple image processing, but processing should not overwrite evidence. Raw frames are the primary record. Edge views, filters, annotations, and detection outputs are derived artifacts. Students should preserve both and explain which one supports the report claim.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Raw Frame (Primary)",
+                                    "value": "The original, unmodified image from the camera  --  preserved as the authoritative visual record. Never delete, overwrite, or modify the raw capture file."
+                        },
+                        {
+                                    "label": "Derived Output (Secondary)",
+                                    "value": "Processed images  --  edge detection, filtering, annotation overlays, object detection bounding boxes. Useful for highlighting features, but derived from the raw frame."
+                        },
+                        {
+                                    "label": "Report Usage",
+                                    "value": "The report should cite the raw frame as primary evidence. Derived outputs can illustrate specific features but cannot replace the original  --  if processing introduces artifacts, the raw frame is the fallback."
+                        }
+            ],
+            "bottom_band": "Processing discipline: 'I applied an edge filter to highlight cracks. The raw frame is preserved at raw_captures/front_<ts>.jpg. The filtered output is at derived/edge_<ts>.jpg.' Both files, clearly labeled, with the raw frame as the authoritative source."
+        },
+        {
+            "title": "JSONL Makes Logs Inspectable",
+            "thesis": "A JSONL <strong class=\"font-bold\">telemetry</strong> log is beginner-friendly because each line can be inspected as one state sample. Students can open the file, read a line, and find fields such as mode, velocity, yaw speed, or body height. This structure prepares the file for later parsing and visualization.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "JSONL Structure",
+                                    "value": "One complete JSON object per line. Each line is a self-contained <strong class=\"font-bold\">SportModeState</strong> sample  --  no multi-line objects, no trailing commas, no array wrappers. Readable with any text editor."
+                        },
+                        {
+                                    "label": "Key Fields",
+                                    "value": "mode, gait, position[x,y,yaw], velocity[vx,vy,vyaw], bodyHeight, timestamp. These fields explain the robot's motion and posture at each sampled moment."
+                        },
+                        {
+                                    "label": "Parsing Ready",
+                                    "value": "Each line can be loaded with json.loads() independently. Students can extract fields, filter by timestamp, or plot values without parsing a complex nested structure."
+                        }
+            ],
+            "bottom_band": "Log inspectability: Open your sportmodestate<strong class=\"font-bold\">.jsonl</strong> file. Can you read line 10 and explain what the robot was doing at that moment  --  mode, velocity, posture? If not, add field labels or documentation until it is self-explanatory."
+        },
+        {
+            "title": "Motion Commands Stay Small",
+            "thesis": "Mock scripts should teach the same discipline used on hardware. A high-level motion command needs instructor approval, small values, short duration, visible observation, and an explicit stop. Students should record the result, because the report needs to explain what command produced the captured evidence.",
+            "board_type": "list",
+            "board_data": [
+                        "Approved command: Instructor confirms the motion is appropriate  --  destination, speed, duration, and safety conditions are reviewed before execution.",
+                        "Short duration: Commands are sent for limited time or distance. The first motion should be the smallest meaningful displacement  --  ~0.2 m or ~0.3 rad.",
+                        "Observe: Watch the robot's response. Did it move in the expected direction? At the expected speed? Did it stop when commanded? Record what you observed, not what you expected.",
+                        "<strong class=\"font-bold\">StopMove</strong>: Send explicit stop command after each motion leg. Redundant stop commands are safer  --  a single <strong class=\"font-bold\">StopMove</strong> may not be enough. Confirm the robot is stationary before next capture.",
+                        "Note result: Document the command, the observed behavior, and any deviation. The report needs to connect each motion command to the evidence it produced."
+            ],
+            "bottom_band": "Motion safety: 'What command am I about to send? What do I expect the robot to do? What will I do if the robot does something different?' Answer all three before any <strong class=\"font-bold\">B2</strong> motion  --  mock or hardware."
+        },
+        {
+            "title": "Debug One Channel at a Time",
+            "thesis": "When a script fails, students should avoid changing everything at once. They should test the camera path alone, telemetry logger alone, folder structure alone, and validator alone before combining them. This debugging habit turns failures into evidence about which channel needs repair.",
+            "board_type": "list",
+            "board_data": [
+                        "1. Camera alone: Test that the video client initializes, captures a still, and saves a readable .jpg file. No <strong class=\"font-bold\">telemetry</strong>, no motion  --  just one camera channel.",
+                        "2. Logger alone: Test that the <strong class=\"font-bold\">SportModeState</strong> subscriber writes valid JSONL lines to a file. Confirm lines are parseable and contain expected fields.",
+                        "3. Folder paths alone: Test that the run folder structure is created correctly  --  all directories exist, naming conventions are correct, placeholder files validate.",
+                        "4. Validator alone: Run the validator against a known-good folder and a known-bad folder. Confirm it correctly distinguishes PASS from FAIL  --  the validator itself must be trustworthy.",
+                        "5. Combined run: Only after all four channels work independently, combine them into the full <strong class=\"font-bold\">inspection</strong> script. Channel-by-channel confidence before integration."
+            ],
+            "bottom_band": "Debugging staircase: Start at the bottom (single channel), confirm it works, move up one step. A failure in the combined run can now be traced to the specific channel that broke  --  because you already proved each one works alone."
+        },
+        {
+            "title": "Validation Catches Script Gaps",
+            "thesis": "The validator is a readiness gate for the script, not just a grading tool. Missing metadata, empty telemetry, absent checkpoint frames, or mismatched checkpoint IDs show that the procedure is not ready. Repairing these gaps in the mock run prevents avoidable field confusion.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "PASS",
+                                    "value": "All required files present, all paths correct, all structural checks satisfied. The package is reviewable  --  proceed to report writing and <strong class=\"font-bold\">B2</strong> handoff gate."
+                        },
+                        {
+                                    "label": "PASS with Warnings",
+                                    "value": "Structure is valid but one or more checks produced warnings  --  e.g., image file is small, JSONL line count is low, optional fields missing. Warnings must be explained in the report."
+                        },
+                        {
+                                    "label": "FAIL",
+                                    "value": "Required file missing, path incorrect, checkpoint ID mismatch, or structural error. The package is not reviewable  --  repair the script and re-validate before proceeding."
+                        }
+            ],
+            "bottom_band": "Validator as gate: Mock folder → Run validator → PASS? → Proceed to instructor approval. FAIL? → Identify the specific gap, repair the script, re-run mock, re-validate. Never skip validation because 'the files are probably there.'"
+        },
+        {
+            "title": "Section 3  --  B2 Field Execution",
+            "thesis": "Run the supervised inspection, capture sensors, and log telemetry. This section covers field roles, observable readiness, stable-dwell capture, RTSP verification, continuous telemetry logging, checkpoint mapping, field notes, immediate verification, and stated fallbacks.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "A <strong class=\"font-bold\">B2</strong> field run needs clear roles before motion. The run director, terminal operator, spotter, evidence lead, and reporter each have defined responsibilities  --  role clarity prevents unsafe mixed instructions."
+                        },
+                        {
+                                    "label": "Key Principle",
+                                    "value": "Readiness is observable  --  interface selected, perimeter clear, stop path known, cameras tested, logger ready. Students show readiness through checks, not confidence statements."
+                        },
+                        {
+                                    "label": "Capture Rule",
+                                    "value": "<strong class=\"font-bold\">Move</strong> to view, stop or dwell, capture, label checkpoint, continue. Checkpoint evidence is strongest when the robot is stable  --  never capture during turning or translation."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 24 -- 32: Field roles, observable readiness, stable-dwell capture, RTSP verification, telemetry logging window, checkpoint mapping, field notes, immediate verification, and fallback procedures."
+                        }
+            ],
+            "bottom_band": "Section rule: The first <strong class=\"font-bold\">B2</strong> field command is not a full <strong class=\"font-bold\">inspection</strong>. It is a single small motion  --  then stop, review, and decide whether to continue. Staged confidence, not rushed demonstration."
+        },
+        {
+            "title": "Field Roles Keep Order",
+            "thesis": "A <strong class=\"font-bold\">B2</strong> field run needs clear roles before motion. The run director approves action, the terminal operator controls commands, the spotter watches the robot and space, the evidence lead checks saved files, and the reporter records limitations. Role clarity prevents excited students from creating unsafe mixed instructions.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Run Director",
+                                    "value": "Approves all motion and capture actions. Has final authority to proceed or halt. No command is sent without the director's explicit approval."
+                        },
+                        {
+                                    "label": "Terminal Operator",
+                                    "value": "Executes commands at the keyboard. Reads each command aloud before sending. Watches console output for errors or unexpected responses."
+                        },
+                        {
+                                    "label": "Spotter",
+                                    "value": "Watches the robot and surrounding space continuously. Holds immediate stop authority  --  spotter says stop, operator stops, no questions asked in the moment."
+                        },
+                        {
+                                    "label": "Evidence Lead",
+                                    "value": "Checks every saved file immediately after capture  --  opens the image, confirms scene, verifies file size. Declares whether evidence is usable or needs recapture."
+                        },
+                        {
+                                    "label": "Reporter",
+                                    "value": "Records limitations, deviations, and field observations in real time. Notes what the files cannot show  --  glare, occlusion, route changes, fallback decisions."
+                        }
+            ],
+            "bottom_band": "Role assignment: Before the <strong class=\"font-bold\">B2</strong> powers on, every person in the arena must know their role and their stop authority. If anyone cannot state their role in one sentence, roles are not clear enough to proceed."
+        },
+        {
+            "title": "Readiness Is Observable",
+            "thesis": "Students should not say they are ready because they feel ready. They should show readiness through checks: selected network interface, clear perimeter, known stop action, verified cameras, active logger, prepared folder, and named checkpoint plan. If one check is missing, the run waits.",
+            "board_type": "list",
+            "board_data": [
+                        "Interface selected: Correct network adapter active, IP on expected subnet, ping to <strong class=\"font-bold\">B2</strong> confirmed, <strong class=\"font-bold\">DDS</strong> discovery working. Connectivity is the foundation  --  if the robot is not reachable, nothing else matters.",
+                        "Perimeter clear: Arena boundaries marked, obstacles identified, operator zones designated, bystanders aware. Physical space is as important as software readiness.",
+                        "Stop path known: Remote stop accessible, script stop command ready, physical stop procedure agreed. Every team member knows at least two ways to halt the robot immediately.",
+                        "Cameras tested: Front and rear still capture verified, <strong class=\"font-bold\">RTSP</strong> stream confirmed playable, file save paths writable. Camera readiness is confirmed before motion, not assumed.",
+                        "Logger ready: <strong class=\"font-bold\">SportModeState</strong> subscriber running, JSONL file writable, lines appearing and parseable. Telemetry logging begins before first motion and continues through final notes."
+            ],
+            "bottom_band": "Readiness gate: Read each check aloud and confirm verbally. 'Interface  --  confirmed. Perimeter  --  clear. Stop path  --  known. Cameras  --  tested. Logger  --  running.' All five confirmed → motion may proceed. Any one missing → wait."
+        },
+        {
+            "title": "Capture at Stable Dwell",
+            "thesis": "Checkpoint evidence is strongest when the robot is stable. Capturing during a turn or translation can create blur and make the report less defensible. Students should move into view, stop or dwell, capture the frame, label it with the checkpoint, and only then continue.",
+            "board_type": "list",
+            "board_data": [
+                        "Approach: <strong class=\"font-bold\">Move</strong> the <strong class=\"font-bold\">B2</strong> into <strong class=\"font-bold\">inspection</strong> view using bounded, supervised motion. Velocity should decrease as the robot nears the checkpoint  --  approach slow, not fast.",
+                        "<strong class=\"font-bold\">StopMove</strong> or Dwell: Command the robot to stop and stabilize. Confirm velocity reads near zero in <strong class=\"font-bold\">SportModeState</strong>. Wait at least 1 -- 2 seconds after stop before capture  --  settling time matters.",
+                        "Capture Frame: Execute still capture only after confirming the robot is stationary. The image should be sharp, well-framed, and clearly show the <strong class=\"font-bold\">inspection</strong> target.",
+                        "Label Checkpoint: Save as checkpoints/<id>/frame<strong class=\"font-bold\">.jpg</strong>. State the checkpoint ID aloud. The evidence lead confirms the file is saved and opens correctly.",
+                        "Continue: Only after the evidence lead confirms usable capture does the director approve the next motion leg. Never rush from one capture directly into the next motion."
+            ],
+            "bottom_band": "Stable dwell rule: 'Capture in motion is not <strong class=\"font-bold\">inspection</strong> evidence  --  it is a screenshot of a moving robot.' If <strong class=\"font-bold\">SportModeState</strong> velocity is non-zero, wait. Blurred evidence weakens every claim that follows."
+        },
+        {
+            "title": "RTSP Needs Proof",
+            "thesis": "RTSP recording may fail because the stream, writer settings, codec, or dimensions are wrong. A file name alone is not evidence. Students should check file size, open playback, confirm the scene, and document any fallback if video cannot be used.",
+            "board_type": "list",
+            "board_data": [
+                        "Record: Start <strong class=\"font-bold\">RTSP</strong> stream capture with explicit writer configuration  --  codec, resolution, frame rate. Confirm the stream is active before declaring recording started.",
+                        "File Size: After recording stops, check the file size. A video file under 1 KB is almost certainly corrupt  --  the stream may have failed silently during recording.",
+                        "Playback: Open the video file and play at least the first and last few seconds. Confirm the content is the expected scene, not a black frame or frozen image.",
+                        "Scene Match: Does the video show the correct checkpoint, the correct robot position, the correct <strong class=\"font-bold\">inspection</strong> target? If the scene does not match, the recording is mislabeled.",
+                        "Accept or Fallback: If video passes all checks → accept as evidence. If video fails → fall back to still frames, <strong class=\"font-bold\">telemetry</strong>, and operator notes. State the fallback explicitly in the report."
+            ],
+            "bottom_band": "<strong class=\"font-bold\">RTSP</strong> verification: 'I recorded a video file. I checked the size. I played it back. The scene matches cp01. I accept it as evidence.' Or: 'Video failed  --  I am using still frames and <strong class=\"font-bold\">telemetry</strong> instead. This limitation is documented in the report.'"
+        },
+        {
+            "title": "Log Through the Run",
+            "thesis": "Telemetry logging should cover the meaningful run window. Starting late can miss the approach, and stopping early can miss recovery or final posture. The evidence lead should confirm that SportModeState logging begins before motion and continues through checkpoint captures and final notes.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Before Motion",
+                                    "value": "Start <strong class=\"font-bold\">SportModeState</strong> logging. Confirm lines are appearing in sportmodestate<strong class=\"font-bold\">.jsonl</strong>. Log at least 5 -- 10 seconds of stationary baseline data  --  this shows the robot's pre-run state."
+                        },
+                        {
+                                    "label": "During Motion & Capture",
+                                    "value": "Keep logging continuously through every motion leg, every checkpoint approach, every dwell, and every capture. No gaps  --  the log is the runtime witness of the entire <strong class=\"font-bold\">inspection</strong>."
+                        },
+                        {
+                                    "label": "After Final Notes",
+                                    "value": "Continue logging for several seconds after the final capture and notes. This captures the robot's post-<strong class=\"font-bold\">inspection</strong> state  --  mode, posture, position after all motion has stopped."
+                        }
+            ],
+            "bottom_band": "Log coverage test: Open your sportmodestate<strong class=\"font-bold\">.jsonl</strong>. Does the first timestamp precede the first motion command? Does the last timestamp follow the final capture? If not, your log has blind spots at the edges of the run."
+        },
+        {
+            "title": "Map Captures to Checkpoints",
+            "thesis": "Students should preserve raw captures and also normalize selected evidence into the expected checkpoint paths. This step turns field media into reviewable inspection evidence. A good habit is to state the checkpoint ID aloud, save the capture, and immediately confirm where the selected frame belongs.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Raw Captures",
+                                    "value": "All original files  --  every still, every video clip, unmodified and timestamped. Stored in raw_captures/ as the unprocessed field record. Never delete raw captures until the report is complete and accepted."
+                        },
+                        {
+                                    "label": "Selected Evidence",
+                                    "value": "The best frame for each checkpoint, copied to checkpoints/<id>/frame<strong class=\"font-bold\">.jpg</strong>. Selected for clarity, focus, and relevance  --  not every raw capture becomes checkpoint evidence."
+                        },
+                        {
+                                    "label": "Naming Convention",
+                                    "value": "checkpoints/cp01/frame<strong class=\"font-bold\">.jpg</strong>, checkpoints/cp02/frame<strong class=\"font-bold\">.jpg</strong>. Consistent naming lets the validator, the report, and any reviewer find the right evidence at the right checkpoint instantly."
+                        }
+            ],
+            "bottom_band": "Mapping habit: After each capture, say aloud: 'Checkpoint cp01  --  frame saved, verified, copied to checkpoints/cp01/frame<strong class=\"font-bold\">.jpg</strong>.' This verbal confirmation catches mislabeled files before they become report errors."
+        },
+        {
+            "title": "Field Notes Capture Limits",
+            "thesis": "Field notes explain what the files cannot show by themselves. If glare limited visibility, the rear stream failed, a checkpoint was skipped, or the route changed for safety, the report should include that limitation. Honest notes make the final inspection more credible, not weaker.",
+            "board_type": "list",
+            "board_data": [
+                        "Glare / Lighting: Note if direct sunlight, reflections, or low light affected camera image quality. A washed-out image at cp02 is not a failure  --  it is a limitation that the report must explain.",
+                        "Occlusion: Note if an object, person, or robot part blocked the <strong class=\"font-bold\">inspection</strong> view. Partial occlusion may still allow useful evidence  --  state what is visible and what is hidden.",
+                        "Skipped Checkpoint: Note if a checkpoint was skipped and why  --  safety concern, time constraint, unreachable position. A skipped checkpoint with a documented reason is better than a missing checkpoint with no explanation.",
+                        "Fallback Stream: Note if <strong class=\"font-bold\">RTSP</strong> video was replaced by still frames. State which channel was used as the fallback and why the primary channel was unavailable.",
+                        "Route / Safety Change: Note if the planned route changed during the run  --  obstacle discovered, perimeter adjusted, operator decision. The report must explain deviations from the plan."
+            ],
+            "bottom_band": "Notes discipline: 'If I do not write this limitation down now, the report will claim evidence quality that the files cannot support.' Write the note at the checkpoint, not from memory during report writing."
+        },
+        {
+            "title": "Evidence Habit: Verify Immediately",
+            "thesis": "The field evidence habit is immediate verification. After capture, students should open the artifact, label the checkpoint, place the selected file in the package, and confirm the log is still running. This avoids discovering after the run that the strongest checkpoint has no usable evidence.",
+            "board_type": "list",
+            "board_data": [
+                        "Capture: Execute the still or video capture at the checkpoint. State aloud what was captured and at which checkpoint.",
+                        "Open: Immediately open the saved file  --  view the image, play the video. Do not trust the file save confirmation alone. A file can save successfully and still be corrupt.",
+                        "Label: Name the file with its checkpoint ID. Confirm the label matches the actual scene content  --  a mislabeled cp01 frame showing cp02 content is a data integrity error.",
+                        "Place: Copy the verified frame to checkpoints/<id>/frame<strong class=\"font-bold\">.jpg</strong>. Confirm the copy succeeded and the file at the destination path opens correctly.",
+                        "Confirm Log: Check that sportmodestate<strong class=\"font-bold\">.jsonl</strong> is still receiving new lines. A frozen log means <strong class=\"font-bold\">telemetry</strong> evidence stopped mid-run  --  diagnose before continuing."
+            ],
+            "bottom_band": "Immediate verification loop: Capture → Open → Label → Place → Confirm Log → Continue. If any step fails, stay at the checkpoint until it is resolved or a fallback is documented. Never leave a checkpoint with unverified evidence."
+        },
+        {
+            "title": "Fallbacks Must Be Stated",
+            "thesis": "A field run can still be useful when one channel fails. If RTSP video is unavailable, students can rely on verified stills, telemetry logs, and limitation notes. The key is to state the fallback clearly so the final report does not imply evidence that was never captured.",
+            "board_type": "list",
+            "board_data": [
+                        "Video Fails → Use Stills: If <strong class=\"font-bold\">RTSP</strong> recording is corrupt or unavailable, fall back to front/rear still captures at each checkpoint. Stills at stable dwell are valid primary evidence.",
+                        "Camera Fails → Use Telemetry: If both video and stills are unavailable, <strong class=\"font-bold\">SportModeState</strong> <strong class=\"font-bold\">telemetry</strong> still documents that the robot reached the checkpoint position and stopped.",
+                        "All Sensors Fail → Use Notes: If no automated evidence is available, operator notes become the primary record. State clearly: 'Automated capture failed  --  all evidence is from operator observation.'",
+                        "Report Caveat: Every fallback must produce a limitation statement in the report. '<strong class=\"font-bold\">RTSP</strong> video was unavailable at cp02 due to stream error  --  still frame and <strong class=\"font-bold\">telemetry</strong> used instead.'"
+            ],
+            "bottom_band": "Fallback rule: A field run with stated fallbacks is still valid engineering work. A field run with hidden failures is not. State every fallback  --  the report's credibility depends on honesty about limitations."
+        },
+        {
+            "title": "Section 4  --  Logs, Reports, and Maintenance",
+            "thesis": "Parse the run, visualize evidence, report claims, and care for the B2. This section covers log parsing, motion visualization, payload data context, artifact-backed report claims, validation as a report-readiness check, message-to-fix debugging, and post-run B2 hardware maintenance.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "Raw <strong class=\"font-bold\">telemetry</strong> → Parsed fields → Visualization → Report claims → Validation → Maintenance. Data becomes evidence only when it is extracted, understood, and connected to a specific claim."
+                        },
+                        {
+                                    "label": "Key Principle",
+                                    "value": "A report claim follows a fixed pattern: state the claim, name the artifact, cite <strong class=\"font-bold\">telemetry</strong> context, explain any limitation, assign confidence. This prevents vague summaries of a live demo."
+                        },
+                        {
+                                    "label": "Maintenance",
+                                    "value": "The <strong class=\"font-bold\">inspection</strong> is not finished when the report is drafted. Close with a <strong class=\"font-bold\">B2</strong> maintenance walkthrough: power state, body, feet, <strong class=\"font-bold\">payload</strong> mount, cables, sensors, and file archive."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 34 -- 40: Log parsing, motion visualization, payload context, report claims, validation, debugging, and B2 hardware maintenance."
+                        }
+            ],
+            "bottom_band": "Section rule: The final deliverable is not a live demo  --  it is a reviewable run folder and report. Another engineer should understand the <strong class=\"font-bold\">inspection</strong> without having watched it."
+        },
+        {
+            "title": "Parse Logs into Fields",
+            "thesis": "Data visualization begins by parsing logs into useful fields. Students should extract timing, mode, velocity, yaw speed, position, and body height from SportModeState records. The goal is not advanced analytics; it is turning raw telemetry into a readable explanation of robot behavior.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Timestamp",
+                                    "value": "When each state sample was recorded. Used to align telemetry with camera captures and operator notes  --  timing is the backbone of multi-sensor correlation."
+                        },
+                        {
+                                    "label": "Mode & Gait",
+                                    "value": "What control mode the robot was in and what gait pattern was active. Mode transitions during inspection may indicate script or operator interventions."
+                        },
+                        {
+                                    "label": "Velocity & Yaw Speed",
+                                    "value": "Linear velocity (vx, vy) and angular velocity (vyaw). Plot these to show when the robot moved, turned, or stopped  --  motion timeline from data, not memory."
+                        },
+                        {
+                                    "label": "Position & Body Height",
+                                    "value": "Estimated position and body height. Track position drift over the run and note any unusual posture changes that may affect camera aim or stability."
+                        }
+            ],
+            "bottom_band": "Parsing exercise: From your sportmodestate<strong class=\"font-bold\">.jsonl</strong>, extract timestamp, vx, and vyaw for the full run. Plot them on a simple timeline. Can you identify exactly when each motion leg started, when the robot stopped, and when each capture occurred?"
+        },
+        {
+            "title": "Visualize Motion and Capture",
+            "thesis": "A simple timeline can explain the field run clearly. Speed and yaw speed show when the robot moved or turned, while vertical markers show checkpoint captures. This helps students explain whether a frame was taken during stable dwell or during motion that might weaken image quality.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Speed Line",
+                                    "value": "Plot vx (forward speed) over time. Flat near-zero segments indicate dwell/stop periods. Spikes indicate motion legs. A capture during a spike is motion-blurred  --  the report must note this."
+                        },
+                        {
+                                    "label": "Yaw-Speed Line",
+                                    "value": "Plot vyaw (turn rate) over time. Non-zero segments indicate the robot was rotating. A capture during rotation may show motion blur or framing shift."
+                        },
+                        {
+                                    "label": "Capture Markers",
+                                    "value": "Vertical lines at checkpoint capture timestamps (cp01, cp02, cp03). Overlay on the speed plot to visually confirm: was the robot stationary at each capture moment?"
+                        }
+            ],
+            "bottom_band": "Visualization test: 'Show me the timeline of your field run. Point to cp01. Was vx near zero? Was vyaw near zero? Was the robot stable?' The timeline answers these questions in one image."
+        },
+        {
+            "title": "Payload Data Needs Context",
+            "thesis": "Payload data becomes useful only when it is tied to context. A measurement should include timestamp, checkpoint ID, sensor identity, and relevant robot state. Without that context, the number may be hard to interpret or defend in the report. Tables are the best beginner format.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Timestamp",
+                                    "Checkpoint",
+                                    "Sensor Value",
+                                    "Robot State",
+                                    "Interpretation"
+                        ],
+                        "rows": [
+                                    [
+                                                "2026-06-04T09:15:23Z",
+                                                "cp01",
+                                                "Temperature: 24.3°C",
+                                                "Mode: <strong class=\"font-bold\">Damp</strong>, vx ≈ 0, body height normal",
+                                                "Normal reading at first checkpoint  --  robot stable, sensor functioning."
+                                    ],
+                                    [
+                                                "2026-06-04T09:18:47Z",
+                                                "cp02",
+                                                "Distance: 1.42 m",
+                                                "Mode: <strong class=\"font-bold\">Damp</strong>, slight pitch from slope",
+                                                "Measurement may be affected by 3° slope  --  noted in report limitation."
+                                    ],
+                                    [
+                                                "2026-06-04T09:22:10Z",
+                                                "cp03",
+                                                "No reading",
+                                                "Mode: <strong class=\"font-bold\">Damp</strong>, vx ≈ 0",
+                                                "Payload sensor did not respond  --  fallback to visual inspection only. Limitation documented."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Payload context rule: 'A number without timestamp, checkpoint, and robot state is not a measurement  --  it is a mystery.' Always pair <strong class=\"font-bold\">payload</strong> readings with the <strong class=\"font-bold\">telemetry</strong> context that explains the conditions under which they were taken."
+        },
+        {
+            "title": "Reports Make Defensible Claims",
+            "thesis": "A report should make claims that the evidence can support. Students can use a fixed pattern: state the claim, name the artifact, cite the telemetry context, explain any limitation, and assign a confidence statement. This prevents reports from becoming vague summaries of a live demo.",
+            "board_type": "list",
+            "board_data": [
+                        "Claim: What are you asserting about the <strong class=\"font-bold\">inspection</strong>? Be specific  --  'The <strong class=\"font-bold\">B2</strong> successfully inspected checkpoint cp01 and captured clear visual evidence'  --  not 'The robot worked.'",
+                        "Artifact: Which file supports this claim? Name the exact file path  --  checkpoints/cp01/frame<strong class=\"font-bold\">.jpg</strong>, sportmodestate<strong class=\"font-bold\">.jsonl</strong> lines 130 -- 145, field_report<strong class=\"font-bold\">.md</strong> section 2.",
+                        "Telemetry Context: What does the robot state data say about the moment of capture? Velocity near zero, mode stable, body height normal  --  or deviations that need explanation.",
+                        "Limitation: What could weaken this claim? Glare on the image, slight motion during capture, sensor gap, timing uncertainty. Honest limitations strengthen credibility.",
+                        "Confidence: How sure are you? High (multiple sensors agree), Medium (primary sensor ok, no cross-validation), Low (fallback used, uncertainty present). Confidence must match evidence strength."
+            ],
+            "bottom_band": "Report pattern practice: Write one claim about your last mock run using all five fields. Can another student read it and understand exactly what you observed, what supports it, and how confident you are?"
+        },
+        {
+            "title": "Validation Protects the Report",
+            "thesis": "The validator checks whether required files and paths are present. A pass means the package is structurally reviewable, but warnings may still need explanation in the report. A fail means the team should repair the folder before making final inspection claims.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "PASS",
+                                    "value": "All required structural checks satisfied  --  metadata present, checkpoint folders populated, <strong class=\"font-bold\">telemetry</strong> log non-empty, images valid. The package can be reviewed and reported on."
+                        },
+                        {
+                                    "label": "PASS with Warnings",
+                                    "value": "Structure valid but one or more quality warnings  --  image below recommended size, JSONL line count low, optional field empty. Warnings go in the report with explanation."
+                        },
+                        {
+                                    "label": "FAIL",
+                                    "value": "Required artifact missing, path incorrect, or structural rule violated. The package is not reviewable. Repair the folder and re-validate  --  do not write the report against incomplete evidence."
+                        }
+            ],
+            "bottom_band": "Validation as report gate: 'PASS → Write the report. Warnings → Write the report AND explain each warning. FAIL → Repair the folder, do not write the report yet.' The validator protects the report from building on incomplete evidence."
+        },
+        {
+            "title": "Debug from Message to Fix",
+            "thesis": "Students should interpret error messages as clues. Missing metadata means accountability is incomplete. Empty logs mean runtime evidence was not saved. Bad frames suggest corrupt or placeholder images. Mismatched checkpoints mean the plan and package disagree. Each problem has a specific repair path.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Validator Message",
+                                    "Likely Cause",
+                                    "First Fix",
+                                    "Report Impact"
+                        ],
+                        "rows": [
+                                    [
+                                                "Missing metadata.json",
+                                                "Script did not create or write the metadata file.",
+                                                "Check setup step  --  add metadata write with operator, date, robot ID, scenario.",
+                                                "Report cannot establish accountability  --  who, when, what scenario."
+                                    ],
+                                    [
+                                                "Empty sportmodestate<strong class=\"font-bold\">.jsonl</strong>",
+                                                "Logger started but no state samples were written  --  subscriber may not have received data.",
+                                                "Check SportModeState subscription  --  confirm callback fires, file handle is open, DDS discovery works.",
+                                                "No telemetry context for any claim  --  captures lack motion/posture support."
+                                    ],
+                                    [
+                                                "Bad frame<strong class=\"font-bold\">.jpg</strong> at cp01",
+                                                "Image file is corrupt, zero bytes, or wrong format.",
+                                                "Re-capture the still  --  verify with file size check and visual open before proceeding.",
+                                                "Primary visual evidence for cp01 is unusable  --  fallback or recapture required."
+                                    ],
+                                    [
+                                                "Mismatched checkpoint IDs",
+                                                "patrol_plan.json lists cp_A but folder has cp01  --  naming convention broken.",
+                                                "Standardize all checkpoint IDs  --  use consistent format (cp01, cp02, cp03) everywhere.",
+                                                "Validator cannot match plan to evidence  --  report claims may reference wrong checkpoints."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Debugging discipline: Read the validator message aloud. State the likely cause. Make one fix. Re-validate. If the message changes, you fixed something  --  if the same message persists, your fix did not address the root cause."
+        },
+        {
+            "title": "Maintain the B2 Afterward",
+            "thesis": "The inspection is not finished when the report is drafted. Students should close with a B2 maintenance walkthrough: safe power state, visible body condition, feet, payload mounting, cables, sensor surfaces, and archived files. Hardware care protects the next team and completes professional field discipline.",
+            "board_type": "list",
+            "board_data": [
+                        "Power State: Confirm the <strong class=\"font-bold\">B2</strong> is in a safe power mode  --  <strong class=\"font-bold\">Damp</strong> or powered down per instructor guidance. Battery level noted. No active motion commands lingering.",
+                        "Body & Feet: Inspect for visible damage, debris, or unusual wear. Check foot pads for embedded gravel or sharp objects. Clean if needed  --  debris from one run affects the next.",
+                        "Payload Mount & Cables: Verify <strong class=\"font-bold\">payload</strong> is secure, connectors are seated, cables are not pinched or frayed. A loose <strong class=\"font-bold\">payload</strong> can shift during the next run and change sensor aim.",
+                        "Sensor Surfaces: Clean camera lenses and sensor windows with appropriate materials. Dust, fingerprints, or moisture from the field run can degrade the next <strong class=\"font-bold\">inspection</strong>'s image quality.",
+                        "File Archive: Confirm all run artifacts are saved, backed up, and organized. The run folder should be complete and accessible for report writing and instructor review."
+            ],
+            "bottom_band": "Maintenance discipline: 'The next team should find the <strong class=\"font-bold\">B2</strong> in the same condition I would want to receive it.' Walk through all five checks, document any issues found, and confirm the archive before leaving."
+        },
+        {
+            "title": "Closing  --  Required Outcomes Check",
+            "thesis": "Confirm that every Day 4 activity served the four required outcomes. This closing section returns to the core framework and gives instructors a concise final standard for Day 4 success.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Rugged Navigation & Sensors",
+                                    "value": "Students can explain how terrain conditions affect evidence quality and what each sensor channel contributes to an inspection claim."
+                        },
+                        {
+                                    "label": "Mock Inspection Scripts",
+                                    "value": "Students can build procedural scripts that rehearse capture, logging, motion, packaging, and validation  --  and pass the mock gate before hardware."
+                        },
+                        {
+                                    "label": "<strong class=\"font-bold\">B2</strong> Field Capture",
+                                    "value": "Students can execute a supervised B2 field run with defined roles, stable-dwell capture, continuous telemetry logging, and immediate evidence verification."
+                        },
+                        {
+                                    "label": "Logs, Reports, Maintenance",
+                                    "value": "Students can parse telemetry, visualize motion, write artifact-backed claims, debug from validator messages, and complete B2 hardware maintenance."
+                        }
+            ],
+            "bottom_band": "Outcome check: For each of the four tiles above, can you produce one concrete artifact that proves you achieved that outcome? If not, that outcome is incomplete  --  return to the relevant section before closing Day 4."
+        },
+        {
+            "title": "Four Outcomes Are Complete",
+            "thesis": "Students have learned how rugged terrain changes navigation evidence, how mock scripts rehearse inspection procedure, how B2 field execution captures sensors and telemetry, and how parsed logs, payload context, reports, and maintenance complete the workflow.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Terrain and Sensors",
+                                    "value": "Rugged terrain changes the run  --  slope, gravel, glare, vibration. Multi-sensor arrays answer different questions. <strong class=\"font-bold\">SportModeState</strong> provides runtime context. Evidence: terrain notes + sensor table + <strong class=\"font-bold\">telemetry</strong> log."
+                        },
+                        {
+                                    "label": "Mock Scripts",
+                                    "value": "Mock-first workflow, <strong class=\"font-bold\">Gazebo</strong> rehearsal, procedural scripts, scenario files, camera capture, JSONL logging, bounded motion, channel debugging, and validation gate. Evidence: validated mock run folder."
+                        },
+                        {
+                                    "label": "<strong class=\"font-bold\">B2</strong> Field Capture",
+                                    "value": "Field roles, observable readiness, stable-dwell capture, <strong class=\"font-bold\">RTSP</strong> verification, continuous logging, checkpoint mapping, field notes, immediate verification, and stated fallbacks. Evidence: field run folder + notes."
+                        },
+                        {
+                                    "label": "Logs, Reports, Maintenance",
+                                    "value": "Parse <strong class=\"font-bold\">SportModeState</strong> fields, visualize motion timeline, contextualize <strong class=\"font-bold\">payload</strong> data, write artifact-backed claims, validate, debug, and maintain the <strong class=\"font-bold\">B2</strong>. Evidence: field_report<strong class=\"font-bold\">.md</strong> + validator output."
+                        }
+            ],
+            "bottom_band": "Completion check: 'I can explain rugged terrain effects. I built and validated a mock script. I executed a supervised <strong class=\"font-bold\">B2</strong> field run. I parsed data and wrote a report. I maintained the <strong class=\"font-bold\">B2</strong> afterward.' All five statements true → Day 4 objectives met."
+        },
+        {
+            "title": "Ready Means Reviewable",
+            "thesis": "The final standard is reviewability. Another engineer should open the run folder and understand the scenario, route, captures, telemetry, payload context, validation result, limitations, report claims, and maintenance notes. If the story depends mainly on memory, the Day 4 evidence workflow is incomplete.",
+            "board_type": "list",
+            "board_data": [
+                        "Scenario: Can the reviewer understand what was being inspected, where, and why? metadata<strong class=\"font-bold\">.json</strong> and patrol_plan<strong class=\"font-bold\">.json</strong> should tell the complete story without verbal explanation.",
+                        "Route: Can the reviewer see the planned checkpoints and the path between them? The route should be documented clearly enough to reconstruct the field layout.",
+                        "Captures: Can the reviewer open each checkpoint frame and see what the robot saw? Every frame<strong class=\"font-bold\">.jpg</strong> should be verified, correctly exposed, and clearly show the <strong class=\"font-bold\">inspection</strong> target.",
+                        "Telemetry: Can the reviewer read the <strong class=\"font-bold\">SportModeState</strong> log and understand robot motion and posture? Velocity, mode, and body height should explain the robot's state at each capture.",
+                        "Payload: Are sensor readings paired with timestamps, checkpoints, and robot state? Raw numbers without context are not evidence.",
+                        "Validation: Does the validator output show PASS or documented warnings? The reviewer should know whether the package is structurally complete.",
+                        "Report: Does field_report<strong class=\"font-bold\">.md</strong> make claims supported by named artifacts, <strong class=\"font-bold\">telemetry</strong>, and stated limitations? The report is the synthesis  --  it should reference every other file in the folder.",
+                        "Maintenance: Is the <strong class=\"font-bold\">B2</strong> condition documented after the run? The reviewer should know the hardware was cared for and the files were archived."
+            ],
+            "bottom_band": "Reviewability test: Hand your run folder to a classmate who did not watch your field run. Can they answer: what was inspected, what evidence was captured, what the robot state was, what limitations exist, and what the report claims? If any answer is no, your Day 4 workflow is not yet complete."
         }
-    ],
-    "labs": [
+    ],    "labs": [
         {
             "id": "lab-00",
             "title": "Inspection Scenario & Run Folder",

@@ -1,0 +1,586 @@
+# Day 2 Beginner-Friendly Full Slide Content
+
+**Course:** Vinci Unitree Training · Day 2 — Autonomy, Gazebo Simulation, and Field Handoff  
+**Audience:** Beginners learning quadruped autonomy concepts and practical validation habits  
+**Platform:** Unitree Go2  
+**Prepared by:** Manus AI  
+**Classification:** Property of Vinci AI — Do Not Distribute  
+**Copyright:** © 2026 Vinci AI. All rights reserved.
+
+## Teaching Design Notes
+
+This version is written for beginners. Each content slide uses a simple teaching rhythm: **what it means**, **why it matters**, and **what students should do or notice**. Arrow text is included so the slide designer can build visual flow diagrams instead of dense paragraphs. Section transition slides are intentionally minimal and should be treated as non-content slides.
+
+| Section | Slides | Beginner-friendly purpose |
+|---|---:|---|
+| Orientation | Cover–Slide 4 | Explain the day’s promise and vocabulary without assuming prior autonomy background. |
+| SLAM and Fusion | Slides 5–12 | Teach mapping, localization, sensors, frames, and evidence in plain language. |
+| Planning and Costmaps | Slides 13–21 | Show how goals become safe motion through routes, local risk maps, and avoidance. |
+| Gazebo Sandbox | Slides 22–29 | Make simulation a required rehearsal space before hardware motion. |
+| Hardware Handoff | Slides 30–37 | Connect simulation evidence to Go2 deployment, logs, field testing, and safety. |
+| Capstone and Habits | Slides 38–42 | Consolidate debugging habits, evidence habits, assessment, and wrap-up. |
+
+## Cover
+
+**Title:** Day 2: Autonomy, Simulation, and Field Handoff  
+**Subtitle:** From SLAM concepts to Gazebo validation and Go2 field testing  
+**Presenter:** Vinci AI
+
+## Slide 1: Today Builds One Autonomy Story
+
+**Section:** Orientation  
+**Purpose:** Help beginners see the whole day as one connected workflow.
+
+**On-slide text:**  
+**Sense → Understand → Plan → Simulate → Deploy → Prove**
+
+**Speaker notes:**  
+Day 2 is not a set of disconnected robotics topics. It is one story about how a robot observes the world, builds usable understanding, chooses motion, rehearses that motion in simulation, and then performs a controlled test on physical hardware. Beginners should leave with a mental map of the full autonomy pipeline.
+
+**Diagram cue:**  
+Use a horizontal arrow chain with six labeled blocks: Sense, Understand, Plan, Simulate, Deploy, Prove.
+
+## Slide 2: Four Milestones Define Success
+
+**Section:** Orientation  
+**Purpose:** Make the schedule requirements explicit.
+
+**On-slide text:**  
+**SLAM + Fusion → Planning + Costmaps → Gazebo Validation → Go2 Handoff**
+
+**Speaker notes:**  
+The lecture is organized around four required academic milestones. Students will learn what SLAM and multi-sensor fusion mean, how planning uses local costmaps and obstacle avoidance, how Gazebo supports inspection validation, and how validated routines move onto the Unitree Go2 for hardware-in-the-loop field testing.
+
+**Diagram cue:**  
+Create a four-column milestone board with a checkmark space under each column.
+
+## Slide 3: Beginner Vocabulary Map
+
+**Section:** Orientation  
+**Purpose:** Reduce intimidation by defining key terms early.
+
+**On-slide text:**  
+**Map = where things are**  
+**Pose = where the robot is**  
+**Planner = where to go next**  
+**Costmap = where it is risky**
+
+**Speaker notes:**  
+Students do not need to memorize every robotics term immediately. They need a simple vocabulary map. A map describes the environment. A pose describes the robot’s estimated location and orientation. A planner chooses movement. A costmap marks risky nearby space so motion can be safer.
+
+**Diagram cue:**  
+Use four cards with icons: map grid, robot arrow, route line, and heatmap cells.
+
+## Slide 4: Autonomy Is Layered, Not Magical
+
+**Section:** Orientation  
+**Purpose:** Introduce the autonomy stack in plain language.
+
+**On-slide text:**  
+**Sensors → Fusion → SLAM → Planning → Costmap → Control → Evidence**
+
+**Speaker notes:**  
+A robot does not become autonomous because one command says “go.” Autonomy is layered. Sensors collect observations. Fusion combines them. SLAM estimates pose and map structure. Planning chooses a path. Costmaps protect local movement. Control sends motion. Evidence tells us whether the claim is true.
+
+**Diagram cue:**  
+Use a layered stack with arrows moving upward or left-to-right.
+
+## Slide 5: Section 1 — SLAM and Fusion
+
+**Subtitle:** How the robot builds a usable understanding of space.
+
+## Slide 6: SLAM Means Two Jobs at Once
+
+**Section:** SLAM and Fusion  
+**Purpose:** Define SLAM clearly for beginners.
+
+**On-slide text:**  
+**Localize: Where am I?**  
+**Map: What is around me?**  
+**SLAM = answer both together**
+
+**Speaker notes:**  
+SLAM stands for simultaneous localization and mapping. The robot estimates where it is while also building or updating a map. This is difficult because each job depends on the other. If the pose estimate is wrong, the map becomes distorted. If the map is poor, localization becomes less reliable.
+
+**Diagram cue:**  
+Draw a loop: Sensor readings → Pose estimate → Map update → Error correction → Better pose.
+
+## Slide 7: Why Quadruped SLAM Is Harder
+
+**Section:** SLAM and Fusion  
+**Purpose:** Connect legged motion to perception challenges.
+
+**On-slide text:**  
+**Walking creates motion → motion affects sensors → sensor error affects maps**
+
+**Speaker notes:**  
+Quadrupeds move differently from wheeled robots. Their bodies rise, fall, pitch, and vibrate as they walk. These motions can disturb cameras, LiDAR, and inertial measurements. Beginners should understand that robot locomotion and robot perception are connected. Stable movement often improves mapping quality.
+
+**Diagram cue:**  
+Use a cause-and-effect chain from gait motion to vibration, sensor noise, registration error, and map drift.
+
+## Slide 8: Multi-Sensor Fusion Combines Strengths
+
+**Section:** SLAM and Fusion  
+**Purpose:** Explain why robots use multiple sensors.
+
+**On-slide text:**  
+**LiDAR sees shape**  
+**Camera sees appearance**  
+**IMU senses motion**  
+**Odometry estimates movement**  
+**Fusion combines clues**
+
+**Speaker notes:**  
+No sensor is perfect. LiDAR can describe geometry but may not identify object meaning. Cameras provide appearance but depend on lighting. IMUs capture motion but drift over time. Odometry estimates movement but can accumulate error. Fusion combines these clues so the system has a more reliable state estimate.
+
+**Diagram cue:**  
+Use converging arrows from sensors into a central “Fused State Estimate” block.
+
+## Slide 9: Frames Keep Everyone Speaking the Same Language
+
+**Section:** SLAM and Fusion  
+**Purpose:** Teach coordinate frames without heavy mathematics.
+
+**On-slide text:**  
+**Map frame → odom frame → robot body → sensor frames**
+
+**Speaker notes:**  
+A frame is a coordinate language. The map has one language, the robot body has another, and each sensor may have its own. Transformations translate between those languages. When transforms are missing, stale, or inverted, a path can look correct on screen but become unsafe in the real world.
+
+**Diagram cue:**  
+Show a simple frame tree with map, odom, base, camera, and LiDAR.
+
+## Slide 10: Point Clouds Become Navigation Information
+
+**Section:** SLAM and Fusion  
+**Purpose:** Show how raw sensor data becomes useful.
+
+**On-slide text:**  
+**Raw points → Filtered points → Occupancy grid → Costmap → Path choice**
+
+**Speaker notes:**  
+Point clouds are collections of spatial samples. They are not automatically a path. The system filters noisy points, identifies occupied space, projects relevant geometry into grids, and builds costmaps that planners can use. Students should see this conversion as the bridge from sensing to safe navigation.
+
+**Diagram cue:**  
+Use a pipeline from scattered dots to grid cells to a highlighted route.
+
+## Slide 11: Beginner Evidence Habit for SLAM
+
+**Section:** SLAM and Fusion  
+**Purpose:** Teach students what counts as proof.
+
+**On-slide text:**  
+**Do not say: “SLAM worked.”**  
+**Say: “Here is the map, pose trace, transform tree, and log.”**
+
+**Speaker notes:**  
+A beginner-friendly evidence habit is to replace vague success claims with artifacts. If students say SLAM worked, they should show the map snapshot, pose trace, transform tree, sensor status, and saved log. Evidence makes robotics work reviewable, repeatable, and easier to debug.
+
+**Diagram cue:**  
+Use an evidence checklist: map, pose trace, transforms, sensor topics, logs.
+
+## Slide 12: Debugging Habit: Check the Data Path First
+
+**Section:** SLAM and Fusion  
+**Purpose:** Introduce a practical beginner debugging routine.
+
+**On-slide text:**  
+**Sensor publishes? → Frame exists? → Timestamp valid? → Map updates? → Pose stable?**
+
+**Speaker notes:**  
+When mapping or localization fails, beginners often change algorithms too quickly. First check the data path. Confirm the sensor publishes, the frame transform exists, timestamps are current, the map updates, and the pose estimate stays reasonable. Many failures come from missing data, not bad theory.
+
+**Diagram cue:**  
+Create a five-step debugging ladder with yes/no gates.
+
+## Slide 13: Section 2 — Planning and Costmaps
+
+**Subtitle:** How goals become safer robot motion.
+
+## Slide 14: Planning Turns Intent into Motion
+
+**Section:** Planning and Costmaps  
+**Purpose:** Explain path planning at beginner level.
+
+**On-slide text:**  
+**Goal → Route → Local motion → Robot command**
+
+**Speaker notes:**  
+Path planning begins with intent. The robot needs to reach a checkpoint, inspect an object, or move through a corridor. The planner converts that intent into a route. A local motion layer then turns the route into near-term movement that respects obstacles, robot size, and safety margins.
+
+**Diagram cue:**  
+Show a start point, goal point, route line, and robot footprint.
+
+## Slide 15: Global and Local Planners Split the Job
+
+**Section:** Planning and Costmaps  
+**Purpose:** Clarify planner hierarchy.
+
+**On-slide text:**  
+**Global planner: big-picture route**  
+**Local planner: next safe movement**
+
+**Speaker notes:**  
+A global planner reasons over the larger map and chooses a route toward the destination. A local planner focuses on the space near the robot and adapts to immediate obstacles. Beginners can remember this as “global chooses the trip, local watches the next few steps.”
+
+**Diagram cue:**  
+Use two stacked panels: full map route above, close-up local trajectory below.
+
+## Slide 16: A Costmap Is a Risk Picture
+
+**Section:** Planning and Costmaps  
+**Purpose:** Define costmaps simply.
+
+**On-slide text:**  
+**Free space = low risk**  
+**Obstacle = blocked**  
+**Inflation = safety buffer**  
+**Unknown = be careful**
+
+**Speaker notes:**  
+A local costmap is a grid around the robot. Each cell stores risk information. Some cells are free, some contain obstacles, some are unknown, and some are inflated safety areas around obstacles. The planner reads this grid to avoid choosing motion that is too close or unsafe.
+
+**Diagram cue:**  
+Show a grid with green free cells, dark obstacle cells, amber inflation, and gray unknown cells.
+
+## Slide 17: Inflation Creates Breathing Room
+
+**Section:** Planning and Costmaps  
+**Purpose:** Explain safety margins visually.
+
+**On-slide text:**  
+**Obstacle cell → inflated zone → safer path margin**
+
+**Speaker notes:**  
+Robots need space around obstacles. Inflation expands obstacle regions so the planner avoids scraping walls, cones, or people. The margin should consider robot width, pose uncertainty, and field safety rules. More inflation improves clearance, but too much inflation can block narrow routes.
+
+**Diagram cue:**  
+Draw an obstacle with rings around it and a path bending outside the rings.
+
+## Slide 18: Obstacle Avoidance Is Not Full Navigation
+
+**Section:** Planning and Costmaps  
+**Purpose:** Prevent a common beginner misunderstanding.
+
+**On-slide text:**  
+**Avoidance reacts nearby**  
+**Planning chooses a route**  
+**Both are needed**
+
+**Speaker notes:**  
+Obstacle avoidance helps the robot respond to nearby hazards, but it does not automatically understand the whole route. Planning chooses where to go over a larger space. Avoidance helps motion remain safe moment by moment. Beginners should not confuse reactive safety behavior with full autonomous navigation.
+
+**Diagram cue:**  
+Use a comparison table with columns: input, time horizon, output, and failure example.
+
+## Slide 19: Unitree Avoid Mode Fits the Local Layer
+
+**Section:** Planning and Costmaps  
+**Purpose:** Connect abstract planning ideas to the Go2 implementation.
+
+**On-slide text:**  
+**Enable avoid mode → gain command authority → move carefully → stop → release authority**
+
+**Speaker notes:**  
+On the Go2, obstacle avoidance is controlled through a clear lifecycle. The program enables the avoidance client, requests command authority, sends controlled motion, stops the robot, releases authority, and disables avoid mode. This lifecycle belongs in the local safety layer of the autonomy stack.
+
+**Diagram cue:**  
+Create a command lifecycle arrow with six blocks.
+
+## Slide 20: Patrol Plans Are Beginner Route Contracts
+
+**Section:** Planning and Costmaps  
+**Purpose:** Explain scripted patrol plans as structured planning artifacts.
+
+**On-slide text:**  
+**Checkpoint → motion limit → capture action → validation rule**
+
+**Speaker notes:**  
+A patrol plan is a simple route contract. It lists checkpoints, movement limits, capture expectations, and validation rules. Beginners can use it before full autonomy because it teaches disciplined route thinking. Later, the same structure can be compared with map-based goals and planner-generated paths.
+
+**Diagram cue:**  
+Show a JSON-like plan feeding a route map with checkpoints.
+
+## Slide 21: Debugging Habit: Separate Plan, Command, and Robot
+
+**Section:** Planning and Costmaps  
+**Purpose:** Teach how to isolate planning failures.
+
+**On-slide text:**  
+**Plan valid? → Command sent? → Robot moved? → Evidence saved?**
+
+**Speaker notes:**  
+When motion fails, do not guess. Separate the problem into layers. First ask whether the plan is valid. Then check whether the command was sent. Next observe whether the robot moved as expected. Finally confirm that evidence was saved. This habit makes debugging less emotional and more systematic.
+
+**Diagram cue:**  
+Use four diagnostic boxes with a yes/no branch under each.
+
+## Slide 22: Section 3 — Gazebo Sandbox
+
+**Subtitle:** Rehearse the inspection routine before field deployment.
+
+## Slide 23: Gazebo Is the Rehearsal Space
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Make simulation mandatory rather than optional.
+
+**On-slide text:**  
+**Design in simulation → test safely → collect evidence → decide readiness**
+
+**Speaker notes:**  
+Gazebo is the rehearsal space for inspection routines. It allows students to test arena layout, route logic, obstacle placement, sensor assumptions, and costmap behavior before moving the physical robot. Simulation does not prove field safety, but it reduces avoidable uncertainty before hardware testing.
+
+**Diagram cue:**  
+Use a funnel: Design, Gazebo Test, Evidence Review, Hardware Readiness.
+
+## Slide 24: Build the Inspection World on Purpose
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Teach simulation world design.
+
+**On-slide text:**  
+**Start zone → corridor → obstacle → inspection target → finish zone**
+
+**Speaker notes:**  
+A useful simulation world is not random decoration. It should represent the field task. Students should place a start zone, corridor boundaries, obstacles, inspection targets, restricted areas, and a finish zone. This makes the simulation test meaningful because it mirrors the decisions required during the real patrol.
+
+**Diagram cue:**  
+Draw a top-down arena with labeled zones and checkpoint markers.
+
+## Slide 25: Simulated Sensors Must Be Checked
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Prevent blind trust in simulation output.
+
+**On-slide text:**  
+**Robot model → sensor topics → visualization → logs → route decision**
+
+**Speaker notes:**  
+A simulated robot must provide usable sensor data. Students should confirm that camera, LiDAR, odometry, and state topics are publishing plausible information. If the simulated sensors are missing or unrealistic, the route validation becomes weak. Beginners should inspect the data before trusting the motion result.
+
+**Diagram cue:**  
+Use sensor-topic arrows from a robot model to RViz, costmap, logger, and planner.
+
+## Slide 26: ROS 2 Shows the Data Flow
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Explain why topics and visualization matter.
+
+**On-slide text:**  
+**/cmd_vel → robot motion**  
+**/odom → pose estimate**  
+**/scan or points → obstacles**  
+**/costmap → risk grid**
+
+**Speaker notes:**  
+In a beginner simulation workflow, ROS 2 topics make invisible data visible. Command topics show intended motion. Odometry shows estimated movement. Sensor topics show what the robot perceives. Costmap topics show how nearby risk is represented. This visibility helps students debug before hardware is involved.
+
+**Diagram cue:**  
+Create a topic flow diagram from Gazebo to ROS 2 tools and visualizers.
+
+## Slide 27: Validate the Routine Before the Robot Moves
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Define validation gates.
+
+**On-slide text:**  
+**Plan file valid → route visible → obstacles detected → no collision → logs saved**
+
+**Speaker notes:**  
+Validation is a gate, not a formality. Before hardware movement, students should verify that the plan file is valid, the route appears correctly, obstacles are detected, the simulated robot avoids collisions, and logs are saved. A failed validation means the system is protecting the field test.
+
+**Diagram cue:**  
+Use a gate diagram with pass/fix outcomes.
+
+## Slide 28: Simulation Evidence Should Be Reviewable
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Teach what to save from simulation.
+
+**On-slide text:**  
+**World screenshot → route trace → costmap snapshot → log file → short conclusion**
+
+**Speaker notes:**  
+Simulation evidence should let another person understand what happened. Students should save a world screenshot, route trace, costmap snapshot, log file, and short conclusion. The conclusion should state whether the routine is ready for field testing, needs tuning, or must be redesigned.
+
+**Diagram cue:**  
+Show an evidence folder with five labeled artifacts.
+
+## Slide 29: Debugging Habit: Simulation Before Hardware
+
+**Section:** Gazebo Sandbox  
+**Purpose:** Reinforce safe development order.
+
+**On-slide text:**  
+**If it fails in simulation, fix it there first.**  
+**If it passes in simulation, still test hardware slowly.**
+
+**Speaker notes:**  
+Beginners should learn a conservative rule. If a routine fails in simulation, fix it before using hardware. If it passes simulation, do not assume the real robot will behave perfectly. Start slowly, use small motion commands, keep a stop procedure ready, and compare field results against simulation evidence.
+
+**Diagram cue:**  
+Use a two-branch decision tree: simulation fail leads to fix; simulation pass leads to cautious field test.
+
+## Slide 30: Section 4 — Physical Go2 Handoff
+
+**Subtitle:** Move from simulation evidence to controlled field testing.
+
+## Slide 31: Handoff Means More Than Copying a File
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Define deployment as a controlled process.
+
+**On-slide text:**  
+**Validated plan → network check → robot state check → safe command authority → field run**
+
+**Speaker notes:**  
+Hardware handoff is not simply copying a patrol file onto a machine. It is a controlled process. Students must confirm that the plan passed validation, the network is connected, robot state is safe, command authority is understood, and the field operator is ready before motion begins.
+
+**Diagram cue:**  
+Use a deployment checklist moving from file to network to robot to operator.
+
+## Slide 32: Network Readiness Comes First
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Make connectivity beginner-friendly.
+
+**On-slide text:**  
+**Robot reachable? → correct interface? → DDS domain? → topics visible?**
+
+**Speaker notes:**  
+Many field failures are network failures disguised as robot failures. Before debugging autonomy, students should confirm the robot is reachable, the correct network interface is active, DDS discovery works, and expected topics or SDK responses are visible. Connectivity is the foundation for safe command and logging.
+
+**Diagram cue:**  
+Show laptop, network interface, DDS layer, and robot connected by arrows.
+
+## Slide 33: Command Authority Must Be Intentional
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Teach safe control ownership.
+
+**On-slide text:**  
+**Request authority → send limited command → stop → release authority**
+
+**Speaker notes:**  
+Command authority defines who is allowed to control the robot. Beginners must treat it seriously. The program should request authority only when ready, send limited commands, stop cleanly, and release authority afterward. This prevents confusion between manual control, SDK control, and emergency intervention.
+
+**Diagram cue:**  
+Use a lock-and-key lifecycle diagram for command authority.
+
+## Slide 34: Start with Small Field Motions
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Encourage conservative first tests.
+
+**On-slide text:**  
+**Small speed → short duration → stop check → log review → repeat**
+
+**Speaker notes:**  
+The first hardware test should not be a full-speed patrol. Students should start with small speeds and short durations, then stop and review behavior. If the robot moves as expected, the test can expand gradually. This staged approach reduces risk and gives students time to learn from evidence.
+
+**Diagram cue:**  
+Use an iterative loop: command, observe, stop, review, tune.
+
+## Slide 35: Hardware-in-the-Loop Tests Close the Gap
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Explain why physical testing is still necessary.
+
+**On-slide text:**  
+**Simulation predicts → hardware reveals → logs explain → tuning improves**
+
+**Speaker notes:**  
+Simulation cannot capture every real-world effect. Hardware-in-the-loop testing exposes network latency, floor texture, sensor noise, lighting, battery condition, and physical dynamics. The purpose is not to prove simulation wrong. The purpose is to compare expectations against reality and improve the routine responsibly.
+
+**Diagram cue:**  
+Use two columns, Simulation Prediction and Field Observation, connected to a tuning loop.
+
+## Slide 36: Field Evidence Must Match the Claim
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Strengthen evidence-based reporting.
+
+**On-slide text:**  
+**Claim → evidence artifact → reviewer question → improvement action**
+
+**Speaker notes:**  
+Every field claim needs matching evidence. If students claim the robot avoided an obstacle, they should show the field video, command log, stop event, or route trace. If they claim the plan is reliable, they should show repeated runs. Evidence turns a demo into an engineering result.
+
+**Diagram cue:**  
+Use a claim-to-evidence table with examples.
+
+## Slide 37: Debugging Habit: Change One Thing at a Time
+
+**Section:** Physical Go2 Handoff  
+**Purpose:** Teach careful experimental discipline.
+
+**On-slide text:**  
+**One change → one run → one log → one conclusion**
+
+**Speaker notes:**  
+When field tests fail, beginners may change speed, route, sensor settings, and code all at once. That makes learning impossible. Change one variable at a time. Run the test. Save the log. Write one conclusion. This habit makes tuning slower at first but much more reliable.
+
+**Diagram cue:**  
+Show a laboratory-style experiment loop with one highlighted variable.
+
+## Slide 38: Section 5 — Capstone and Practical Habits
+
+**Subtitle:** Combine SLAM, planning, simulation, and field evidence.
+
+## Slide 39: The Capstone Connects Every Layer
+
+**Section:** Capstone and Practical Habits  
+**Purpose:** Show the integrated assessment expectation.
+
+**On-slide text:**  
+**Explain the map → justify the route → validate in Gazebo → test on Go2 → report evidence**
+
+**Speaker notes:**  
+The capstone should not be judged only by whether the robot moves. Students must explain the map or spatial assumptions, justify the route, validate behavior in Gazebo, run a controlled Go2 field test, and report evidence. This connects the full academic scope of Day 2.
+
+**Diagram cue:**  
+Use a five-step capstone staircase.
+
+## Slide 40: Beginner Debugging Checklist
+
+**Section:** Capstone and Practical Habits  
+**Purpose:** Provide a reusable troubleshooting framework.
+
+**On-slide text:**  
+**Power → Network → Topics → Frames → Plan → Simulation → Command → Logs**
+
+**Speaker notes:**  
+A beginner debugging checklist prevents panic. Start with power and safety. Check network connectivity. Confirm topics or SDK responses. Verify coordinate frames. Validate the plan. Test in simulation. Send limited commands. Save logs. Most robotics debugging becomes manageable when students move through layers in order.
+
+**Diagram cue:**  
+Use a vertical checklist with each layer as a card.
+
+## Slide 41: Evidence Habit: Make Every Run Reproducible
+
+**Section:** Capstone and Practical Habits  
+**Purpose:** Teach reproducible reporting.
+
+**On-slide text:**  
+**Run folder = plan + settings + logs + screenshots + conclusion**
+
+**Speaker notes:**  
+A reproducible run folder lets another person understand and repeat the test. It should include the plan file, key settings, logs, screenshots, captured images, and a short conclusion. Students should name folders clearly by date, scenario, and attempt number so results can be compared later.
+
+**Diagram cue:**  
+Show a run folder tree with five required contents.
+
+## Slide 42: Final Takeaway: Autonomy Is Evidence-Based
+
+**Section:** Closing  
+**Purpose:** End with the central beginner message.
+
+**On-slide text:**  
+**Good autonomy is not just motion.**  
+**Good autonomy is motion with explanation, validation, and evidence.**
+
+**Speaker notes:**  
+The most important Day 2 lesson is that autonomy is not only about making the robot move. Students should learn to explain the system, validate the routine, test carefully, and preserve evidence. This beginner habit prepares them for more advanced SLAM, navigation, costmap tuning, and field autonomy work.
+
+**Diagram cue:**  
+Use a closing triangle labeled Explanation, Validation, and Evidence around a robot icon.
