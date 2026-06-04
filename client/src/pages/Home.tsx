@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { 
   BookOpen, 
   Clock, 
@@ -154,6 +155,17 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [activeTab, currentDayData, isFullscreen, blueprintFullscreen, labGuideFullscreen]);
 
+  // Sync labGuideFullscreen state with native Fullscreen API exit (e.g. Esc key)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement && labGuideFullscreen) {
+        setLabGuideFullscreen(false);
+      }
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, [labGuideFullscreen]);
+
   // Handle active lab change
   const handleLabChange = (labId: string) => {
     setActiveLabId(labId);
@@ -164,6 +176,28 @@ export default function Home() {
       setActiveLabFile("");
     }
   };
+
+  // Lab fullscreen toggle — activates native HTML5 Fullscreen API on the portal container
+  const handleToggleFullscreen = useCallback(() => {
+    if (!labGuideFullscreen) {
+      // Enter: first set state so the portal mounts, then request native fullscreen
+      setLabGuideFullscreen(true);
+      // Use rAF to wait for the portal div to be in the DOM
+      requestAnimationFrame(() => {
+        const element = document.getElementById("lab-guide-container");
+        if (element) {
+          element.requestFullscreen().catch((err) => console.error("Fullscreen request failed:", err));
+        }
+      });
+    } else {
+      // Exit: native fullscreen first, state syncs via fullscreenchange listener
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => console.error("Exit fullscreen failed:", err));
+      } else {
+        setLabGuideFullscreen(false);
+      }
+    }
+  }, [labGuideFullscreen]);
 
   const activeLab = currentDayData?.labs?.find(l => l.id === activeLabId);
   const activeCodeFile = activeLab?.code_files?.find(f => f.name === activeLabFile);
@@ -415,10 +449,10 @@ export default function Home() {
                         ))}
                       </div>
                     ) : (
-                      /* Non-Table Slide: Balanced 2-Column Layout */
-                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start h-full">
-                        {/* Slide Left Column (Thesis & Title) */}
-                        <div className="md:col-span-4 flex flex-col justify-between border-r border-border/40 pr-5 h-full min-h-0">
+                      /* Non-Table Slide: Balanced 2-Column Layout — fluid height, no h-full to avoid overlap with debug-callout */
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                        {/* Slide Left Column (Thesis & Title) — natural flex flow, no forced stretch */}
+                        <div className="md:col-span-4 flex flex-col gap-4 border-r border-border/40 pr-5">
                           <div>
                             <span className="text-[10px] uppercase tracking-widest font-mono text-primary block mb-2">Concept Pillar</span>
                             <h3 className={`font-serif font-bold leading-tight mb-4 text-foreground break-words ${
@@ -438,8 +472,8 @@ export default function Home() {
                           </div>
                         </div>
 
-                        {/* Slide Right Column (Technical Board) */}
-                        <div className="md:col-span-8 flex flex-col justify-center">
+                        {/* Slide Right Column (Technical Board) — start-aligned with isolated scroll */}
+                        <div className="md:col-span-8 flex flex-col justify-start overflow-y-auto min-h-0 max-h-[70vh]">
                           {/* Render Grid Board */}
                           {currentSlide.board_type === "grid" && (
                             <div className="grid grid-cols-1 gap-4">
@@ -510,15 +544,15 @@ export default function Home() {
                         </div>
                       </div>
                     )}
-                  </div>
 
-                  {/* PPT Slide Bottom Band */}
-                  <div className="debug-callout">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
-                      <strong>Debugging Habit</strong>
+                    {/* PPT Slide Bottom Band — inside scrollable body to prevent clipping */}
+                    <div className="debug-callout">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+                        <strong>Debugging Habit</strong>
+                      </div>
+                      <span><SafeHTML text={extractDiagrams(currentSlide.bottom_band).clean} /></span>
                     </div>
-                    <span><SafeHTML text={extractDiagrams(currentSlide.bottom_band).clean} /></span>
                   </div>
 
                 </div>
@@ -627,7 +661,7 @@ export default function Home() {
                             <span>Active Environment</span>
                           </div>
                           <button
-                            onClick={() => setLabGuideFullscreen(true)}
+                            onClick={handleToggleFullscreen}
                             className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 border border-border/40 px-2.5 py-1 rounded transition-colors"
                             aria-label="View guide fullscreen"
                           >
@@ -660,11 +694,11 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* ── TRUE MONITOR-WIDE FULLSCREEN OVERLAY ── */}
-                    {labGuideFullscreen && (
-                      <div className="fixed inset-0 z-[9999] bg-background flex flex-col animate-fade-in">
+                    {/* ── TRUE MONITOR-WIDE FULLSCREEN OVERLAY (Portal to body) ── */}
+                    {labGuideFullscreen && createPortal(
+                      <div id="lab-guide-container" className="fixed inset-0 w-screen h-screen z-[9999] bg-background flex flex-col animate-fade-in overflow-y-auto">
                         {/* Fullscreen header bar */}
-                        <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-card shrink-0 shadow-sm">
+                        <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-card shrink-0 shadow-sm sticky top-0 z-10">
                           <div>
                             <span className="font-mono text-[11px] text-primary font-bold uppercase tracking-wider">{activeLab.id} Guide</span>
                             <h2 className="text-2xl font-serif font-bold text-foreground mt-0.5">{activeLab.title}</h2>
@@ -674,7 +708,7 @@ export default function Home() {
                               Press <kbd className="px-1.5 py-0.5 rounded border border-border bg-muted text-[10px] font-mono">Esc</kbd> to exit
                             </span>
                             <button
-                              onClick={() => setLabGuideFullscreen(false)}
+                              onClick={handleToggleFullscreen}
                               className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-foreground bg-muted/30 hover:bg-muted/60 border border-border px-3 py-1.5 rounded transition-colors"
                               aria-label="Exit fullscreen"
                             >
@@ -685,7 +719,7 @@ export default function Home() {
                         </div>
 
                         {/* Fullscreen scrollable content area */}
-                        <div className="flex-1 overflow-y-auto px-8 py-8 max-w-5xl mx-auto w-full">
+                        <div className="flex-1 px-8 py-8 max-w-5xl mx-auto w-full">
                           <div className="lab-content
                             text-sm text-muted-foreground leading-relaxed
                             [&_ul]:list-decimal [&_ul]:pl-6 [&_ul]:space-y-2 [&_ul]:my-4
@@ -706,7 +740,8 @@ export default function Home() {
                             <SafeHTML text={activeLab.content} />
                           </div>
                         </div>
-                      </div>
+                      </div>,
+                      document.body
                     )}
 
                     {/* Code Snippet Viewer */}
@@ -923,9 +958,9 @@ export default function Home() {
             ) : (
               /* NON-TABLE SLIDE: Balanced 2-Column Split */
               <>
-                {/* Left Info Stack Panel — Title + Thesis + Debugging Habit Alert */}
-                <div className="lg:col-span-5 flex flex-col justify-between h-full min-h-0 overflow-hidden">
-                  <div className="flex flex-col gap-4 flex-shrink-0">
+                {/* Left Info Stack Panel — Title + Thesis + Debugging Habit Alert — scrollable with isolated overflow */}
+                <div className="lg:col-span-5 flex flex-col gap-4 h-full min-h-0 overflow-y-auto custom-scrollbar">
+                  <div className="flex flex-col gap-4">
                     <span className="font-mono text-sm uppercase tracking-widest text-blue-400 font-bold">
                       Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
                     </span>
@@ -938,14 +973,14 @@ export default function Home() {
                     </h2>
                     <div className="h-1 w-24 bg-blue-500" />
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-5 mt-4 flex-shrink-0">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-5">
                     <span className="font-mono text-sm uppercase tracking-widest text-blue-400 block mb-2 font-bold">Thesis Statement</span>
                     <p className="text-base lg:text-lg font-serif text-white/90 leading-relaxed font-medium">
                       <SafeHTML text={`"${currentSlide.thesis}"`} />
                     </p>
                   </div>
                   {/* Debugging Habit Alert Card — scroll-protected with max-height clamp */}
-                  <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded text-xs leading-relaxed overflow-y-auto max-h-[25vh] mt-4 flex-shrink-0 custom-scrollbar">
+                  <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded text-xs leading-relaxed overflow-y-auto max-h-[25vh] custom-scrollbar">
                     <div className="flex items-center gap-2 mb-1.5">
                       <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0" />
                       <span className="font-mono text-[10px] uppercase tracking-widest text-amber-400 font-bold">Debugging Habit</span>

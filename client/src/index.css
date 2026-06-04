@@ -132,7 +132,7 @@
     rgba(13, 148, 136, 0.015) 122px
   );
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
 /* Scrollbar customization */

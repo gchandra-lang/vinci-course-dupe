@@ -41,375 +41,1016 @@ DAY02 = {
     ],
     "slides": [
         {
-            "title": "Learning Outcomes — Day 2",
-            "thesis": "Day 2 extends Day 1 primitives into an inspection patrol pipeline: define a scenario, validate data products, move safely, capture checkpoint evidence, tune the plan, and report what happened.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Outcome Area", "Student Should Be Able To...", "Evidence of Understanding"],
-                "rows": [
-                    ["System Architecture", "Explain how Python scripts use DDS/RPC clients to control Go2 and collect evidence.", "Student can draw PC → DDS/RPC → Go2 → run folder."],
-                    ["Inspection Data", "Explain why metadata.json, patrol_plan.json, sportmodestate.jsonl, and checkpoint images are separated.", "Student can validate or diagnose a run folder."],
-                    ["Motion Semantics", "Distinguish velocity streaming from increment goals.", "Student can read a leg entry and predict robot behaviour."],
-                    ["Safety & Limits", "Explain why speeds, increments, cones, spotters, and cleanup are required.", "Student can name abort conditions before touching hardware."],
-                    ["Autonomy Boundaries", "Explain why Day 2 patrol is not GPS, not map-based navigation, and not full SLAM.", "Student can distinguish local avoidance from mapping/localization/planning."]
-                ]
-            },
-            "bottom_band": "Precision check: After reading a patrol_plan.json leg entry, can you say whether it uses MoveToIncrementPosition or Move(vx,vy,vyaw)? If not, review the motion semantics before touching hardware."
-        },
-        {
-            "title": "Three-Hour Teaching Plan — Day 2",
-            "thesis": "Compress the full-day arc into a concept-rich lecture with short demonstrations and guided code/data walkthroughs — prepare students to perform labs safely, not complete every lab live.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Time", "Segment", "Teaching Objective", "Instructor Emphasis"],
-                "rows": [
-                    ["00:00–00:15", "Day 1 Recap & Day 2 Framing", "Connect Day 1 DDS/motion primitives to patrol autonomy.", "\"We are assembling primitives into a controlled inspection workflow.\""],
-                    ["00:15–00:35", "Inspection Architecture", "Introduce sense → log → decide → act → report.", "Show why autonomy is also data discipline, not only movement."],
-                    ["00:35–01:00", "Readiness, Scenario & Safety", "Explain my_team_scenario.json, limits, and abort rules.", "Make speed caps (≤0.25 m/s) and cleanup non-negotiable."],
-                    ["01:00–01:30", "Run-Folder Schema & Validation", "Explain metadata, plan, JSONL logs, checkpoint images.", "Treat the run folder as the inspection deliverable."],
-                    ["01:30–01:40", "Break", "Reset attention before motion/API topics.", "Confirm students understand open-loop vs map-based autonomy."],
-                    ["01:40–02:10", "Obstacle Avoidance & Motion APIs", "Teach ObstaclesAvoidClient lifecycle, Move, and MoveToIncrementPosition.", "Repeated/controlled command sending; UseRemoteCommandFromApi(True)."],
-                    ["02:10–02:35", "Multi-Leg Patrol & Integrated Capture", "Walk through patrol plan execution and lab03_patrol_runner.py.", "Start capture, leg execution, dwell, checkpoint capture, metadata."],
-                    ["02:35–02:50", "Gazebo & ROS 2 Context", "Contrast simulation /cmd_vel with hardware SDK clients.", "Use sim as design validation, not a substitute for field safety."],
-                    ["02:50–03:00", "Field Trial, Tuning & Knowledge Check", "Close with tuning/reporting and presentation expectations.", "Every run must end as evidence, not just a console PASS."]
-                ]
-            },
-            "bottom_band": "Plan discipline: If a segment runs long, preserve the learning objective by using pre-recorded artifacts or dry-run output rather than skipping safety gates."
-        },
-        {
-            "title": "What 'Inspection Autonomy' Means on Day 2",
-            "thesis": "Inspection autonomy means the robot follows a bounded, human-prepared patrol routine in a cleared arena, logs state while moving, captures visual evidence at named checkpoints, and produces a run folder that a human team can inspect and present.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Term", "Meaning in Robotics", "Meaning in Day 2 Lecture"],
-                "rows": [
-                    ["Reactive Obstacle Avoidance", "The robot responds locally to nearby obstacles while accepting velocity or increment commands.", "Used directly through ObstaclesAvoidClient."],
-                    ["Open-Loop Patrol", "A sequence is executed without closed-loop correction to a semantic target.", "The default Day 2 patrol model: legs come from patrol_plan.json."],
-                    ["SLAM", "Simultaneous mapping and localization.", "Conceptual background and optional advanced context, not the core Python patrol."],
-                    ["Navigation Stack", "Integrated map, localization, planner, controller, behaviours, and goals.", "Mentioned to explain what Day 2 is not yet doing."],
-                    ["Inspection Evidence", "Data that proves what was run, where the robot stopped, and what it saw.", "The run folder: metadata, plan, JSONL state, images, field report."]
-                ]
-            },
-            "bottom_band": "Vocabulary discipline: Never say 'the robot navigated to the cone.' Say 'the robot executed a local increment leg under obstacle avoidance and captured an image at the checkpoint.' Imprecise language hides open-loop assumptions."
-        },
-        {
-            "title": "Day 1 Primitives → Day 2 Reuse",
-            "thesis": "Day 2 assumes students have already established the essential Go2 development loop — DDS communication, state reading, safe posture, high-level sport motion, and basic image capture. These are building blocks, not isolated exercises.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Day 1 Capability", "Day 2 Reuse", "Why It Matters"],
-                "rows": [
-                    ["DDS Topic Subscription", "sportmodestate.jsonl during patrol.", "The team can reconstruct motion state and error codes over time."],
-                    ["Sport State & Posture Checks", "Stand preparation before patrol.", "The robot should not enter avoid/patrol from an unsafe posture."],
-                    ["Single Checkpoint Image Capture", "checkpoints/<id>/frame.jpg.", "Visual evidence becomes tied to a patrol plan checkpoint."],
-                    ["Obstacle Avoidance Preview", "Increment and velocity patrol legs.", "Students move from one short motion to a planned multi-leg sequence."],
-                    ["Clean Shutdown Habits", "Patrol cleanup on success, failure, or Ctrl+C.", "The robot must always stop and release API control — success and failure paths converge on the same safe shutdown."]
-                ]
-            },
-            "bottom_band": "Safety gate: If a team did not pass Day 1 motion on hardware, they may continue schema, validation, simulation, and dry-run work — but real movement must wait until Day 1 readiness and field safety are restored."
-        },
-        {
-            "title": "Inspection Pipeline: Sense → Log → Decide → Act → Report",
-            "thesis": "The most useful single diagram for the lecture — sensors provide state and images, software logs DDS state and camera captures, the scenario encodes intent, patrol code acts through avoidance, and the run folder becomes reportable evidence.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Pipeline Stage", "Day 2 Implementation", "Question Students Should Answer"],
-                "rows": [
-                    ["Sense", "VideoClient, rt/sportmodestate, optional platform probe.", "What did the robot see, and what state was it in?"],
-                    ["Log", "sportmodestate.jsonl, checkpoint frame.jpg, optional state_slice.jsonl.", "Is there enough data to reconstruct the run?"],
-                    ["Decide", "Scenario card, speed limits, abort rules, plan legs.", "Why is this motion allowed, and when should it stop?"],
-                    ["Act", "ObstaclesAvoidClient, increment/velocity legs.", "Which API command moves the robot, and in which frame?"],
-                    ["Report", "metadata.json, field_test.md, validator PASS/FAIL.", "What evidence proves the run was valid?"]
-                ]
-            },
-            "bottom_band": "Data discipline: If the robot stops short of a cone, the team should compare baseline and tuned runs, view checkpoint images, read JSONL state, and explain what changed — not just rerun with a bigger dx."
-        },
-        {
-            "title": "Readiness & Scenario Definition",
-            "thesis": "The first Day 2 lab is intentionally conservative — confirm Day 1 artifacts exist, patrol-related SDK imports are available, network and DDS readiness are acceptable, and a patrol scenario has been written and validated before motion begins.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Scenario Field", "Lecture Explanation", "Common Mistake to Prevent"],
-                "rows": [
-                    ["team_name / operator", "Identifies who owns the run and report.", "Leaving metadata anonymous — evidence must be attributable."],
-                    ["arena", "Describes physical boundaries, floor, and hazards.", "Treating any open space as acceptable without marking boundaries."],
-                    ["checkpoints", "Names the stops where evidence will be captured.", "Using inconsistent IDs between scenario and plan."],
-                    ["motion_limits", "Defines allowed vx, dx, dy, and yaw rates/angles.", "Copying SDK maximums instead of class limits (vx ≤ 0.25 m/s, dx ≤ 0.5 m)."],
-                    ["abort_rules", "States when the spotter or script must halt.", "Writing vague rules like 'stop if something goes wrong' that cannot be acted on."],
-                    ["deliverables", "Defines what must be submitted.", "Ending with only a terminal transcript instead of a validated run folder."]
-                ]
-            },
-            "bottom_band": "Scenario validation prompt: 'If I hand your scenario file to another team, could they understand the arena, checkpoints, speed limits, and abort conditions without asking you?' If no, the scenario is not ready for motion."
-        },
-        {
-            "title": "Safety Rules for Day 2 Patrol",
-            "thesis": "Safety must be taught as part of the software architecture — Day 2 adds multi-stop motion, so the risk is no longer only whether a single command works, but whether a sequence continues after conditions change.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Rule", "Required Behaviour", "Rationale"],
-                "rows": [
-                    ["Marked Arena", "Corners are marked with cones; stop caller is agreed before motion.", "Everyone knows the physical operating envelope."],
-                    ["One Patrol at a Time", "Only one team commands a Go2 on the subnet.", "Prevents command confusion and network contention."],
-                    ["Speed Cap", "Keep vx ≤ 0.25 m/s unless instructor approves.", "Preserves reaction time and reduces impact risk."],
-                    ["Increment Cap", "Keep dx ≤ 0.5 m unless instructor approves.", "Prevents large open-loop jumps."],
-                    ["Avoid Mode Default", "Use SwitchSet(True) and UseRemoteCommandFromApi(True).", "Ensures commands flow through the avoid service."],
-                    ["Clean Shutdown", "Send zero motion, release API command source, disable avoid.", "Avoids lingering command authority after the run."],
-                    ["No SLAM Claims", "Describe increments as local, not GPS or global navigation.", "Prevents false mental models."],
-                    ["No Acrobatics", "Exclude flips/handstands from patrol paths.", "Keeps the day focused on inspection safety."]
-                ]
-            },
-            "bottom_band": "Instructor safety sentence: 'The robot may be capable of higher speeds and larger increments than we use today, but class limits are chosen for supervision, evidence quality, and repeatability — not for demonstrating the robot's maximum capability.'"
-        },
-        {
-            "title": "Run-Folder Schema: The Inspection Deliverable",
-            "thesis": "The run folder transforms a robot demonstration into an auditable inspection artifact — metadata, patrol plan, state log, and checkpoint-specific files make field robotics into data engineering as well as control.",
+            "title": "Day 2: Autonomy, Simulation, and Field Handoff",
+            "thesis": "Day 2 is one connected story: how a robot observes the world, builds usable understanding, chooses motion, rehearses that motion in simulation, and then performs a controlled test on physical hardware. Beginners leave with a mental map of the full autonomy pipeline.",
             "board_type": "grid",
             "board_data": [
-                {"label": "metadata.json — Run Identity & Artifact Index", "value": "\"Who ran what, when, on which interface, with which robot state?\" Contains schema_version, created_utc, operator, interface, check_mode, checkpoints list, and artifact map."},
-                {"label": "patrol_plan.json — Mission & Motion Definition", "value": "\"What was supposed to happen?\" Declares checkpoint IDs with labels and dwell times, plus motion legs with type (increment/velocity/dwell), values, and durations."},
-                {"label": "sportmodestate.jsonl — Time-Series State Evidence", "value": "\"What state did the robot report during the run?\" Line-by-line JSONL with mode, gait_type, position, velocity, yaw_speed, body_height — robust to partial writes."},
-                {"label": "checkpoints/<id>/frame.jpg — Visual Evidence", "value": "\"What did the robot see at this checkpoint?\" JPEG still image captured during dwell with OpenCV decode from VideoClient.GetImageSample()."},
-                {"label": "state_slice.jsonl — Local Context Around Capture", "value": "\"What was the state near this image?\" Optional narrow window of state samples surrounding the checkpoint capture moment (not required by validator)."},
-                {"label": "field_test.md — Field Trial Interpretation", "value": "\"What changed, what passed, what still needs tuning?\" Compares baseline and tuned runs, lists checkpoint outcomes, references validator status, states next change."}
+                        {
+                                    "label": "Pipeline",
+                                    "value": "Sense → Understand → Plan → Simulate → Deploy → Prove — six stages that connect into one autonomy workflow."
+                        },
+                        {
+                                    "label": "Four Milestones",
+                                    "value": "<strong class=\"font-bold\">SLAM</strong> + Fusion, Planning + Costmaps, <strong class=\"font-bold\">Gazebo</strong> Validation, <strong class=\"font-bold\">Go2</strong> Handoff — each milestone builds toward the final capstone demonstration."
+                        },
+                        {
+                                    "label": "Beginner Promise",
+                                    "value": "By the end of Day 2, you will explain what SLAM, sensor fusion, costmaps, planning, and Gazebo validation mean, and you will connect those ideas to hardware field testing on the Go2."
+                        },
+                        {
+                                    "label": "Platform",
+                                    "value": "<strong class=\"font-bold\">Unitree</strong> <strong class=\"font-bold\">Go2</strong> quadruped with <strong class=\"font-bold\">ROS 2</strong>, <strong class=\"font-bold\">Gazebo</strong> simulation, and Python SDK integration."
+                        }
             ],
-            "bottom_band": "Validator teaching strategy: Intentionally validate both a passing fixture and an incomplete fixture. Train students to read failure messages as structured evidence of missing artifacts, not as personal criticism."
+            "bottom_band": "Mental model check: Can you draw six connected blocks — Sense, Understand, Plan, Simulate, Deploy, Prove — and explain what data flows between them? If not, that is the goal for today."
         },
         {
-            "title": "patrol_plan.json: How a Patrol Becomes Executable",
-            "thesis": "The patrol plan bridges human scenario to executable robot motion — checkpoint definitions provide IDs and dwell times; leg definitions provide movement from one checkpoint toward another using increment or timed velocity commands.",
+            "title": "Today Builds One Autonomy Story",
+            "thesis": "Day 2 is not a set of disconnected robotics topics. It is one story about how a robot observes the world, builds usable understanding, chooses motion, rehearses that motion in simulation, and then performs a controlled test on physical hardware.",
+            "board_type": "list",
+            "board_data": [
+                        "Sense: Sensors collect observations — <strong class=\"font-bold\">LiDAR</strong> for shape, cameras for appearance, <strong class=\"font-bold\">IMU</strong> for motion.",
+                        "Understand: Multi-sensor fusion and <strong class=\"font-bold\">SLAM</strong> combine observations into a map and <strong class=\"font-bold\">pose</strong> estimate the robot can use.",
+                        "Plan: Global and local planners convert intent into safe routes, using costmaps to mark risk.",
+                        "Simulate: <strong class=\"font-bold\">Gazebo</strong> provides a rehearsal space — test routes, check sensor data, validate before hardware.",
+                        "Deploy: Controlled hardware handoff — network check, robot state check, safe command authority, field run.",
+                        "Prove: Every claim needs matching evidence — logs, screenshots, route traces, and a written conclusion."
+            ],
+            "bottom_band": "Beginner checkpoint: After each section today, ask yourself — 'Which stage of the Sense → Prove chain did we just cover?' Keep a running map of where you are in the pipeline."
+        },
+        {
+            "title": "Four Milestones Define Success",
+            "thesis": "The lecture is organized around four required academic milestones: <strong class=\"font-bold\">SLAM</strong> + Fusion, Planning + Costmaps, <strong class=\"font-bold\">Gazebo</strong> Validation, and <strong class=\"font-bold\">Go2</strong> Handoff. Each connects to the next — you cannot validate a route in simulation if you have not understood how the robot builds a map.",
             "board_type": "table",
             "board_data": {
-                "headers": ["Leg Type", "Command Relationship", "Semantic Meaning", "Day 2 Use"],
-                "rows": [
-                    ["increment", "MoveToIncrementPosition(dx, dy, dyaw)", "Move a local body-frame increment under avoid mode — closer to a patrol leg than streaming velocity.", "Default multi-leg patrol."],
-                    ["velocity", "Repeated Move(vx, vy, vyaw) for a duration.", "Stream body velocity for a fixed time — must be repeated at a suitable rate.", "Optional advanced tuning or comparison."],
-                    ["dwell", "Sleep at checkpoint.", "Stop long enough for the robot to settle and for image capture to complete.", "Used before images and between legs."]
-                ]
+                        "headers": [
+                                    "Milestone",
+                                    "Key Question",
+                                    "Evidence Required"
+                        ],
+                        "rows": [
+                                    [
+                                                "<strong class=\"font-bold\">SLAM</strong> + Fusion",
+                                                "How does the robot know where it is and what is around it?",
+                                                "Map snapshot, <strong class=\"font-bold\">pose</strong> trace, transform tree, sensor status, logs."
+                                    ],
+                                    [
+                                                "Planning + Costmaps",
+                                                "How does the robot choose safe motion?",
+                                                "Route plot, <strong class=\"font-bold\">costmap</strong> snapshot, plan file, obstacle detection record."
+                                    ],
+                                    [
+                                                "<strong class=\"font-bold\">Gazebo</strong> Validation",
+                                                "Does the routine work safely in rehearsal?",
+                                                "World screenshot, route trace, <strong class=\"font-bold\">costmap</strong> snapshot, log file, conclusion."
+                                    ],
+                                    [
+                                                "<strong class=\"font-bold\">Go2</strong> Handoff",
+                                                "Does the routine work on physical hardware?",
+                                                "Field video, command log, stop events, route trace, tuning notes."
+                                    ]
+                        ]
             },
-            "bottom_band": "Key distinction: Neither increment nor velocity legs are 'navigate to the blue cone.' Both are open-loop local commands. Tuning dx or dyaw changes open-loop behaviour; it does not cause the robot to recognize or steer toward a visual target."
+            "bottom_band": "Milestone check: If you cannot answer the Key Question for a milestone, flag it now. Each milestone is a gate — the next one makes less sense without the previous one."
         },
         {
-            "title": "Python SDK & Unitree Context",
-            "thesis": "The Day 2 materials use the Python SDK path for Go2 inspection patrol — ChannelFactoryInitialize, SportClient, MotionSwitcherClient, ObstaclesAvoidClient, VideoClient, and ChannelSubscriber form the API surface.",
+            "title": "Beginner Vocabulary Map",
+            "thesis": "Students do not need to memorize every robotics term immediately. They need a simple vocabulary map: a map describes the environment, a pose describes the robot's estimated location and orientation, a planner chooses movement, and a costmap marks risky nearby space so motion can be safer.",
             "board_type": "grid",
             "board_data": [
-                {"label": "ChannelFactoryInitialize(0, \"en6\")", "value": "Initialize SDK communication on the robot-facing interface. The interface name (e.g., en6, eth0, enp3s0) comes from ip addr, not the robot IP."},
-                {"label": "SportClient", "value": "Prepare posture (BalanceStand, StandUp), stop sport movement (StopMove), and manage high-level locomotion state before and after patrol."},
-                {"label": "MotionSwitcherClient.CheckMode()", "value": "Record current mode in metadata and readiness checks — confirms the robot is in the expected high-level service mode before motion."},
-                {"label": "ObstaclesAvoidClient", "value": "Enable local obstacle avoidance (SwitchSet), transfer command authority (UseRemoteCommandFromApi), and execute avoid-mode motion (Move, MoveToIncrementPosition)."},
-                {"label": "VideoClient", "value": "Pull camera frames via GetImageSample() for checkpoint evidence — RPC-style client, not a DDS video topic in these examples."},
-                {"label": "ChannelSubscriber(\"rt/sportmodestate\", SportModeState_)", "value": "Subscribe to robot state and write JSONL logs — the runtime witness that records mode, gait, position, velocity, yaw_speed, and body_height over time."}
+                        {
+                                    "label": "Map",
+                                    "value": "Where things are — an occupancy grid showing free space, obstacles, and unknown areas. Built and updated by <strong class=\"font-bold\">SLAM</strong>."
+                        },
+                        {
+                                    "label": "Pose",
+                                    "value": "Where the robot is — its estimated position (x, y, z) and orientation (roll, pitch, yaw) in a coordinate frame."
+                        },
+                        {
+                                    "label": "Planner",
+                                    "value": "Where to go next — a global <strong class=\"font-bold\">planner</strong> chooses the big-picture route; a local <strong class=\"font-bold\">planner</strong> handles the next few safe steps."
+                        },
+                        {
+                                    "label": "Costmap",
+                                    "value": "Where it is risky — a local grid around the robot marking obstacles, inflated safety buffers, and unknown space."
+                        }
             ],
-            "bottom_band": "Network prerequisite: The user PC's robot-facing network adapter must be on the 192.168.123 subnet, but must NOT be assigned the robot onboard address 192.168.123.161. Test with ping 192.168.123.161 before SDK initialization."
+            "bottom_band": "Vocabulary test: Can you explain Map, Pose, Planner, and Costmap to a classmate in one sentence each, without using any of those four words in the explanation? Try it."
         },
         {
-            "title": "ObstaclesAvoidClient: Lifecycle & Semantics",
-            "thesis": "The lifecycle is as important as the motion command itself — a safe script initializes, enables, transfers authority, moves, stops, releases authority, disables, and cleans up. Success and failure paths converge on the same safe shutdown.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Step", "API Action", "Teaching Explanation"],
-                "rows": [
-                    ["1. Initialize", "Create client, set timeout, Init().", "The script must bind to the robot service before commanding."],
-                    ["2. Enable Avoid", "SwitchSet(True) and verify with SwitchGet().", "Avoid mode must actually be on, not assumed — confirm with read-back."],
-                    ["3. API Command Source", "UseRemoteCommandFromApi(True).", "Unitree documentation requires this for API avoid control — transfers command authority from remote."],
-                    ["4. Move", "Move(...) or MoveToIncrementPosition(...).", "Commands are local body-frame velocity or increment requests sent through the avoid service."],
-                    ["5. Stop", "Send repeated Move(0,0,0).", "Stop commands should be explicit and redundant — one zero command may not be enough."],
-                    ["6. Release", "UseRemoteCommandFromApi(False), SwitchSet(False).", "The script must not retain control after completion — return authority and disable avoid."],
-                    ["7. Sport Cleanup", "SportClient.StopMove() when available.", "Adds another layer of stop semantics — defense in depth for motion termination."]
-                ]
-            },
-            "bottom_band": "Defensive robotics: Both try and except/finally paths must call release_avoid(). A script that crashes after UseRemoteCommandFromApi(True) but before release leaves the robot in an unsafe state."
-        },
-        {
-            "title": "Velocity Commands vs. Increment Commands",
-            "thesis": "A velocity command is a stream of desired body-frame velocity that must be repeated. An increment command asks for a bounded local displacement and yaw increment — closer to a patrol leg, but still not map navigation.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Question", "Velocity Leg", "Increment Leg"],
-                "rows": [
-                    ["What is specified?", "Speed and duration.", "Local displacement and yaw increment."],
-                    ["What API is used?", "Move(vx, vy, vyaw).", "MoveToIncrementPosition(dx, dy, dyaw)."],
-                    ["How is it sent?", "Repeated at a control rate for the duration.", "Pulsed a few times, then allowed to settle."],
-                    ["Typical student mental model", "\"Walk forward slowly for 2 seconds.\"", "\"Move about 0.3 m forward.\""],
-                    ["Main risk", "Forgetting to send Move(0,0,0) or StopMove() after the duration — the robot may continue drifting.", "Treating local body-frame increments as global map goals — the robot does not close a perception loop."]
-                ]
-            },
-            "bottom_band": "Newer recommended pattern: Pulse MoveToIncrementPosition a few times rather than flooding it for the entire leg window. The command should be robust enough for the service to receive it without overwhelming the communication channel."
-        },
-        {
-            "title": "Sensor Capture & Inspection Evidence",
-            "thesis": "The primary evidence sensor is the front camera via VideoClient.GetImageSample(). State evidence comes from rt/sportmodestate. The camera records what the robot saw when stopped — it does not steer the robot toward colored cones.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Capture Artifact", "What It Proves", "What It Does NOT Prove"],
-                "rows": [
-                    ["frame.jpg at checkpoint", "A visual scene was recorded at a named checkpoint — the camera was functioning and the robot was positioned.", "That the robot used vision to navigate to that position."],
-                    ["metadata.json capture map", "Which checkpoint IDs have captured frames — the evidence package is structurally complete.", "That the physical cone was exactly reached with centimeter precision."],
-                    ["state_slice.jsonl", "Nearby state samples around the capture moment — mode, velocity, posture context.", "Full localization or mapped position in a global frame."],
-                    ["Full sportmodestate.jsonl", "Mode, gait, error code, velocity over time — the complete runtime witness.", "Semantic understanding of the environment or obstacle identities."]
-                ]
-            },
-            "bottom_band": "Instructor prompt: 'What can an inspector learn from the image that JSONL alone cannot provide?' Expected answers: obstacle presence, lighting conditions, scene mismatch (wrong room), human safety issue, glare, visible robot/camera alignment problems."
-        },
-        {
-            "title": "Integrated Patrol Runner Pipeline",
-            "thesis": "The integrated patrol runner is the best single-file narrative — it loads and clamps the plan, creates a run folder, initializes all clients, captures at each checkpoint, executes legs, and validates the output.",
+            "title": "Autonomy Is Layered, Not Magical",
+            "thesis": "A robot does not become autonomous because one command says go. Autonomy is layered. Sensors collect observations, fusion combines them, SLAM estimates pose and map structure, planning chooses a path, costmaps protect local movement, control sends motion, and evidence tells us whether the claim is true.",
             "board_type": "list",
             "board_data": [
-                "Phase 1 — Load scenario + plan: Read my_team_scenario.json and patrol_plan.json; validate structure.",
-                "Phase 2 — Clamp motion limits: Compare plan leg values against scenario limits; if dx > 0.5 m, clamp and warn.",
-                "Phase 3 — Create run directory: run_YYYYMMDD_HHMM/ with checkpoints/ subdirectories for each checkpoint ID.",
-                "Phase 4 — Initialize clients: SportClient, ObstaclesAvoidClient, VideoClient, state subscriber — all with timeouts.",
-                "Phase 5 — Stand + balance: BalanceStand(), wait for stable posture, confirm SportModeState before motion.",
-                "Phase 6 — Start state logger: Begin writing sportmodestate.jsonl line-by-line with timestamp, mode, gait, position, velocity, yaw_speed, body_height.",
-                "Phase 7 — Capture starting checkpoint (cp_A): GetImageSample(), decode JPEG, write checkpoints/cp_A/frame.jpg.",
-                "Phase 8 — Enable avoid + API command source: SwitchSet(True) → verify SwitchGet() → UseRemoteCommandFromApi(True).",
-                "Phase 9 — Execute leg 1 → dwell → capture cp_B: run_increment_leg() or run_velocity_leg(), sleep dwell, capture frame.",
-                "Phase 10 — Execute leg 2 → dwell → capture cp_C: Repeat for each leg in patrol_plan.json.",
-                "Phase 11 — Release avoid + stop logger: Move(0,0,0) → UseRemoteCommandFromApi(False) → SwitchSet(False) → close state log.",
-                "Phase 12 — Write metadata + validate: Dump metadata.json with run identity, checkpoints, and artifact map; run validator."
+                        "Sensors → Fusion: Raw observations are combined — <strong class=\"font-bold\">LiDAR</strong> sees shape, cameras see appearance, <strong class=\"font-bold\">IMU</strong> senses motion.",
+                        "Fusion → <strong class=\"font-bold\">SLAM</strong>: Combined sensor data feeds simultaneous localization and mapping — <strong class=\"font-bold\">pose</strong> estimate plus map structure.",
+                        "<strong class=\"font-bold\">SLAM</strong> → Planning: The map and <strong class=\"font-bold\">pose</strong> provide the spatial understanding planners need to choose routes.",
+                        "Planning → Costmap → Control: Global route is refined by local costmaps; control sends safe motion commands.",
+                        "Control → Evidence: Logs, images, traces, and reports prove what happened — without evidence, motion is just a demo."
             ],
-            "bottom_band": "Failure diagnosis: If capture fails but motion succeeds → partial inspection outcome. If validation fails → motion demo is not yet a valid deliverable. If plan violates scenario limits → clamping warnings explain what changed before motion."
+            "bottom_band": "Layering check: Draw the stack from bottom (Sensors) to top (Evidence). Can you add one data artifact at each layer that proves that layer worked?"
         },
         {
-            "title": "Integrated Patrol Runner Pipeline (Cont.) — Failure Modes",
-            "thesis": "Each runner phase has a distinct failure mode and instructor diagnosis — treat the validator output as a repair checklist, not a final grade.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Runner Phase", "Failure Mode", "Instructor Diagnosis"],
-                "rows": [
-                    ["Plan Load", "Missing checkpoints or legs in JSON.", "Validate JSON structure with a dry-run before hardware."],
-                    ["Scenario Clamp", "Leg value exceeds scenario speed/increment limits.", "Teach why class caps (vx≤0.25, dx≤0.5) override ambitious plans — not punishment, supervision margin."],
-                    ["Client Init", "SDK import or network timeout.", "Return to Day 1 readiness checks: interface name, ping, DDS environment."],
-                    ["Start Capture", "No camera frame — timeout or empty image.", "Increase wait after client init; check VideoClient service availability; use --no-capture only for motion debug."],
-                    ["Avoid Enable", "SwitchSet or SwitchGet returns False or errors.", "Check robot mode, firmware state, app state, and whether previous cleanup released control correctly."]
-                ]
-            },
-            "bottom_band": "Tuning is documented plan editing: lab04_tune_plan.py copies a baseline plan and applies leg overrides (e.g., --set 1:dyaw:0.7). Changes are explicit, repeatable, and recorded in field_test.md — not made by editing the original patrol_plan.json directly."
-        },
-        {
-            "title": "Field Trial & Tuning Matrix",
-            "thesis": "The field-trial lab teaches students to convert observations into controlled plan changes — observe → tune → trial → report. These adjustments are still open-loop calibration, not camera-based steering.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Observation", "Likely Tuning Action", "Report Language Example"],
-                "rows": [
-                    ["Robot stops short of cone B.", "Increase dx slightly or increase --leg-wait.", "\"Baseline under-reached cp_B by ~0.15 m; tuned leg 1 dx from 0.3→0.4.\""],
-                    ["Robot overshoots near wall.", "Decrease final dx; add dwell at final checkpoint.", "\"Reduced final forward increment (0.5→0.3 m) to preserve wall clearance.\""],
-                    ["Turn at corner is too small.", "Increase turn-leg dyaw (e.g., 0.6→0.8 rad).", "\"Increased yaw increment to align with second corridor segment.\""],
-                    ["Turn at corner is too large.", "Decrease dyaw (e.g., 0.8→0.5 rad).", "\"Reduced yaw increment after over-rotation observed at cp_B.\""],
-                    ["Capture is blurry.", "Increase dwell time or add settling wait before capture.", "\"Added 2 s settling time before checkpoint image; observed velocity near zero during capture.\""]
-                ]
-            },
-            "bottom_band": "A strong field-trial report compares the baseline run folder with the tuned run folder, lists checkpoint outcomes as pass/partial/fail, references validator status, and states one next change. It should NEVER claim success merely because the robot moved."
-        },
-        {
-            "title": "Gazebo & ROS 2 Context — Simulation vs. Hardware",
-            "thesis": "Simulation helps students understand timing, topic flow, and movement concepts, but it does not remove the need for hardware readiness, spotters, cones, speed limits, and cleanup.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Aspect", "Gazebo Extension", "Physical Go2 Patrol"],
-                "rows": [
-                    ["Main Interface", "ROS 2 topic /cmd_vel with geometry_msgs/Twist.", "Python SDK clients: ObstaclesAvoidClient, SportClient, VideoClient."],
-                    ["Robot Required", "No — runs in simulation.", "Yes — physical Go2 with Ethernet connection."],
-                    ["Primary Risk", "Software setup, display server, ROS environment variables.", "Physical motion, field safety, obstacle contact, battery state."],
-                    ["Evidence", "Topic list (ros2 topic list), simulation screenshot, short motion result.", "Valid run_* folder with images, state logs, metadata, validator output."],
-                    ["Lecture Message", "\"Simulation helps reason about timing and topic flow before field deployment.\"", "\"Hardware requires conservative execution and auditable evidence.\""]
-                ]
-            },
-            "bottom_band": "ros_gz_bridge exchanges messages between ROS 2 and Gazebo Transport — commands and sensor data move between ecosystems. The sim uses geometry_msgs/Twist; the hardware uses Unitree SDK clients. Different interfaces, same engineering discipline."
-        },
-        {
-            "title": "SLAM & Navigation: Vocabulary Discipline",
-            "thesis": "Students should say 'Our Day 2 patrol used a local obstacle-avoidance service and scripted local increments from patrol_plan.json' — not 'the robot mapped the room,' 'navigated to cones,' or 'performed SLAM patrol.'",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Claim", "Acceptable?", "Correction"],
-                "rows": [
-                    ["\"The robot executed a local increment patrol under obstacle avoidance.\"", "Yes", "This accurately describes the Day 2 Python workflow."],
-                    ["\"The camera captured evidence at checkpoints.\"", "Yes", "This is exactly what VideoClient contributes."],
-                    ["\"The robot used the camera to steer to colored cones.\"", "No", "The camera records evidence after stopping; it does not steer in this lab."],
-                    ["\"The patrol used GPS navigation.\"", "No", "Increments are local body-frame commands, not GPS or global coordinate goals."],
-                    ["\"This is full SLAM.\"", "No", "SLAM requires mapping/localization services not used in the main Python patrol."],
-                    ["\"Simulation used ROS 2 /cmd_vel; hardware used SDK clients.\"", "Yes", "This is the correct sim/hardware contrast — different interfaces, same discipline."]
-                ]
-            },
-            "bottom_band": "Unitree's SLAM/navigation documentation limits these services to EDU robot dogs with expansion dock and official Unitree-purchased lidar, in constrained static indoor flat-ground environments < 25 m × 25 m with rich features."
-        },
-        {
-            "title": "Capstone Presentation Expectations",
-            "thesis": "Teams present a five-minute demo linking scenario, architecture, evidence, and one failure/fix — a strong presentation does not merely show a moving robot, it opens the run folder and shows at least one checkpoint frame.",
-            "board_type": "list",
-            "board_data": [
-                "Scenario: Present the arena layout, named checkpoints (cp_A, cp_B, cp_C), motion limits (vx ≤ 0.25 m/s, dx ≤ 0.5 m), and abort rules before any video.",
-                "Architecture: Show the block diagram — PC → DDS/RPC → Go2 → run folder. Identify each client (SportClient, ObstaclesAvoidClient, VideoClient).",
-                "Plan: Display patrol_plan.json leg definitions — identify which legs use increment vs. velocity, and explain the difference from global navigation goals.",
-                "Evidence: Open the run_* folder — show checkpoint frame.jpg, sample a JSONL line, and present validator PASS/FAIL/WARNING output.",
-                "Failure & Fix: Describe one tuning note (e.g., 'turned 0.3 rad short of cp_B, increased dyaw by 0.2 rad'), one abort condition encountered, or one capture issue resolved."
-            ],
-            "bottom_band": "Presentation anti-pattern: 'The robot walked and it was cool.' Strong pattern: 'Our baseline run under-shot cp_B by ~0.15 m; we tuned leg 1 dx from 0.3→0.4 m and the validator passed with one documented warning about an optional rear camera frame.'"
-        },
-        {
-            "title": "Instructor Demo Script for 3-Hour Lecture",
-            "thesis": "Emphasize reading, prediction, and diagnosis before motion — walk through dry-runs, validation, and tuning before the physical robot moves.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Demo Step", "Command or Artifact", "Instructor Narration"],
-                "rows": [
-                    ["1. Readiness Dry-Run", "python lab00_day2_readiness.py", "\"Before motion, verify the machine and imports — environment, SDK, network interface.\""],
-                    ["2. Scenario Creation", "--write-scenario my_team_scenario.json", "\"This is the mission and safety contract — define limits before the robot moves.\""],
-                    ["3. Scenario Validation", "--validate-scenario my_team_scenario.json", "\"Invalid mission definitions should fail early, not during the patrol.\""],
-                    ["4. Validate Good Fixture", "lab01_validate_run_folder.py ...sample_run_pass", "\"This is what valid evidence looks like — every required file present and structured.\""],
-                    ["5. Validate Bad Fixture", "lab01_validate_run_folder.py ...sample_run_incomplete", "\"Use errors as a repair checklist, not as criticism.\""],
-                    ["6. Avoid Dry-Run", "lab04_obstacle_avoid_intro.py en6 --dry-run", "\"Dry-run before physical motion — confirm client init and lifecycle without moving.\""],
-                    ["7. Integrated Runner Dry-Run", "lab03_patrol_runner.py en6 --dry-run", "\"Now motion, logging, and capture are one pipeline — predict each phase before executing.\""],
-                    ["8. Field Tuning", "lab04_tune_plan.py ... --set 1:dyaw:0.7", "\"Tuning is documented plan editing — changes are explicit, repeatable, and recorded.\""]
-                ]
-            },
-            "bottom_band": "Demo rhythm: Before each command, ask students 'What do you expect to see?' After each command, ask 'What did we actually see, and does it match?' This builds diagnostic instinct, not just command memorization."
-        },
-        {
-            "title": "Common Misconceptions & Corrections — Day 2",
-            "thesis": "Precisely separate command execution, local avoidance, evidence capture, and navigation intelligence — these corrections should be made firmly because imprecise vocabulary prevents unsafe assumptions in the lab.",
-            "board_type": "table",
-            "board_data": {
-                "headers": ["Misconception", "Why It Is Wrong", "Correct Mental Model"],
-                "rows": [
-                    ["\"Obstacle avoidance means the robot is autonomous.\"", "Avoidance is local and reactive; it does not define mission goals.", "Autonomy requires goal definition, evidence, decision logic, and safety rules — avoidance is one component."],
-                    ["\"A checkpoint image means vision guided the robot.\"", "The image is captured after stopping; it is not used for steering.", "Vision is evidence capture in the main Day 2 labs — the camera records, it does not control."],
-                    ["\"A larger dx finishes faster, so it is better.\"", "Larger increments reduce supervision margin and increase open-loop positioning error.", "Use small increments (≤0.5 m) and tune from evidence — speed is not the success metric."],
-                    ["\"If the terminal says PASS, the inspection is complete.\"", "The run folder may still lack useful evidence or field interpretation.", "PASS means structurally valid; inspect artifacts — is the image clear? Is the report coherent?"],
-                    ["\"Gazebo success means hardware is safe.\"", "Simulation omits physical risks: battery, floor friction, cable snags, lighting changes.", "Simulation reduces uncertainty; field safety rules still govern hardware operation."],
-                    ["\"SLAM is any robot movement with sensors.\"", "SLAM specifically involves simultaneous mapping and localization — a closed perception-localization loop.", "Day 2 mainly uses local obstacle avoidance and open-loop plans — this is valuable, but it is not SLAM."]
-                ]
-            },
-            "bottom_band": "If you hear a student say 'the robot navigated to the cone,' pause and ask: 'Which API call moved the robot — MoveToIncrementPosition or a navigation goal? In which coordinate frame? Did the robot use camera feedback to correct its path?'"
-        },
-        {
-            "title": "Knowledge Check — Day 2",
-            "thesis": "Students should answer in complete sentences — the goal is conceptual precision, not command memorization. These seven questions test whether students can reason about patrol architecture, not just recall API names.",
-            "board_type": "list",
-            "board_data": [
-                "What are the five stages of the Day 2 inspection architecture? — Sense (camera + state), Log (JSONL + images), Decide (scenario + limits), Act (avoid + capture), Report (run folder).",
-                "Why does patrol_plan.json exist separately from metadata.json? — The plan defines intended checkpoints and legs (the mission design); metadata records run identity, environment, mode, and actual artifacts (the execution record).",
-                "What must happen before ObstaclesAvoidClient.Move() can control avoid-mode movement? — SwitchSet(True) must enable avoidance and UseRemoteCommandFromApi(True) must transfer command authority from the remote controller to the API.",
-                "Why should Move() be sent repeatedly for velocity motion? — A single Move(vx,vy,vyaw) represents a velocity stream over time, not a complete path; the command must be refreshed at a control rate for the intended duration.",
-                "What is the difference between leg-wait and checkpoint dwell? — leg-wait allows the increment motion to settle after the last command pulse; dwell is the deliberate stop time at a checkpoint before image capture or the next action.",
-                "Why is Day 2 patrol not SLAM patrol? — It does not build or use a global map and does not localize to global goals; it executes local scripted increments under reactive obstacle avoidance.",
-                "What evidence should a team show in the capstone presentation? — Scenario definition, architecture diagram, patrol plan, valid run folder (or recording), at least one checkpoint frame, validator status, and one documented failure/fix."
-            ],
-            "bottom_band": "Assessment anti-pattern: 'Name three SDK clients.' Strong pattern: 'Here is a patrol_plan.json fragment — explain what the robot will do, in which frame, and what must happen before Motion Leg 1 executes.'"
-        },
-        {
-            "title": "Closing Summary — Three Principles of Day 2",
-            "thesis": "Day 2 is the first point where students see a complete robotics workflow emerge: the robot operates inside a scenario, with safety limits, a plan, state logs, camera evidence, validation, tuning, and reporting.",
+            "title": "Section 1 — SLAM and Fusion",
+            "thesis": "How the robot builds a usable understanding of space. This section covers SLAM fundamentals, why quadruped SLAM is harder, multi-sensor fusion, coordinate frames, point cloud processing, and the evidence habits that make SLAM claims reviewable.",
             "board_type": "grid",
             "board_data": [
-                {"label": "1. Bounded Autonomy Is Still Autonomy", "value": "\"When it is explicit, safe, and evidence-producing.\" A patrol that follows a declared plan, logs state, captures images, and produces a validated run folder is autonomous in the engineering sense — even without a global map."},
-                {"label": "2. Local Avoidance Is Not SLAM", "value": "\"Use accurate language when describing work.\" Obstacle avoidance is reactive and local; SLAM requires mapping and localization. Confusing them creates false expectations and unsafe mental models."},
-                {"label": "3. Field Robotics Is an Evidence Discipline", "value": "\"If a patrol cannot be reconstructed from its plan, logs, images, metadata, and report, the team has not completed an inspection mission.\" A validator PASS is necessary but not sufficient — human review of artifacts is required."}
+                        {
+                                    "label": "Core Idea",
+                                    "value": "<strong class=\"font-bold\">SLAM</strong> = Localization + Mapping, solved together. The robot estimates where it is while building or updating a map."
+                        },
+                        {
+                                    "label": "Why It Is Hard",
+                                    "value": "Each job depends on the other. A wrong pose distorts the map. A poor map makes localization less reliable."
+                        },
+                        {
+                                    "label": "Beginner Goal",
+                                    "value": "Replace vague claims like '<strong class=\"font-bold\">SLAM</strong> worked' with evidence: map snapshot, <strong class=\"font-bold\">pose</strong> trace, transform tree, sensor status, and saved log."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 6–12: SLAM definition, quadruped challenges, multi-sensor fusion, coordinate frames, point clouds, evidence habits, and the data-path debugging routine."
+                        }
             ],
-            "bottom_band": "Final instructor message: 'The robot does not simply execute commands. It operates inside a scenario, with safety limits, a plan, state logs, camera evidence, validation, tuning, and reporting. That is the main lesson of Day 2.'"
+            "bottom_band": "Section framing: By the end of this section, you should be able to explain why <strong class=\"font-bold\">SLAM</strong> is called 'simultaneous' and what kind of evidence proves it is working."
+        },
+        {
+            "title": "SLAM Means Two Jobs at Once",
+            "thesis": "<strong class=\"font-bold\">SLAM</strong> stands for simultaneous localization and mapping. The robot estimates where it is (localization) while also building or updating a map (mapping). This is difficult because each job depends on the other — if the <strong class=\"font-bold\">pose</strong> estimate is wrong, the map becomes distorted; if the map is poor, localization becomes less reliable.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Localize",
+                                    "value": "'Where am I?' — Estimate the robot's position and orientation relative to the map using sensor observations and motion predictions."
+                        },
+                        {
+                                    "label": "Map",
+                                    "value": "'What is around me?' — Build and update a representation of the environment: occupancy grid, feature map, or point cloud."
+                        },
+                        {
+                                    "label": "<strong class=\"font-bold\">SLAM</strong> Loop",
+                                    "value": "Sensor readings → Pose estimate → Map update → Error correction → Better <strong class=\"font-bold\">pose</strong> → Repeat. Each cycle refines both answers."
+                        },
+                        {
+                                    "label": "Failure Mode",
+                                    "value": "If the robot loses localization (kidnapped robot problem), the map and pose both become unreliable until recovery."
+                        }
+            ],
+            "bottom_band": "Diagram exercise: Draw the <strong class=\"font-bold\">SLAM</strong> loop on paper. Label where sensor data enters, where <strong class=\"font-bold\">pose</strong> is estimated, where the map updates, and where error correction feeds back. Can you identify which arrow carries the most uncertainty?"
+        },
+        {
+            "title": "Why Quadruped SLAM Is Harder",
+            "thesis": "Quadrupeds move differently from wheeled robots. Their bodies rise, fall, pitch, and vibrate as they walk. These motions can disturb cameras, LiDAR, and inertial measurements. Robot locomotion and robot perception are connected — stable movement often improves mapping quality.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Motion Effect",
+                                    "Sensor Impact",
+                                    "SLAM Consequence"
+                        ],
+                        "rows": [
+                                    [
+                                                "Body pitch/roll during gait",
+                                                "<strong class=\"font-bold\">IMU</strong> readings include walking vibration.",
+                                                "Pose estimate becomes noisier — map features may misalign between frames."
+                                    ],
+                                    [
+                                                "Vertical bounce",
+                                                "<strong class=\"font-bold\">LiDAR</strong> scan lines shift upward and downward.",
+                                                "Point cloud registration errors increase — walls may appear wavy or duplicated."
+                                    ],
+                                    [
+                                                "Foot strike vibration",
+                                                "Camera images may blur at key moments.",
+                                                "Visual features become harder to track — loop closures weaken."
+                                    ],
+                                    [
+                                                "Variable ground contact",
+                                                "Odometry slip accumulates.",
+                                                "Motion prediction drifts — the robot thinks it moved farther or shorter than reality."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Key insight for beginners: Walking is not a sensor problem to ignore — it is a perception challenge. When mapping quality drops, check gait stability before changing <strong class=\"font-bold\">SLAM</strong> parameters."
+        },
+        {
+            "title": "Multi-Sensor Fusion Combines Strengths",
+            "thesis": "No sensor is perfect. LiDAR can describe geometry but may not identify object meaning. Cameras provide appearance but depend on lighting. IMUs capture motion but drift over time. Odometry estimates movement but can accumulate error. Fusion combines these clues so the system has a more reliable state estimate.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Sensor",
+                                    "Strength",
+                                    "Weakness",
+                                    "Fusion Role"
+                        ],
+                        "rows": [
+                                    [
+                                                "<strong class=\"font-bold\">LiDAR</strong>",
+                                                "Accurate 3D geometry, works in darkness.",
+                                                "Cannot see through glass; no color or semantic meaning.",
+                                                "Provides structural backbone of the map."
+                                    ],
+                                    [
+                                                "Camera",
+                                                "Rich appearance, object recognition.",
+                                                "Fails in low light or direct glare; depth estimation is indirect.",
+                                                "Adds visual features for place recognition and loop closure."
+                                    ],
+                                    [
+                                                "<strong class=\"font-bold\">IMU</strong>",
+                                                "Fast motion sensing, independent of environment.",
+                                                "Drifts over seconds; cannot provide absolute position.",
+                                                "Stabilizes pose between slower sensor updates."
+                                    ],
+                                    [
+                                                "Odometry",
+                                                "Direct motion estimate from leg/joint sensors.",
+                                                "Slip and uneven terrain cause accumulating error.",
+                                                "Provides short-term motion prediction for the filter."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Fusion mental model: '<strong class=\"font-bold\">LiDAR</strong> gives the shape, camera gives the look, <strong class=\"font-bold\">IMU</strong> gives the feel, and <strong class=\"font-bold\">odometry</strong> gives the motion guess — fusion turns them into one reliable answer.'"
+        },
+        {
+            "title": "Frames Keep Everyone Speaking the Same Language",
+            "thesis": "A frame is a coordinate language. The map has one language, the robot body has another, and each sensor may have its own. Transformations translate between those languages. When transforms are missing, stale, or inverted, a path can look correct on screen but become unsafe in the real world.",
+            "board_type": "list",
+            "board_data": [
+                        "Map Frame: The fixed world coordinate system. Everything is ultimately referenced to this frame — the global 'truth' of where things are.",
+                        "Odom Frame: The robot's estimated position from <strong class=\"font-bold\">odometry</strong>. Drifts over time — useful for short-term motion, not long-term accuracy.",
+                        "Base Link / Body Frame: Attached to the robot chassis. Motion commands are expressed relative to this frame — 'go forward' means 'go forward from the robot's current facing direction.'",
+                        "Sensor Frames: Each sensor (camera, <strong class=\"font-bold\">LiDAR</strong>) has its own frame. Transforms map sensor data into the body frame and then into the world frame.",
+                        "Transform Tree: A directed graph connecting all frames. If any link breaks or is inverted, the entire perception chain may produce wrong results."
+            ],
+            "bottom_band": "Frame debugging: When sensor data appears in the wrong place, check the transform tree first — not the algorithm. Missing or stale transforms are the most common beginner frame error."
+        },
+        {
+            "title": "Point Clouds Become Navigation Information",
+            "thesis": "Point clouds are collections of spatial samples — not automatically a path. The system filters noisy points, identifies occupied space, projects relevant geometry into grids, and builds costmaps that planners can use. This conversion is the bridge from sensing to safe navigation.",
+            "board_type": "list",
+            "board_data": [
+                        "Raw Points: Sensor returns thousands of 3D points — scattered, noisy, unprocessed. Includes ghost points, reflections, and sensor artifacts.",
+                        "Filtered Points: Noise removal, downsampling, and outlier rejection produce a cleaner point set. Fewer points, but each is more reliable.",
+                        "Occupancy Grid: Points are projected into a 2D or 3D grid. Each cell is marked free, occupied, or unknown based on point evidence.",
+                        "Costmap: The occupancy grid is annotated with risk — obstacle cells are lethal, nearby cells are inflated with safety buffers, and unknown cells carry caution.",
+                        "Path Choice: The <strong class=\"font-bold\">planner</strong> reads the <strong class=\"font-bold\">costmap</strong> and selects the lowest-cost route that respects safety margins and reaches the goal."
+            ],
+            "bottom_band": "Pipeline check: 'I have a point cloud — can I send it directly to the <strong class=\"font-bold\">planner</strong>?' No. Walk through each conversion step and identify what information is added or removed at each stage."
+        },
+        {
+            "title": "Beginner Evidence Habit for SLAM",
+            "thesis": "Replace vague success claims with artifacts. If students say '<strong class=\"font-bold\">SLAM</strong> worked,' they should show the map snapshot, <strong class=\"font-bold\">pose</strong> trace, transform tree, sensor status, and saved log. Evidence makes robotics work reviewable, repeatable, and easier to debug.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Instead of Saying...",
+                                    "Show This Evidence"
+                        ],
+                        "rows": [
+                                    [
+                                                "\"<strong class=\"font-bold\">SLAM</strong> worked.\"",
+                                                "Map snapshot (screenshot of the built map), <strong class=\"font-bold\">pose</strong> trace (x/y/yaw over time), and transform tree (all frames connected and timestamped)."
+                                    ],
+                                    [
+                                                "\"The robot knows where it is.\"",
+                                                "Pose estimate plot with covariance bounds. If uncertainty is large, the robot does not really know."
+                                    ],
+                                    [
+                                                "\"The sensors are fine.\"",
+                                                "Sensor status dashboard: publication rate, timestamp freshness, data range. A sensor that publishes stale data is not fine."
+                                    ],
+                                    [
+                                                "\"The map looks good.\"",
+                                                "Quantitative comparison: map-to-ground-truth alignment, feature count, registration score. Aesthetics are not accuracy."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Evidence rule: If you cannot show an artifact that proves your claim, you do not have evidence — you have an opinion. Opinions are fine for conversation; artifacts are required for engineering."
+        },
+        {
+            "title": "Debugging Habit: Check the Data Path First",
+            "thesis": "When mapping or localization fails, beginners often change algorithms too quickly. First check the data path: confirm the sensor publishes, the frame transform exists, timestamps are current, the map updates, and the pose estimate stays reasonable. Many failures come from missing data, not bad theory.",
+            "board_type": "list",
+            "board_data": [
+                        "Step 1 — Sensor publishes? Confirm the topic or SDK stream is active. No data → no <strong class=\"font-bold\">SLAM</strong>. Check rostopic list, rostopic hz, or SDK subscriber callbacks.",
+                        "Step 2 — Frame exists? Verify the transform from sensor to base and base to map exists. Missing transforms produce ghost obstacles or invisible walls.",
+                        "Step 3 — Timestamp valid? Check that sensor timestamps are current (not system time mismatch or stale data). Stale timestamps break filter updates.",
+                        "Step 4 — Map updates? Observe whether the occupancy grid changes as the robot moves. A static map when the robot is moving means <strong class=\"font-bold\">SLAM</strong> is not updating.",
+                        "Step 5 — Pose stable? Monitor <strong class=\"font-bold\">pose</strong> estimate over time. Large jumps, oscillation, or divergence indicate a filter or registration problem, not a planning problem."
+            ],
+            "bottom_band": "Data-path first: Before touching any algorithm parameter, confirm that data enters the system, transforms exist, timestamps are valid, the map updates, and the <strong class=\"font-bold\">pose</strong> is stable. Most '<strong class=\"font-bold\">SLAM</strong> failures' are actually data-path failures."
+        },
+        {
+            "title": "Section 2 — Planning and Costmaps",
+            "thesis": "How goals become safer robot motion. This section covers global vs. local planners, costmap structure, inflation zones, the difference between obstacle avoidance and full navigation, the Go2 avoid-mode lifecycle, patrol plans as beginner route contracts, and the habit of separating plan, command, and robot failures.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "Planning turns intent into motion: Goal → Route → Local motion → Robot command. Each layer refines the intent into safer, more specific instructions."
+                        },
+                        {
+                                    "label": "Key Concept",
+                                    "value": "A <strong class=\"font-bold\">costmap</strong> is a risk picture around the robot. It marks free, occupied, inflated, and unknown cells so the <strong class=\"font-bold\">planner</strong> avoids dangerous space."
+                        },
+                        {
+                                    "label": "Common Mistake",
+                                    "value": "Confusing obstacle avoidance (reactive, local) with navigation (planned, global). Both are needed — avoidance alone does not choose a destination."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 14–21: Planning concepts, global/local split, costmap grid, inflation, avoidance vs. navigation, Go2 avoid lifecycle, patrol plans, and layered debugging."
+                        }
+            ],
+            "bottom_band": "Section framing: By the end of this section you should be able to read a <strong class=\"font-bold\">costmap</strong>, explain why <strong class=\"font-bold\">inflation</strong> exists, and describe how the <strong class=\"font-bold\">Go2</strong> avoid-mode lifecycle protects local motion."
+        },
+        {
+            "title": "Planning Turns Intent into Motion",
+            "thesis": "Path planning begins with intent. The robot needs to reach a checkpoint, inspect an object, or move through a corridor. The <strong class=\"font-bold\">planner</strong> converts that intent into a route. A local motion layer then turns the route into near-term movement that respects obstacles, robot size, and safety margins.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Goal",
+                                    "value": "What the robot should achieve — reach a checkpoint, inspect a target, patrol a corridor. The goal is expressed in the map frame as a destination <strong class=\"font-bold\">pose</strong>."
+                        },
+                        {
+                                    "label": "Route",
+                                    "value": "The global path from start to goal — a sequence of waypoints through free space. The global <strong class=\"font-bold\">planner</strong> computes this using the full occupancy grid."
+                        },
+                        {
+                                    "label": "Local Motion",
+                                    "value": "The next few velocity or increment commands — refined by the local <strong class=\"font-bold\">costmap</strong> to avoid nearby obstacles. Updated at a higher frequency than the global route."
+                        },
+                        {
+                                    "label": "Robot Command",
+                                    "value": "The final motion instruction — Move(vx, vy, vyaw) or MoveToIncrementPosition(dx, dy, dyaw) — sent to the robot through the appropriate client."
+                        }
+            ],
+            "bottom_band": "Planning mental model: 'Goal is the destination postcard, Route is the highway map, Local Motion is the next three seconds of driving, and Robot Command is the steering wheel.' Each layer operates at a different time and space scale."
+        },
+        {
+            "title": "Global and Local Planners Split the Job",
+            "thesis": "A global planner reasons over the larger map and chooses a route toward the destination. A local planner focuses on the space near the robot and adapts to immediate obstacles. Beginners can remember this as: global chooses the trip, local watches the next few steps.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Dimension",
+                                    "Global Planner",
+                                    "Local Planner"
+                        ],
+                        "rows": [
+                                    [
+                                                "Scope",
+                                                "Full map — considers the entire known environment.",
+                                                "Local window — typically a few meters around the robot."
+                                    ],
+                                    [
+                                                "Update Rate",
+                                                "Slow — recomputed when the map changes or a new goal arrives.",
+                                                "Fast — replanned at 5–20 Hz to react to dynamic obstacles."
+                                    ],
+                                    [
+                                                "Output",
+                                                "A route: sequence of waypoints through free space.",
+                                                "A trajectory: velocity commands or increment goals for the next few seconds."
+                                    ],
+                                    [
+                                                "Fails When",
+                                                "The map is incomplete or the goal is unreachable.",
+                                                "An unexpected obstacle appears too close for the stopping distance."
+                                    ],
+                                    [
+                                                "Beginner Analogy",
+                                                "\"Which highway should I take to the city?\"",
+                                                "\"Should I brake for the car that just pulled in front of me?\""
+                                    ]
+                        ]
+            },
+            "bottom_band": "Key distinction: If the robot does not know the overall route, the problem is global planning. If the robot knows the route but hits nearby obstacles, the problem is local planning. Separate these before debugging."
+        },
+        {
+            "title": "A Costmap Is a Risk Picture",
+            "thesis": "A local costmap is a grid around the robot. Each cell stores risk information. Some cells are free, some contain obstacles, some are unknown, and some are inflated safety areas around obstacles. The planner reads this grid to avoid choosing motion that is too close or unsafe.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Free Space (Low Risk)",
+                                    "value": "Cells with no detected obstacles. The <strong class=\"font-bold\">planner</strong> can route through these cells at low cost. Color-coded green in most visualizers."
+                        },
+                        {
+                                    "label": "Obstacle (Blocked)",
+                                    "value": "Cells containing detected obstacles — lethal cost. The <strong class=\"font-bold\">planner</strong> must never route through these. Color-coded dark/red."
+                        },
+                        {
+                                    "label": "Inflation (Safety Buffer)",
+                                    "value": "Cells near obstacles — cost increases with proximity. Creates a safety margin so the robot does not scrape walls or cones. Color-coded amber/yellow gradient."
+                        },
+                        {
+                                    "label": "Unknown (Be Careful)",
+                                    "value": "Cells with no sensor data — the robot does not know what is there. Conservative planners treat unknown as high-cost. Color-coded gray."
+                        }
+            ],
+            "bottom_band": "Costmap reading exercise: Look at a <strong class=\"font-bold\">costmap</strong> visualization. Point to one free cell, one obstacle cell, one inflated cell, and one unknown cell. For each, explain what the <strong class=\"font-bold\">planner</strong> will do with that information."
+        },
+        {
+            "title": "Inflation Creates Breathing Room",
+            "thesis": "Robots need space around obstacles. Inflation expands obstacle regions so the planner avoids scraping walls, cones, or people. The margin should consider robot width, pose uncertainty, and field safety rules. More inflation improves clearance, but too much inflation can block narrow routes.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Inflation Factor",
+                                    "Effect on Planning",
+                                    "Beginner Guidance"
+                        ],
+                        "rows": [
+                                    [
+                                                "Robot Footprint Radius",
+                                                "The minimum clearance — at least half the robot's width plus a margin.",
+                                                "Measure the Go2 width and add 0.1–0.2 m. This is your absolute minimum inflation radius."
+                                    ],
+                                    [
+                                                "Pose Uncertainty",
+                                                "Additional margin for localization error — if the robot may be 0.1 m off, add 0.1 m.",
+                                                "Larger in GPS-denied or feature-poor environments; smaller in well-mapped indoor spaces with good features."
+                                    ],
+                                    [
+                                                "Safety Policy",
+                                                "Extra margin required by field safety rules — typically 0.2–0.5 m for classroom settings.",
+                                                "Non-negotiable for student labs. The instructor sets this value; it overrides other considerations."
+                                    ],
+                                    [
+                                                "Narrow Passage Trade-off",
+                                                "Too much inflation blocks legitimate routes through doors or corridors.",
+                                                "If the robot refuses to pass through a wide-enough opening, reduce inflation slightly — but never below the minimum."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Inflation test: 'My robot refuses to enter a 1.2 m corridor. The robot is 0.4 m wide. What should I check?' Answer: <strong class=\"font-bold\">inflation</strong> radius — if it exceeds 0.4 m, the corridor looks blocked even though the robot physically fits."
+        },
+        {
+            "title": "Obstacle Avoidance Is Not Full Navigation",
+            "thesis": "Obstacle avoidance helps the robot respond to nearby hazards, but it does not automatically understand the whole route. Planning chooses where to go over a larger space. Avoidance helps motion remain safe moment by moment. Beginners should not confuse reactive safety behavior with full autonomous navigation.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Dimension",
+                                    "Obstacle Avoidance",
+                                    "Full Navigation"
+                        ],
+                        "rows": [
+                                    [
+                                                "Input",
+                                                "Local sensor data — immediate surroundings.",
+                                                "Global map + goal pose + local sensor data."
+                                    ],
+                                    [
+                                                "Time Horizon",
+                                                "Seconds — the next few motion commands.",
+                                                "Minutes — the complete route to the destination."
+                                    ],
+                                    [
+                                                "Output",
+                                                "Safe velocity adjustment or stop command.",
+                                                "Route waypoints + trajectory + avoidance overlay."
+                                    ],
+                                    [
+                                                "Answers the Question",
+                                                "\"Is my next step safe?\"",
+                                                "\"Where should I go, and is the path safe all the way?\""
+                                    ],
+                                    [
+                                                "Fails When",
+                                                "An obstacle appears inside the stopping distance.",
+                                                "The global goal is unreachable or the map is wrong."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Vocabulary check: 'The robot avoided the cone.' What does this mean? It means the local avoidance layer detected the cone and adjusted motion — it does NOT mean the robot planned a new global route around it."
+        },
+        {
+            "title": "Unitree Avoid Mode Fits the Local Layer",
+            "thesis": "On the Go2, obstacle avoidance is controlled through a clear lifecycle. The program enables the avoidance client, requests command authority, sends controlled motion, stops the robot, releases authority, and disables avoid mode. This lifecycle belongs in the local safety layer of the autonomy stack.",
+            "board_type": "list",
+            "board_data": [
+                        "1. Enable Avoid Mode: <strong class=\"font-bold\">ObstaclesAvoidClient</strong>.SwitchSet(True) and verify with SwitchGet(). The avoid service must actually be on — confirm with read-back.",
+                        "2. Gain Command Authority: UseRemoteCommandFromApi(True) transfers control from the remote to the API. Without this, your commands are ignored.",
+                        "3. Move Carefully: Send limited velocity or increment commands through the avoid service. The robot will slow or stop for nearby obstacles automatically.",
+                        "4. Stop: Send repeated Move(0, 0, 0) to halt all motion. Redundant stop commands are safer — one zero command may not be enough.",
+                        "5. Release Authority: UseRemoteCommandFromApi(False) returns control to the remote. The script must not retain control after completion.",
+                        "6. Disable Avoid: SwitchSet(False) turns off the avoid service. Clean shutdown prevents lingering command authority."
+            ],
+            "bottom_band": "Lifecycle rule: Success, failure, and Ctrl+C paths must all converge on the same release sequence. A crash after step 2 leaves the robot in an unsafe state — always wrap in try/finally."
+        },
+        {
+            "title": "Patrol Plans Are Beginner Route Contracts",
+            "thesis": "A patrol plan is a simple route contract. It lists checkpoints, movement limits, capture expectations, and validation rules. Beginners can use it before full autonomy because it teaches disciplined route thinking. Later, the same structure can be compared with map-based goals and planner-generated paths.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Checkpoint",
+                                    "value": "A named stop on the route — cp_A (start), cp_B (corner), cp_C (end). Each checkpoint has an ID, label, dwell time, and optional capture requirement."
+                        },
+                        {
+                                    "label": "Motion Limit",
+                                    "value": "Speed cap (vx ≤ 0.25 m/s) and increment cap (dx ≤ 0.5 m). Limits are chosen for supervision and evidence quality, not for the robot's maximum capability."
+                        },
+                        {
+                                    "label": "Capture Action",
+                                    "value": "<strong class=\"font-bold\">VideoClient</strong>.GetImageSample() at designated checkpoints — the camera records evidence after the robot stops, not during motion."
+                        },
+                        {
+                                    "label": "Validation Rule",
+                                    "value": "Each artifact has a structural requirement — metadata<strong class=\"font-bold\">.json</strong> fields, image file size > 100 bytes, JSONL with at least one valid line."
+                        }
+            ],
+            "bottom_band": "Patrol plan as contract: 'If I hand this plan to another team, can they execute it safely?' If the answer is no — the limits are vague, checkpoints are unnamed, or validation rules are missing — the plan is not ready for hardware."
+        },
+        {
+            "title": "Debugging Habit: Separate Plan, Command, and Robot",
+            "thesis": "When motion fails, do not guess. Separate the problem into layers. First ask whether the plan is valid, then check whether the command was sent, next observe whether the robot moved as expected, and finally confirm that evidence was saved. This habit makes debugging less emotional and more systematic.",
+            "board_type": "list",
+            "board_data": [
+                        "1. Plan valid? Check patrol_plan<strong class=\"font-bold\">.json</strong> structure — are all required fields present? Do checkpoint IDs match between checkpoints and legs? Are values within limits?",
+                        "2. Command sent? Verify the SDK client sent the command — check console output, return codes, and any error messages. Did the client timeout or throw?",
+                        "3. Robot moved? Observe physical behavior — did the robot move at all? In the expected direction? For the expected distance? Did it stop correctly?",
+                        "4. Evidence saved? Check the run folder — are metadata<strong class=\"font-bold\">.json</strong>, sportmodestate<strong class=\"font-bold\">.jsonl</strong>, and checkpoint images present and valid? Does the validator pass?"
+            ],
+            "bottom_band": "Debugging discipline: Before changing any code, answer all four questions. If the plan was never valid, tuning dx values will not help. If the command was never sent, the robot behavior is irrelevant."
+        },
+        {
+            "title": "Section 3 — Gazebo Sandbox",
+            "thesis": "Rehearse the inspection routine before field deployment. This section covers Gazebo as a required rehearsal space, building meaningful simulation worlds, checking simulated sensors, reading ROS 2 data flow, establishing validation gates, collecting simulation evidence, and the rule that simulation failures are fixed before hardware is touched.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "Design in simulation → Test safely → Collect evidence → Decide readiness. <strong class=\"font-bold\">Gazebo</strong> is the rehearsal space — not a replacement for hardware testing, but a required step before it."
+                        },
+                        {
+                                    "label": "Why Required",
+                                    "value": "Simulation catches plan errors, route problems, sensor misconfigurations, and costmap issues without risking physical damage or safety incidents."
+                        },
+                        {
+                                    "label": "ROS 2 Bridge",
+                                    "value": "<strong class=\"font-bold\">ros_gz_bridge</strong> exchanges messages between <strong class=\"font-bold\">ROS 2</strong> and <strong class=\"font-bold\">Gazebo</strong> Transport. Topics like /cmd_vel, /odom, /scan, and /<strong class=\"font-bold\">costmap</strong> become visible for debugging."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 23–29: Gazebo as rehearsal, world design, sensor checking, ROS 2 topic flow, validation gates, simulation evidence, and the sim-before-hardware debugging rule."
+                        }
+            ],
+            "bottom_band": "Section rule: If a routine fails in simulation, fix it in simulation. If it passes simulation, still test hardware slowly. Simulation is a gate, not a guarantee."
+        },
+        {
+            "title": "Gazebo Is the Rehearsal Space",
+            "thesis": "<strong class=\"font-bold\">Gazebo</strong> is the rehearsal space for inspection routines. It allows students to test arena layout, route logic, obstacle placement, sensor assumptions, and <strong class=\"font-bold\">costmap</strong> behavior before moving the physical robot. Simulation does not prove field safety, but it reduces avoidable uncertainty before hardware testing.",
+            "board_type": "list",
+            "board_data": [
+                        "Design: Build the arena in simulation — start zone, corridor, obstacles, inspection targets, restricted areas, finish zone. Make the world mirror the field task.",
+                        "Test: Run the patrol routine in <strong class=\"font-bold\">Gazebo</strong>. Observe sensor output, route execution, obstacle avoidance behavior, and <strong class=\"font-bold\">costmap</strong> updates.",
+                        "Collect Evidence: Save world screenshot, route trace, <strong class=\"font-bold\">costmap</strong> snapshot, log file. Evidence lets another person understand what happened without re-running.",
+                        "Decide Readiness: Based on evidence — is the routine ready for hardware? Does it need tuning? Does it need redesign? Make an explicit decision, not an assumption."
+            ],
+            "bottom_band": "Simulation mindset: 'I am not proving the routine works. I am finding what would fail on hardware before the hardware is at risk.' Design your simulation test to find failures, not to confirm hopes."
+        },
+        {
+            "title": "Build the Inspection World on Purpose",
+            "thesis": "A useful simulation world is not random decoration. It should represent the field task. Students should place a start zone, corridor boundaries, obstacles, inspection targets, restricted areas, and a finish zone. This makes the simulation test meaningful because it mirrors the decisions required during the real patrol.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Start Zone",
+                                    "value": "Where the robot initializes — clear of obstacles, near the first checkpoint. The simulated robot should spawn in the same <strong class=\"font-bold\">pose</strong> the physical robot will start from."
+                        },
+                        {
+                                    "label": "Corridor Boundaries",
+                                    "value": "Walls, cones, or markers defining the patrol corridor. Should match the physical arena dimensions as closely as practical."
+                        },
+                        {
+                                    "label": "Obstacles",
+                                    "value": "Objects the robot must avoid — placed at positions that test the costmap and avoidance response. Start with one obstacle; add more after confirming avoidance works."
+                        },
+                        {
+                                    "label": "Inspection Targets",
+                                    "value": "Checkpoint locations — the robot should stop, dwell, and capture evidence here. Each target tests a different part of the route logic."
+                        },
+                        {
+                                    "label": "Finish Zone",
+                                    "value": "Where the robot ends — clear of obstacles, with enough space for a clean stop and final capture."
+                        }
+            ],
+            "bottom_band": "World design test: 'Does my simulation world contain every decision the robot will face in the field?' If the field has a narrow turn but the sim doesn't, the simulation missed a critical test case."
+        },
+        {
+            "title": "Simulated Sensors Must Be Checked",
+            "thesis": "A simulated robot must provide usable sensor data. Students should confirm that camera, LiDAR, odometry, and state topics are publishing plausible information. If the simulated sensors are missing or unrealistic, the route validation becomes weak. Beginners should inspect the data before trusting the motion result.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Check",
+                                    "What to Look For",
+                                    "Red Flags"
+                        ],
+                        "rows": [
+                                    [
+                                                "Robot Model",
+                                                "Correct URDF/Xacro, joint limits, sensor plugins.",
+                                                "Missing links, zero-mass bodies, sensors with no plugin."
+                                    ],
+                                    [
+                                                "Sensor Topics",
+                                                "Topics publishing at expected rates with valid data types.",
+                                                "Topics missing, publishing at 0 Hz, or with zero-filled messages."
+                                    ],
+                                    [
+                                                "Visualization",
+                                                "Data visible in <strong class=\"font-bold\">RViz</strong> — point clouds, laser scans, camera images.",
+                                                "Data appears offset, inverted, or shows constant/default values."
+                                    ],
+                                    [
+                                                "Logs",
+                                                "Logged values match visual inspection — ranges, timestamps, frame IDs.",
+                                                "Timestamps frozen, frame IDs mismatched, ranges out of sensor spec."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Sensor check rule: Before you trust the robot's motion in simulation, verify each sensor independently. A world with broken sensors trains you to ignore broken data — the opposite of what you need for hardware."
+        },
+        {
+            "title": "ROS 2 Shows the Data Flow",
+            "thesis": "In a beginner simulation workflow, ROS 2 topics make invisible data visible. Command topics show intended motion, odometry shows estimated movement, sensor topics show what the robot perceives, and costmap topics show how nearby risk is represented. This visibility helps students debug before hardware is involved.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "/cmd_vel → Robot Motion",
+                                    "value": "Publishes <strong class=\"font-bold\">geometry_msgs</strong>/<strong class=\"font-bold\">Twist</strong> — linear and angular velocity commands. In simulation, this is how the robot is told to move. Compare commanded vs. actual velocity."
+                        },
+                        {
+                                    "label": "/odom → Pose Estimate",
+                                    "value": "Publishes <strong class=\"font-bold\">odometry</strong> — position and orientation estimate from motion sensors. Drifts over time but useful for short-term motion tracking."
+                        },
+                        {
+                                    "label": "/scan or /points → Obstacles",
+                                    "value": "Publishes laser scan or point cloud data — what the robot detects around it. Feed this into <strong class=\"font-bold\">RViz</strong> to visually confirm obstacle detection."
+                        },
+                        {
+                                    "label": "/<strong class=\"font-bold\">costmap</strong> → Risk Grid",
+                                    "value": "Publishes the local costmap — the risk picture the planner reads. Watch how inflation zones expand around obstacles as the robot approaches."
+                        }
+            ],
+            "bottom_band": "Topic flow exercise: Run a simulation. Open a terminal and run rostopic list. For each topic above, run rostopic echo once and explain what the message means. If you cannot, that topic is a blind spot in your understanding."
+        },
+        {
+            "title": "Validate the Routine Before the Robot Moves",
+            "thesis": "Validation is a gate, not a formality. Before hardware movement, students should verify that the plan file is valid, the route appears correctly, obstacles are detected, the simulated robot avoids collisions, and logs are saved. A failed validation means the system is protecting the field test.",
+            "board_type": "list",
+            "board_data": [
+                        "Plan file valid: All required fields present; checkpoint IDs match; motion values within limits; JSON structure parses without errors.",
+                        "Route visible: The planned path appears correctly on the map — no segments through walls, no impossible turns, no self-intersections.",
+                        "Obstacles detected: Sensor data shows obstacles at expected positions; <strong class=\"font-bold\">costmap</strong> marks them correctly; <strong class=\"font-bold\">inflation</strong> zones provide adequate clearance.",
+                        "No collision: The simulated robot completes the route without contacting obstacles, crossing safety boundaries, or entering restricted zones.",
+                        "Logs saved: All evidence artifacts exist — world screenshot, route trace, <strong class=\"font-bold\">costmap</strong> snapshot, log file, short conclusion statement."
+            ],
+            "bottom_band": "Validation gate rule: PASS → proceed to hardware (slowly). FAIL → fix the issue and re-validate. WARNING → document the concern and get instructor approval before hardware. Never skip validation because 'it will probably be fine.'"
+        },
+        {
+            "title": "Simulation Evidence Should Be Reviewable",
+            "thesis": "Simulation evidence should let another person understand what happened. Students should save a world screenshot, route trace, costmap snapshot, log file, and short conclusion. The conclusion should state whether the routine is ready for field testing, needs tuning, or must be redesigned.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "World Screenshot",
+                                    "value": "Top-down view of the simulation world with the robot's path overlaid. Shows the arena layout and the complete route in one image."
+                        },
+                        {
+                                    "label": "Route Trace",
+                                    "value": "Plot of the robot's actual trajectory vs. the planned path. Deviations, overshoots, and correction points are visible."
+                        },
+                        {
+                                    "label": "Costmap Snapshot",
+                                    "value": "Screenshot of the local <strong class=\"font-bold\">costmap</strong> at a critical moment — e.g., the narrowest turn or closest obstacle approach."
+                        },
+                        {
+                                    "label": "Log File",
+                                    "value": "Sensor topics, command messages, and state data saved during the run. Timestamps allow correlation with screenshots."
+                        },
+                        {
+                                    "label": "Short Conclusion",
+                                    "value": "One explicit statement: ready for hardware / needs tuning (list what) / must be redesigned (explain why). No hedging."
+                        }
+            ],
+            "bottom_band": "Reviewability test: 'If I give this evidence folder to someone who did not watch the simulation, can they: (a) understand what happened, (b) identify any problems, and (c) decide whether to proceed?' If any answer is no, add evidence."
+        },
+        {
+            "title": "Debugging Habit: Simulation Before Hardware",
+            "thesis": "If a routine fails in simulation, fix it before using hardware. If it passes simulation, do not assume the real robot will behave perfectly. Start slowly, use small motion commands, keep a stop procedure ready, and compare field results against simulation evidence.",
+            "board_type": "list",
+            "board_data": [
+                        "Rule 1 — Fix in sim first: A failure in <strong class=\"font-bold\">Gazebo</strong> means something is wrong with the plan, sensors, or logic. Fix it where it is safe and fast to iterate.",
+                        "Rule 2 — Passing sim is not a guarantee: Hardware introduces network latency, floor texture, lighting, battery state, and sensor noise that simulation cannot fully capture.",
+                        "Rule 3 — Start hardware slowly: First test = small speed, short duration, clear arena. Stop and review behavior before increasing scope.",
+                        "Rule 4 — Keep a stop procedure: Agree on who calls stop, how to stop (remote, script, or physical), and what conditions trigger an immediate halt.",
+                        "Rule 5 — Compare sim vs. hardware: After the field test, overlay the hardware route trace on the simulation route trace. Differences are evidence of real-world effects."
+            ],
+            "bottom_band": "Conservative rule: 'Simulation is where you earn confidence. Hardware is where you confirm it cautiously.' Never reverse the order — hardware is not for debugging obvious plan errors."
+        },
+        {
+            "title": "Section 4 — Physical Go2 Handoff",
+            "thesis": "Move from simulation evidence to controlled field testing. This section covers the handoff as a controlled process, network readiness checks, intentional command authority, staged motion testing, hardware-in-the-loop comparison, evidence-based claims, and the one-change-at-a-time experimental discipline.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "Validated plan → Network check → Robot state check → Safe command authority → Field run. Handoff is a controlled process, not just copying a file."
+                        },
+                        {
+                                    "label": "Key Principle",
+                                    "value": "Many field failures are network failures disguised as robot failures. Check connectivity, interface, DDS discovery, and topic visibility before debugging autonomy."
+                        },
+                        {
+                                    "label": "Safety Rule",
+                                    "value": "Command authority defines who controls the robot. Request only when ready, send limited commands, stop cleanly, release afterward. Treat it seriously."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 31–37: Controlled handoff, network readiness, command authority lifecycle, staged field testing, hardware-in-the-loop, evidence-based claims, and one-variable-at-a-time debugging."
+                        }
+            ],
+            "bottom_band": "Section rule: The first hardware test is not a full-speed patrol. It is a slow, short, supervised motion — then stop, review, and decide whether to expand."
+        },
+        {
+            "title": "Handoff Means More Than Copying a File",
+            "thesis": "Hardware handoff is not simply copying a patrol file onto a machine. It is a controlled process. Students must confirm that the plan passed validation, the network is connected, robot state is safe, command authority is understood, and the field operator is ready before motion begins.",
+            "board_type": "list",
+            "board_data": [
+                        "1. Validated Plan: The patrol plan passed simulation validation. Artifacts exist — world screenshot, route trace, <strong class=\"font-bold\">costmap</strong> snapshot, conclusion.",
+                        "2. Network Check: Robot is reachable (ping 192.168.123.161), correct interface is active (en6, eth0), <strong class=\"font-bold\">DDS</strong> discovery works, topics or SDK responses are visible.",
+                        "3. Robot State Check: Posture is safe (BalanceStand confirmed), SportModeState is normal, battery is adequate, no error codes active.",
+                        "4. Safe Command Authority: Operator understands who has control (remote vs. API). UseRemoteCommandFromApi(True) is intentional and documented.",
+                        "5. Field Operator Ready: Spotter in position, arena marked, stop procedure agreed, abort rules reviewed, one-patrol-at-a-time rule enforced."
+            ],
+            "bottom_band": "Handoff test: 'Before I run a single motion command, can I answer: is the network up, is the robot state safe, who has command authority, and what is the stop procedure?' If any answer is no, do not proceed."
+        },
+        {
+            "title": "Network Readiness Comes First",
+            "thesis": "Many field failures are network failures disguised as robot failures. Before debugging autonomy, students should confirm the robot is reachable, the correct network interface is active, DDS discovery works, and expected topics or SDK responses are visible. Connectivity is the foundation for safe command and logging.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Check",
+                                    "Command / Action",
+                                    "Expected Result"
+                        ],
+                        "rows": [
+                                    [
+                                                "Robot Reachable",
+                                                "ping 192.168.123.161",
+                                                "Consistent replies, latency < 5 ms, no packet loss."
+                                    ],
+                                    [
+                                                "Correct Interface",
+                                                "ip addr — identify the robot-facing adapter (en6, eth0, enp3s0).",
+                                                "Interface has IP on 192.168.123.x subnet, NOT .161 (the robot's onboard address)."
+                                    ],
+                                    [
+                                                "<strong class=\"font-bold\">DDS</strong> Discovery",
+                                                "Initialize ChannelFactoryInitialize(0, \"<interface>\") without errors.",
+                                                "SDK clients initialize; no <strong class=\"font-bold\">CycloneDDS</strong> domain mismatch or discovery timeout."
+                                    ],
+                                    [
+                                                "Topics Visible",
+                                                "Subscriber callbacks fire; SportModeState_ messages arrive.",
+                                                "State messages contain valid mode, gait, position, velocity fields — not defaults or zeros."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Network-first rule: If the robot is not reachable, nothing else matters. Do not debug autonomy, planning, or costmaps — debug the network. Connectivity problems are the #1 cause of beginner field failures."
+        },
+        {
+            "title": "Command Authority Must Be Intentional",
+            "thesis": "Command authority defines who is allowed to control the robot. Beginners must treat it seriously. The program should request authority only when ready, send limited commands, stop cleanly, and release authority afterward. This prevents confusion between manual control, SDK control, and emergency intervention.",
+            "board_type": "list",
+            "board_data": [
+                        "Request authority only when ready: UseRemoteCommandFromApi(True) is called after all checks pass — network, state, plan, operator. Not during initialization as a default.",
+                        "Send limited commands: Speed ≤ 0.25 m/s, increment ≤ 0.5 m, short duration. The first command should be the smallest meaningful motion possible.",
+                        "Stop cleanly: Move(0, 0, 0) sent repeatedly; <strong class=\"font-bold\">SportClient</strong>.StopMove() as backup. Stop is as important as move — a script that can start but not stop is unsafe.",
+                        "Release authority afterward: UseRemoteCommandFromApi(False) and SwitchSet(False) in a finally block. Authority must not linger after the script exits."
+            ],
+            "bottom_band": "Authority question: At any moment, ask: 'Who currently has command authority?' If the answer is unclear — the remote might be connected, the app might be open, another script might be running — stop and resolve before motion."
+        },
+        {
+            "title": "Start with Small Field Motions",
+            "thesis": "The first hardware test should not be a full-speed patrol. Students should start with small speeds and short durations, then stop and review behavior. If the robot moves as expected, the test can expand gradually. This staged approach reduces risk and gives students time to learn from evidence.",
+            "board_type": "list",
+            "board_data": [
+                        "Stage 1 — Single small increment: One dx = 0.2 m forward. Stop. Review state log. Confirm the robot moved ~0.2 m, not 0.5 m or 0.0 m.",
+                        "Stage 2 — Increment + turn: One dx = 0.3 m, one dyaw = 0.3 rad. Stop. Review. Did the robot turn approximately the expected angle?",
+                        "Stage 3 — Two-leg sequence: Forward to cp_B, turn, forward to cp_C. Capture at each checkpoint. Run validator. Review all artifacts.",
+                        "Stage 4 — Full patrol at low speed: Complete the patrol plan at minimum speeds. Compare with simulation route trace. Identify deviations.",
+                        "Stage 5 — Tuned patrol: One parameter change (e.g., increase leg 1 dx by 0.1 m). Compare baseline vs. tuned. Document the difference."
+            ],
+            "bottom_band": "Staging rule: Never jump from simulation to full-speed patrol. Each stage confirms one new capability. If a stage fails, fix it before adding complexity."
+        },
+        {
+            "title": "Hardware-in-the-Loop Tests Close the Gap",
+            "thesis": "Simulation cannot capture every real-world effect. Hardware-in-the-loop testing exposes network latency, floor texture, sensor noise, lighting, battery condition, and physical dynamics. The purpose is not to prove simulation wrong — it is to compare expectations against reality and improve the routine responsibly.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Real-World Effect",
+                                    "Simulation Gap",
+                                    "Hardware Observation Method"
+                        ],
+                        "rows": [
+                                    [
+                                                "Network Latency",
+                                                "Simulation assumes instantaneous or low-latency communication.",
+                                                "Timestamp command send time and state receipt time; compute round-trip delay."
+                                    ],
+                                    [
+                                                "Floor Texture",
+                                                "Simulation floor is uniform friction; real floors vary (carpet, tile, concrete).",
+                                                "Compare odometry-reported distance with measured physical distance."
+                                    ],
+                                    [
+                                                "Sensor Noise",
+                                                "Simulated sensors add modeled noise; real noise patterns are more complex.",
+                                                "Plot sensor values over time during a static robot — noise floor should be visible."
+                                    ],
+                                    [
+                                                "Lighting",
+                                                "Simulation lighting is controlled; real lighting changes throughout the day.",
+                                                "Capture checkpoint images at the same location under different lighting conditions."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Comparison mindset: 'The simulation predicted X. The hardware showed Y. The difference Z tells me something about the real world.' Document Z — that is your engineering insight, not a failure."
+        },
+        {
+            "title": "Field Evidence Must Match the Claim",
+            "thesis": "Every field claim needs matching evidence. If students claim the robot avoided an obstacle, they should show the field video, command log, stop event, or route trace. If they claim the plan is reliable, they should show repeated runs. Evidence turns a demo into an engineering result.",
+            "board_type": "table",
+            "board_data": {
+                        "headers": [
+                                    "Claim",
+                                    "Required Evidence",
+                                    "Insufficient Evidence"
+                        ],
+                        "rows": [
+                                    [
+                                                "\"The robot avoided the obstacle.\"",
+                                                "Video of approach + <strong class=\"font-bold\">costmap</strong> showing obstacle + velocity change before contact.",
+                                                "'I saw it turn' — memory is not evidence."
+                                    ],
+                                    [
+                                                "\"The plan is reliable.\"",
+                                                "Three repeated runs with route traces overlaid, all within tolerance.",
+                                                "One successful run — reliability requires repetition."
+                                    ],
+                                    [
+                                                "\"The checkpoint was reached.\"",
+                                                "Checkpoint frame<strong class=\"font-bold\">.jpg</strong> showing the expected scene + state slice showing velocity ≈ 0.",
+                                                "Metadata entry alone — image content matters more than structural presence."
+                                    ],
+                                    [
+                                                "\"The robot stopped safely.\"",
+                                                "Velocity plot showing vx → 0 within expected time; no residual drift.",
+                                                "'It looked stopped' — measure, do not estimate."
+                                    ]
+                        ]
+            },
+            "bottom_band": "Evidence test: 'If someone disputes your claim, what artifact would you show to prove it?' If you cannot name a specific file, image, plot, or log entry, your claim is not yet evidence-backed."
+        },
+        {
+            "title": "Debugging Habit: Change One Thing at a Time",
+            "thesis": "When field tests fail, beginners may change speed, route, sensor settings, and code all at once. That makes learning impossible. Change one variable at a time, run the test, save the log, write one conclusion. This habit makes tuning slower at first but much more reliable.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "One Change",
+                                    "value": "Modify exactly one parameter — leg dx, turn dyaw, dwell time, or speed cap. Document: what changed, old value, new value, why this change."
+                        },
+                        {
+                                    "label": "One Run",
+                                    "value": "Execute the patrol under the same conditions as the baseline — same arena, same lighting, same operator. Only the one parameter differs."
+                        },
+                        {
+                                    "label": "One Log",
+                                    "value": "Save the complete run folder with a descriptive name — e.g., run_field_tuned_dx_0.4. The name should encode the change."
+                        },
+                        {
+                                    "label": "One Conclusion",
+                                    "value": "State what the change did: 'dx 0.3→0.4 reduced under-shoot at cp_B from ~0.15 m to ~0.03 m.' Or: 'Change had no measurable effect — dx is not the limiting factor.'"
+                        }
+            ],
+            "bottom_band": "Experimental discipline: If you change dx, dyaw, and dwell simultaneously and the robot reaches the checkpoint, you learned nothing about which change mattered. Control one variable to learn one lesson."
+        },
+        {
+            "title": "Section 5 — Capstone and Practical Habits",
+            "thesis": "Combine SLAM, planning, simulation, and field evidence into an integrated capstone demonstration. This section covers the five-step capstone expectation, a reusable beginner debugging checklist, evidence habits for reproducible runs, and the final takeaway that good autonomy is motion with explanation, validation, and evidence.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Core Idea",
+                                    "value": "The capstone is not judged only by whether the robot moves. Students explain the map, justify the route, validate in Gazebo, test on Go2, and report evidence."
+                        },
+                        {
+                                    "label": "Debugging Checklist",
+                                    "value": "Power → Network → Topics → Frames → Plan → Simulation → Command → Logs. Move through layers in order — most issues resolve before you reach the bottom."
+                        },
+                        {
+                                    "label": "Evidence Habit",
+                                    "value": "Run folder = plan + settings + logs + screenshots + conclusion. Name folders by date, scenario, and attempt so results can be compared later."
+                        },
+                        {
+                                    "label": "Section Slides",
+                                    "value": "Slides 39–42: Capstone integration, debugging checklist, reproducible run folders, and the final takeaway that autonomy is evidence-based."
+                        }
+            ],
+            "bottom_band": "Capstone mindset: Your presentation should let someone who never attended this class understand what you did, why it was safe, what evidence you collected, and what you would change next."
+        },
+        {
+            "title": "The Capstone Connects Every Layer",
+            "thesis": "The capstone should not be judged only by whether the robot moves. Students must explain the map or spatial assumptions, justify the route, validate behavior in Gazebo, run a controlled Go2 field test, and report evidence. This connects the full academic scope of Day 2.",
+            "board_type": "list",
+            "board_data": [
+                        "1. Explain the map: Show the occupancy grid or spatial assumptions. What does the robot know about the environment? What is the coordinate frame layout?",
+                        "2. Justify the route: Present the patrol plan or <strong class=\"font-bold\">planner</strong> output. Why this path? How do costmaps and <strong class=\"font-bold\">inflation</strong> protect the robot at each turn?",
+                        "3. Validate in <strong class=\"font-bold\">Gazebo</strong>: Show simulation evidence — world screenshot, route trace, <strong class=\"font-bold\">costmap</strong> snapshot, log file. State the validation outcome explicitly.",
+                        "4. Test on <strong class=\"font-bold\">Go2</strong>: Present hardware results — field video, command log, checkpoint images, validator output. Compare hardware route trace with simulation trace.",
+                        "5. Report evidence: Provide the run folder with all artifacts. State one tuning action, one failure encountered or avoided, and one next improvement."
+            ],
+            "bottom_band": "Capstone test: 'If I only read your evidence folder — no live demo, no verbal explanation — would I understand what happened and whether the routine was safe?' If the answer is no, add evidence until it is yes."
+        },
+        {
+            "title": "Beginner Debugging Checklist",
+            "thesis": "A beginner debugging checklist prevents panic. Start with power and safety, check network connectivity, confirm topics or SDK responses, verify coordinate frames, validate the plan, test in simulation, send limited commands, and save logs. Most robotics debugging becomes manageable when students move through layers in order.",
+            "board_type": "list",
+            "board_data": [
+                        "Power: Is the robot on? Battery adequate? Emergency stop accessible? No error lights or warning beeps.",
+                        "Network: Can you ping the robot? Correct interface active? <strong class=\"font-bold\">DDS</strong> discovery working? No IP conflicts on the subnet.",
+                        "Topics: Are expected topics publishing? Are message rates normal? Are timestamps current? No stale or zero-filled data.",
+                        "Frames: Does the transform tree exist? Are all expected frames connected? Are timestamps synchronized across frames?",
+                        "Plan: Is the plan file valid? All fields present? Values within limits? Checkpoint IDs consistent between checkpoints and legs?",
+                        "Simulation: Does the routine pass in <strong class=\"font-bold\">Gazebo</strong>? Has evidence been collected? Is the conclusion explicit about readiness?",
+                        "Command: Are commands being sent? Any error returns or timeouts? Is command authority explicitly controlled?",
+                        "Logs: Are logs being written? Are files non-empty? Does the validator pass? Can another person understand the run folder?"
+            ],
+            "bottom_band": "Checklist discipline: When something fails, start at the top and work down. Do not skip layers. 'My robot isn't moving' could be a dead battery (Power), a disconnected cable (Network), or a missing authority request (Command) — the checklist catches all three."
+        },
+        {
+            "title": "Evidence Habit: Make Every Run Reproducible",
+            "thesis": "A reproducible run folder lets another person understand and repeat the test. It should include the plan file, key settings, logs, screenshots, captured images, and a short conclusion. Students should name folders clearly by date, scenario, and attempt number so results can be compared later.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Plan File",
+                                    "value": "The exact patrol_plan<strong class=\"font-bold\">.json</strong> or <strong class=\"font-bold\">planner</strong> configuration used — not a similar version, not 'approximately what we ran.'"
+                        },
+                        {
+                                    "label": "Key Settings",
+                                    "value": "Speed limits, increment caps, <strong class=\"font-bold\">inflation</strong> radius, <strong class=\"font-bold\">costmap</strong> parameters, interface name, <strong class=\"font-bold\">DDS</strong> domain. Anyone should be able to recreate the configuration."
+                        },
+                        {
+                                    "label": "Logs",
+                                    "value": "State logs (sportmodestate<strong class=\"font-bold\">.jsonl</strong>), command logs, sensor data snapshots. Timestamps allow correlation between events."
+                        },
+                        {
+                                    "label": "Visual Evidence",
+                                    "value": "World screenshot, route trace, costmap snapshot, checkpoint images, field video or photo. Visual evidence answers questions text cannot."
+                        },
+                        {
+                                    "label": "Short Conclusion",
+                                    "value": "One paragraph: what was tested, what passed, what failed, what was changed, what should be tested next. No hedging, no unexplained success."
+                        }
+            ],
+            "bottom_band": "Reproducibility test: 'Can someone else, using only this run folder, recreate the test and get similar results?' If not, what is missing? Add it and re-run."
+        },
+        {
+            "title": "Final Takeaway: Autonomy Is Evidence-Based",
+            "thesis": "Good autonomy is not just motion. Good autonomy is motion with explanation, validation, and evidence. Students should learn to explain the system, validate the routine, test carefully, and preserve evidence. This beginner habit prepares them for more advanced SLAM, navigation, costmap tuning, and field autonomy work.",
+            "board_type": "grid",
+            "board_data": [
+                        {
+                                    "label": "Explanation",
+                                    "value": "Can you explain the autonomy stack — sensors, fusion, <strong class=\"font-bold\">SLAM</strong>, planning, costmaps, control — in plain language? Can you draw the data flow from /cmd_vel to robot motion to evidence?"
+                        },
+                        {
+                                    "label": "Validation",
+                                    "value": "Did the routine pass structured validation gates in simulation? Were all artifacts collected? Was the readiness decision explicit and documented?"
+                        },
+                        {
+                                    "label": "Evidence",
+                                    "value": "Does every claim have a matching artifact? If you say 'the robot avoided the obstacle,' can you show the <strong class=\"font-bold\">costmap</strong>, video, or velocity plot that proves it?"
+                        },
+                        {
+                                    "label": "Next Steps",
+                                    "value": "Day 3 builds on this foundation — more complex SLAM configurations, advanced costmap tuning, multi-sensor calibration, and longer autonomous patrol sequences."
+                        }
+            ],
+            "bottom_band": "Day 2 closing message: 'You now understand autonomy not as magic, but as a layered, testable, evidence-producing engineering discipline. Carry that mindset into every future robotics project.'"
         }
     ],
     "labs": [
