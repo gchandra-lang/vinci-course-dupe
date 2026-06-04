@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "description": "Minimal valid plan for Lab 1 validator fixture",
+  "checkpoints": [
+    {"id": "cp_A", "label": "Entry", "dwell_s": 2.0},
+    {"id": "cp_B", "label": "End", "dwell_s": 2.0}
+  ],
+  "legs": [
+    {
+      "type": "increment",
+      "dx": 0.4,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_B"
+    }
+  ]
+}

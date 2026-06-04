@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "description": "Lab 2 L-shaped cone course — forward, turn at B, forward to C",
+  "checkpoints": [
+    {"id": "cp_A", "label": "Start cone (red)", "dwell_s": 2.0},
+    {"id": "cp_B", "label": "Corner cone (yellow)", "dwell_s": 2.0},
+    {"id": "cp_C", "label": "End cone (blue)", "dwell_s": 2.0}
+  ],
+  "legs": [
+    {
+      "type": "increment",
+      "dx": 0.3,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_B",
+      "notes": "Straight leg A → B"
+    },
+    {
+      "type": "increment",
+      "dx": 0.0,
+      "dy": 0.0,
+      "dyaw": 0.6,
+      "to_checkpoint": "cp_B",
+      "notes": "Turn in place at B (~34 deg); tune dyaw for your cone layout"
+    },
+    {
+      "type": "increment",
+      "dx": 0.3,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_C",
+      "notes": "Second straight leg B → C (after turn)"
+    }
+  ]
+}

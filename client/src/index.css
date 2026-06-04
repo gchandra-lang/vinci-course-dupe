@@ -132,7 +132,7 @@
     rgba(13, 148, 136, 0.015) 122px
   );
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
 /* Scrollbar customization */
@@ -149,4 +149,203 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+}
+
+/* ── Semantic Color Coding ── */
+.semantic-subscribe   { color: oklch(0.55 0.15 250); }     /* Blue — passive observation */
+.semantic-publish     { color: oklch(0.65 0.15 70); }       /* Amber — active command */
+.semantic-rpc         { color: oklch(0.50 0.15 290); }      /* Purple — service request */
+.semantic-safe        { color: oklch(0.55 0.12 160); }      /* Green — ready / safe */
+.semantic-danger      { color: oklch(0.55 0.15 30); }       /* Red — blocking / danger */
+.semantic-neutral     { color: oklch(0.40 0.02 240); }      /* Muted — informational */
+.bg-semantic-subscribe { background: oklch(0.55 0.15 250 / 0.08); border-left: 3px solid oklch(0.55 0.15 250); }
+.bg-semantic-publish   { background: oklch(0.65 0.15 70 / 0.08);  border-left: 3px solid oklch(0.65 0.15 70); }
+.bg-semantic-rpc       { background: oklch(0.50 0.15 290 / 0.08); border-left: 3px solid oklch(0.50 0.15 290); }
+.bg-semantic-safe      { background: oklch(0.55 0.12 160 / 0.08); border-left: 3px solid oklch(0.55 0.12 160); }
+.bg-semantic-danger    { background: oklch(0.55 0.15 30 / 0.08);  border-left: 3px solid oklch(0.55 0.15 30); }
+
+/* ── Diagram Placeholder ── */
+.diagram-placeholder {
+  background: oklch(0.98 0.005 240);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  position: relative;
+}
+.diagram-placeholder::before {
+  content: "📐 DIAGRAM";
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Debugging Habit Accent Callout ── */
+.debug-callout {
+  background: linear-gradient(90deg, oklch(0.65 0.15 70 / 0.10), transparent);
+  border-left: 4px solid oklch(0.65 0.15 70);
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+.debug-callout strong {
+  color: var(--foreground);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Inline Tech Term Badge ── */
+.tech-term {
+  display: inline;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  padding: 0.08em 0.35em;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+.tech-class  { background: oklch(0.55 0.12 200 / 0.10); color: oklch(0.50 0.12 200); }
+.tech-module { background: oklch(0.65 0.15 70 / 0.10);  color: oklch(0.60 0.13 70);  }
+.tech-topic  { background: oklch(0.55 0.15 250 / 0.10); color: oklch(0.50 0.13 250); }
+.tech-field  { background: oklch(0.50 0.15 290 / 0.10); color: oklch(0.45 0.13 290); }
+.tech-value  { background: oklch(0.55 0.12 160 / 0.10); color: oklch(0.50 0.10 160); }
+
+/* ── Inline Details Dropdown ── */
+details.tech-detail, details.inline-detail {
+  display: inline;
+  font-size: 0.72rem;
+  margin-left: 0.3em;
+}
+details.tech-detail summary, details.inline-detail summary {
+  display: inline;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+details.tech-detail summary:hover, details.inline-detail summary:hover { color: var(--foreground); }
+details.tech-detail .dd-content {
+  display: block;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: normal;
+}
+details.inline-detail > :not(summary) {
+  display: block;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+/* ── Platform Icons ── */
+.platform-go2 { color: oklch(0.55 0.12 200); font-weight: 700; }
+.platform-b2  { color: oklch(0.60 0.13 70);  font-weight: 700; }
+.platform-g1  { color: oklch(0.50 0.15 290); font-weight: 700; }
+
+/* ── Risk Pill ── */
+.risk-pill {
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.risk-low    { background: oklch(0.55 0.12 160 / 0.12); color: oklch(0.50 0.10 160); }
+.risk-medium { background: oklch(0.65 0.15 70 / 0.12);  color: oklch(0.60 0.13 70);  }
+.risk-high   { background: oklch(0.55 0.15 30 / 0.12);  color: oklch(0.50 0.13 30);  }
+
+/* ── FSM State Inline Badge ── */
+.fsm-state {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1em 0.4em;
+  border-radius: 0.2rem;
+  white-space: nowrap;
+}
+.fsm-fail      { background: oklch(0.55 0.15 30 / 0.12); color: oklch(0.50 0.13 30);  }
+.fsm-partial   { background: oklch(0.65 0.15 70 / 0.12);  color: oklch(0.60 0.13 70);  }
+.fsm-ready     { background: oklch(0.55 0.12 160 / 0.12); color: oklch(0.50 0.10 160); }
+.fsm-unknown   { background: oklch(0.40 0.02 240 / 0.10); color: oklch(0.40 0.02 240); }
+
+/* ── Day-Phase Bridge Connector ── */
+.bridge-connector {
+  border-left: 3px solid var(--primary);
+  background: oklch(0.55 0.12 200 / 0.04);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+.bridge-connector strong { color: var(--primary); }
+
+/* ── Slide content HTML rendering ── */
+.slide-content-html table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.slide-content-html td, .slide-content-html th {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+.slide-content-html tr { border-bottom: 1px solid var(--border); }
+.slide-content-html tr:last-child { border-bottom: none; }
+.slide-content-html .dual-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Custom dark scrollbar for fullscreen modal inner panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: oklch(0.35 0.03 240);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.55 0.12 200);
 }

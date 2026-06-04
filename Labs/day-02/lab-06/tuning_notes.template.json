@@ -1,0 +1,18 @@
+{
+  "baseline_run": "run_YYYYMMDD_HHMMZ",
+  "symptoms": [
+    "leg 1 stops short of yellow cone",
+    "turn at B barely visible",
+    "leg 3 overshoots toward wall"
+  ],
+  "changes": [
+    {"leg_index": 0, "field": "dx", "from": 0.3, "to": 0.35, "reason": "short of cp_B"},
+    {"leg_index": 1, "field": "dyaw", "from": 0.6, "to": 0.7, "reason": "weak turn"},
+    {"leg_index": 2, "field": "dx", "from": 0.3, "to": 0.25, "reason": "avoid wall at cp_C"}
+  ],
+  "motion_flags": {
+    "leg_wait_s": 5,
+    "leg_pulses": 3,
+    "default_dwell_s": 2
+  }
+}

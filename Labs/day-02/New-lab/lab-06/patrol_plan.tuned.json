@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "description": "Lab 2 L-shaped cone course — forward, turn at B, forward to C (Lab 4 tuned)",
+  "checkpoints": [
+    {"id": "cp_A", "label": "Start cone (red)", "dwell_s": 2.0},
+    {"id": "cp_B", "label": "Corner cone (yellow)", "dwell_s": 2.0},
+    {"id": "cp_C", "label": "End cone (blue)", "dwell_s": 2.0}
+  ],
+  "legs": [
+    {
+      "type": "increment",
+      "dx": 0.3,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_B",
+      "notes": "Straight leg A → B"
+    },
+    {
+      "type": "increment",
+      "dx": 0.0,
+      "dy": 0.0,
+      "dyaw": 0.7,
+      "to_checkpoint": "cp_B",
+      "notes": "Turn at B — tuned stronger than default 0.6"
+    },
+    {
+      "type": "increment",
+      "dx": 0.25,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_C",
+      "notes": "Shorter final leg — avoid wall"
+    }
+  ]
+}

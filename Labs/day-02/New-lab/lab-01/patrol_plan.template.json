@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "description": "Example patrol plan — edit legs before Lab 3 hardware run",
+  "checkpoints": [
+    {
+      "id": "cp_A",
+      "label": "Entry",
+      "dwell_s": 2.0
+    },
+    {
+      "id": "cp_B",
+      "label": "Mid corridor",
+      "dwell_s": 2.0
+    },
+    {
+      "id": "cp_C",
+      "label": "End",
+      "dwell_s": 2.0
+    }
+  ],
+  "legs": [
+    {
+      "type": "increment",
+      "dx": 0.4,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_B",
+      "notes": "Supervised — match motion_limits in scenario file"
+    },
+    {
+      "type": "increment",
+      "dx": 0.4,
+      "dy": 0.0,
+      "dyaw": 0.0,
+      "to_checkpoint": "cp_C"
+    }
+  ]
+}
