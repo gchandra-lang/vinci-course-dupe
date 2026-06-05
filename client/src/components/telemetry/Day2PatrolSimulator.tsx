@@ -44,7 +44,7 @@ export default function Day2PatrolSimulator() {
   const resetToDefaults = () => setLegs(DEFAULT_LEGS.map((l) => ({ ...l })));
 
   return (
-    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col flex-1 min-h-[400px]">
+    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col min-h-[420px]">
       {/* Header */}
       <div className="bg-muted/40 border-b border-border px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -64,7 +64,7 @@ export default function Day2PatrolSimulator() {
 
       <div className="flex-1 flex flex-col lg:flex-row">
         {/* Left: Controls */}
-        <div className="w-full lg:w-64 border-r border-border bg-card/40 p-4 flex flex-col gap-4">
+        <div className="w-full lg:w-64 border-r border-border bg-card/40 p-4 flex flex-col gap-4 overflow-y-auto">
           {/* Leg Selection */}
           <div>
             <span className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground block mb-2">
@@ -120,7 +120,7 @@ export default function Day2PatrolSimulator() {
                     step="0.01"
                     value={activeLeg[field]}
                     onChange={(e) => updateActive(field, parseFloat(e.target.value) || 0)}
-                    className="w-full bg-muted border border-border rounded px-2 py-1 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
+                    className="w-full bg-muted border border-border rounded px-2.5 py-2 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
                   />
                 </div>
               ))}

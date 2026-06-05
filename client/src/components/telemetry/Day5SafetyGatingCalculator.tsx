@@ -87,7 +87,7 @@ export default function Day5SafetyGatingCalculator() {
   }, [params, fsmHint]);
 
   return (
-    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col flex-1 min-h-[400px]">
+    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col min-h-[420px]">
       <div className="bg-muted/40 border-b border-border px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Shield className="h-4 w-4 text-primary" />
@@ -103,7 +103,7 @@ export default function Day5SafetyGatingCalculator() {
 
       <div className="flex-1 flex flex-col lg:flex-row">
         {/* Left: Gate Controls */}
-        <div className="w-full lg:w-64 border-r border-border bg-card/40 p-4 flex flex-col gap-3">
+        <div className="w-full lg:w-64 border-r border-border bg-card/40 p-4 flex flex-col gap-3 overflow-y-auto">
           <span className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground block mb-1">
             Diagnostic Layers (bottom-up)
           </span>

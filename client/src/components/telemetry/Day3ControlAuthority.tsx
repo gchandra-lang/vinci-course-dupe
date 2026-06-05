@@ -46,7 +46,7 @@ export default function Day3ControlAuthority() {
   }, [active, commPath]);
 
   return (
-    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col flex-1 min-h-[400px]">
+    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col min-h-[420px]">
       <div className="bg-muted/40 border-b border-border px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Radio className="h-4 w-4 text-primary" />
@@ -61,7 +61,7 @@ export default function Day3ControlAuthority() {
 
       <div className="flex-1 flex flex-col lg:flex-row">
         {/* Control Panel */}
-        <div className="w-full lg:w-64 border-r border-border bg-card/40 p-4 flex flex-col gap-4">
+        <div className="w-full lg:w-64 border-r border-border bg-card/40 p-4 flex flex-col gap-4 overflow-y-auto">
           {/* Comm Path Toggle */}
           <div>
             <span className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground block mb-2">
@@ -102,7 +102,6 @@ export default function Day3ControlAuthority() {
                 </label>
                 <input
                   type="range"
-                  // @ts-expect-error benign
                   min={min}
                   max={max}
                   step={step || 1}

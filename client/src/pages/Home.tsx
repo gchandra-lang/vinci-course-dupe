@@ -222,7 +222,7 @@ export default function Home() {
   const currentSlide = currentDayData?.slides?.[activeSlideIndex];
 
   return (
-    <div className="h-screen flex flex-col bg-background text-foreground relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-background text-foreground relative">
       {/* Subtle Background Watermark (Vinci Style Rule) */}
       <div className="vinci-watermark" />
 
@@ -287,7 +287,7 @@ export default function Home() {
           </div>
 
           {/* Current Day Metadata — title block locked at top, rules fill remaining space */}
-          <div className="p-4 flex flex-col gap-4 flex-1 min-h-0">
+          <div className="p-4 flex flex-col gap-4">
             {/* Day title + thesis — locked at top */}
             <div className="shrink-0 space-y-3">
               <div>
@@ -305,7 +305,7 @@ export default function Home() {
             </div>
 
             {/* Classroom Safety Rules — fills remaining sidebar space */}
-            <div className="bg-primary/[0.06] border border-primary/15 rounded-lg p-4 flex-1 min-h-0 flex flex-col overflow-y-auto">
+            <div className="bg-primary/[0.06] border border-primary/15 rounded-lg p-4 flex flex-col overflow-y-auto max-h-[40vh]">
               <div className="flex items-center gap-2.5 text-primary mb-3 shrink-0">
                 <Shield className="h-4 w-4 flex-shrink-0" />
                 <span className="text-[10px] uppercase tracking-[0.15em] font-sans font-bold">Classroom Safety Rules</span>
@@ -364,11 +364,11 @@ export default function Home() {
           </div>
 
           {/* Tab Contents */}
-          <div className="flex-1 p-4 flex flex-col overflow-y-auto">
+          <div className="flex-1 p-4 pb-16 flex flex-col">
             
             {/* LECTURE SLIDES TAB */}
             {activeTab === "lecture" && currentDayData.slides && currentDayData.slides.length > 0 && (
-              <div className="flex-1 flex flex-col max-w-5xl mx-auto w-full gap-2.5 min-h-0">
+              <div className="flex flex-col max-w-5xl mx-auto w-full gap-2.5">
                 
                 {/* Fullscreen Presentation Trigger */}
                 <div className="flex justify-end shrink-0">
@@ -382,7 +382,7 @@ export default function Home() {
                 </div>
 
                 {/* PPT Slide Wrapper (Styled exactly after Day 1 PPT design) */}
-                <div className="border border-border bg-card rounded-lg shadow-xl overflow-hidden relative flex flex-col w-full flex-1 min-h-0">
+                <div className="border border-border bg-card rounded-lg shadow-xl overflow-hidden relative flex flex-col w-full min-h-[50vh]">
                   
                   {/* Subtle Diagonal Watermark inside PPT frame */}
                   <div className="vinci-watermark opacity-30" />
@@ -618,7 +618,7 @@ export default function Home() {
 
             {/* LAB WORKSPACES TAB */}
             {activeTab === "labs" && currentDayData.labs && currentDayData.labs.length > 0 && (
-              <div className="flex-1 flex flex-col lg:flex-row gap-6">
+              <div className="flex flex-col lg:flex-row gap-6">
                 
                 {/* Lab Selection Sidebar */}
                 <div className="w-full lg:w-72 flex flex-col gap-3">
@@ -674,7 +674,7 @@ export default function Home() {
                       <div className="h-px bg-border/60 my-4" />
 
                       {/* Render Lab Guide Content — rendered as sanitized HTML */}
-                      <div className="lab-content max-h-64 overflow-y-auto pr-2
+                      <div className="lab-content max-h-52 overflow-y-auto pr-2
                         text-xs text-muted-foreground leading-relaxed
                         [&_ul]:list-decimal [&_ul]:pl-5 [&_ul]:space-y-1
                         [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1
@@ -746,7 +746,7 @@ export default function Home() {
 
                     {/* Code Snippet Viewer */}
                     {activeLab.code_files && activeLab.code_files.length > 0 && (
-                      <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col flex-1 min-h-[350px]">
+                      <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col">
 
                         {/* Code Header */}
                         <div className="bg-muted/40 border-b border-border px-4 py-3 flex items-center justify-between">
@@ -774,7 +774,7 @@ export default function Home() {
                         </div>
 
                         {/* Code Editor Body */}
-                        <div className="flex-1 bg-[#0a192f] p-4 font-mono text-xs text-[#a9b7c6] overflow-auto max-h-96">
+                        <div className="bg-[#0a192f] p-4 font-mono text-xs text-[#a9b7c6] overflow-auto max-h-[60vh]">
                           <pre className="leading-relaxed">
                             <code>{activeCodeFile?.code || "# No code file selected."}</code>
                           </pre>

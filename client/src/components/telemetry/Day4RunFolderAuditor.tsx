@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { CheckCircle, AlertTriangle, XCircle, FolderOpen, FileText, Save } from "lucide-react";
+import { CheckCircle, AlertTriangle, XCircle, FolderOpen, FileText, Save, Activity } from "lucide-react";
 
 interface CheckpointEntry {
   id: string;
@@ -71,7 +71,7 @@ export default function Day4RunFolderAuditor() {
   const VerdictIcon = overallVerdict.icon;
 
   return (
-    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col flex-1 min-h-[400px]">
+    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col min-h-[420px]">
       <div className="bg-muted/40 border-b border-border px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <FolderOpen className="h-4 w-4 text-primary" />
@@ -107,14 +107,14 @@ export default function Day4RunFolderAuditor() {
               value={metaOperator}
               onChange={(e) => setMetaOperator(e.target.value)}
               disabled={!metaOperatorPresent}
-              className="w-full bg-muted border border-border rounded px-2 py-1.5 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none disabled:opacity-40"
+              className="w-full bg-muted border border-border rounded px-2.5 py-2 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none disabled:opacity-40"
               placeholder="operator name"
             />
             <input
               type="text"
               value={metaVersion}
               onChange={(e) => setMetaVersion(e.target.value)}
-              className="w-full bg-muted border border-border rounded px-2 py-1.5 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
+              className="w-full bg-muted border border-border rounded px-2.5 py-2 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
               placeholder="schema_version"
             />
           </div>
@@ -139,7 +139,7 @@ export default function Day4RunFolderAuditor() {
                 type="number"
                 value={planLegsCount}
                 onChange={(e) => setPlanLegsCount(parseInt(e.target.value) || 0)}
-                className="w-full bg-muted border border-border rounded px-2 py-1.5 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
+                className="w-full bg-muted border border-border rounded px-2.5 py-2 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
               />
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function Day4RunFolderAuditor() {
                 type="number"
                 value={stateLines}
                 onChange={(e) => setStateLines(parseInt(e.target.value) || 0)}
-                className="w-full bg-muted border border-border rounded px-2 py-1.5 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
+                className="w-full bg-muted border border-border rounded px-2.5 py-2 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
               />
             </div>
           </div>

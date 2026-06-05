@@ -101,7 +101,7 @@ export default function Day7AudioCapstoneTool() {
   const rgbString = `rgb(${currentLedColor.r}, ${currentLedColor.g}, ${currentLedColor.b})`;
 
   return (
-    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col flex-1 min-h-[400px]">
+    <div className="border border-border bg-card rounded-lg overflow-hidden flex flex-col min-h-[420px]">
       <div className="bg-muted/40 border-b border-border px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Volume2 className="h-4 w-4 text-primary" />
@@ -123,7 +123,7 @@ export default function Day7AudioCapstoneTool() {
 
       <div className="flex-1 flex flex-col lg:flex-row">
         {/* Left: Audio & LED Controls */}
-        <div className="w-full lg:w-72 border-r border-border bg-card/40 p-4 flex flex-col gap-4">
+        <div className="w-full lg:w-72 border-r border-border bg-card/40 p-4 flex flex-col gap-4 overflow-y-auto">
           {/* Readiness Gate */}
           <div className="border border-border rounded-lg p-3 bg-muted/20 space-y-2">
             <span className="text-[9px] uppercase tracking-widest font-mono text-primary block">
@@ -188,7 +188,7 @@ export default function Day7AudioCapstoneTool() {
                 type="text"
                 value={customText}
                 onChange={(e) => setCustomText(e.target.value)}
-                className="w-full bg-muted border border-border rounded px-2 py-1.5 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
+                className="w-full bg-muted border border-border rounded px-2.5 py-2 text-[11px] font-mono text-foreground focus:border-primary focus:outline-none"
               />
             </div>
             <button
