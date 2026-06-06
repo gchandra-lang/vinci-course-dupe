@@ -2,7 +2,7 @@ name: Deploy Vite App
 
 on:
   push:
-    branches: [ main ] # Change to master if your default branch is master
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -29,17 +29,18 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-          
+
       - name: Install dependencies
         run: pnpm install
 
       - name: Build project
         run: pnpm run build --prefix client
 
+      # This step automatically finds where your index.html / dist folder ended up
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './client/dist' # Points to Vite's output folder
+          path: './client/dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
