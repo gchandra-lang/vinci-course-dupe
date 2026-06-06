@@ -23,6 +23,8 @@ import {
   Volume2
 } from "lucide-react";
 import syllabusData from "../data/syllabus.json";
+import { resolveDay, EMPTY_CURRICULUM_DAY } from "../types/syllabus";
+import type { CurriculumDay, Slide, Lab, LabFile, PacingEntry } from "../types/syllabus";
 
 // ── Semantic keyword classifier — maps technical terms to CSS color classes ──
 const S_PATTERNS: [RegExp, string][] = [
@@ -63,42 +65,8 @@ import {
   Day7AudioCapstoneTool
 } from "../components/telemetry";
 
-interface LabFile {
-  name: string;
-  code: string;
-}
-
-interface Lab {
-  id: string;
-  title: string;
-  content: string;
-  code_files: LabFile[];
-}
-
-interface Slide {
-  title: string;
-  thesis: string;
-  board_type: string;
-  board_data: any;
-  bottom_band: string;
-}
-
-interface Pacing {
-  time: string;
-  session: string;
-  path: string;
-}
-
-interface DaySyllabus {
-  day: string;
-  title: string;
-  eyebrow: string;
-  thesis: string;
-  rules: string[];
-  pacing: Pacing[];
-  slides: Slide[];
-  labs: Lab[];
-}
+// All curriculum types are now sourced from src/types/syllabus.ts
+// Imported above: CurriculumDay, Slide, Lab, LabFile, PacingEntry
 
 export default function Home() {
   const [activeDay, setActiveDay] = useState<string>("01");
@@ -111,7 +79,7 @@ export default function Home() {
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
   const [labGuideFullscreen, setLabGuideFullscreen] = useState<boolean>(false);
 
-  const currentDayData = (syllabusData as Record<string, DaySyllabus>)[activeDay];
+  const currentDayData: CurriculumDay = resolveDay(syllabusData as Record<string, unknown>, activeDay);
 
   // Reset indices when active day changes
   useEffect(() => {
@@ -169,7 +137,7 @@ export default function Home() {
   // Handle active lab change
   const handleLabChange = (labId: string) => {
     setActiveLabId(labId);
-    const lab = currentDayData.labs.find(l => l.id === labId);
+    const lab = (currentDayData?.labs ?? []).find(l => l.id === labId);
     if (lab && lab.code_files && lab.code_files.length > 0) {
       setActiveLabFile(lab.code_files[0].name);
     } else {
@@ -210,14 +178,19 @@ export default function Home() {
 
   // Schematic Image Mapping based on Day
   const getDaySchematic = (day: string) => {
+    const base = import.meta.env.BASE_URL;
     if (day === "01" || day === "02") {
       return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/quadruped_schematic-DUWbwKpo8zKzLia7SShhSM.webp";
     }
     if (day === "03" || day === "04") {
-      return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/quadruped_schematic-RjoQuK9eKvxRP27zd8KsKz.png"; // Original or other asset
+      return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/quadruped_schematic-RjoQuK9eKvxRP27zd8KsKz.png";
     }
-    return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/humanoid_schematic-PwYwUQShDyDdHD5XrBQURm.webp";
+    // Days 05, 06, 07: G1 Humanoid — local high-resolution asset
+    return `${base}assets/G1_Image.png`;
   };
+
+  // Whether the active day uses the G1 humanoid platform (Days 5–7)
+  const isG1Platform = activeDay === "05" || activeDay === "06" || activeDay === "07";
 
   const currentSlide = currentDayData?.slides?.[activeSlideIndex];
 
@@ -279,7 +252,7 @@ export default function Home() {
                     }`}
                   >
                     <span className="font-mono text-sm font-bold opacity-80">0{parseInt(dayKey)}</span>
-                    <span className="font-serif text-xs font-semibold truncate hidden lg:block">{dayData.title.split(" ")[0]} {dayData.title.split(" ")[1] || ""}</span>
+                    <span className="font-serif text-xs font-semibold truncate hidden lg:block">{(dayData?.title ?? "Day").split(" ")[0]} {(dayData?.title ?? "").split(" ")[1] || ""}</span>
                   </button>
                 );
               })}
@@ -311,7 +284,7 @@ export default function Home() {
                 <span className="text-[10px] uppercase tracking-[0.15em] font-sans font-bold">Classroom Safety Rules</span>
               </div>
               <ul className="space-y-2 text-[11px] leading-relaxed">
-                {currentDayData.rules.map((rule, idx) => (
+                {(currentDayData?.rules ?? []).map((rule, idx) => (
                   <li key={idx} className="flex gap-2.5">
                     <span className="text-primary/70 font-bold select-none flex-shrink-0 mt-px">•</span>
                     <span className="text-muted-foreground">{rule}</span>
@@ -349,7 +322,7 @@ export default function Home() {
               >
                 <Code className="h-3.5 w-3.5" />
                 Lab Workspaces
-                {currentDayData.labs.length > 0 && (
+                {(currentDayData?.labs?.length ?? 0) > 0 && (
                   <span className="ml-1 bg-primary/10 text-primary text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold">
                     {currentDayData.labs.length}
                   </span>
@@ -444,7 +417,7 @@ export default function Home() {
                           </table>
                         </div>
                         {/* Diagram placeholders extracted from bottom_band */}
-                        {extractDiagrams(currentSlide.bottom_band).diagrams.map((d, i) => (
+                        {extractDiagrams(currentSlide.bottom_band ?? "").diagrams.map((d, i) => (
                           <div key={i} className="diagram-placeholder">{d}</div>
                         ))}
                       </div>
@@ -538,7 +511,7 @@ export default function Home() {
                             </div>
                           )}
                           {/* Diagram placeholders extracted from bottom_band */}
-                          {extractDiagrams(currentSlide.bottom_band).diagrams.map((d, i) => (
+                          {extractDiagrams(currentSlide.bottom_band ?? "").diagrams.map((d, i) => (
                             <div key={i} className="diagram-placeholder">{d}</div>
                           ))}
                         </div>
@@ -551,28 +524,28 @@ export default function Home() {
                         <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
                         <strong>Debugging Habit</strong>
                       </div>
-                      <span><SafeHTML text={extractDiagrams(currentSlide.bottom_band).clean} /></span>
+                      <span><SafeHTML text={extractDiagrams(currentSlide.bottom_band ?? "").clean} /></span>
                     </div>
                   </div>
 
                 </div>
 
                 {/* PPT Slide Controls */}
-                <div className="flex items-center justify-between px-1 py-1.5 shrink-0">
+                <div className="flex items-center justify-between px-1 py-1.5 shrink-0 max-w-full overflow-hidden gap-2">
                   <button
                     disabled={activeSlideIndex === 0}
                     onClick={() => setActiveSlideIndex(prev => Math.max(0, prev - 1))}
-                    className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded bg-card hover:bg-accent text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded bg-card hover:bg-accent text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none transition-all shrink-0"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Previous
                   </button>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 flex-1 min-w-0 overflow-hidden justify-center mx-2">
                     {currentDayData.slides.map((_, idx) => (
                       <div
                         key={idx}
-                        className={`h-1.5 w-4 rounded-full transition-all ${
-                          idx === activeSlideIndex ? "bg-primary" : "bg-border"
+                        className={`h-1.5 rounded-full transition-all shrink-0 ${
+                          idx === activeSlideIndex ? "bg-primary w-3" : "bg-border w-1.5"
                         }`}
                       />
                     ))}
@@ -580,28 +553,37 @@ export default function Home() {
                   <button
                     disabled={activeSlideIndex === currentDayData.slides.length - 1}
                     onClick={() => setActiveSlideIndex(prev => Math.min(currentDayData.slides.length - 1, prev + 1))}
-                    className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded bg-card hover:bg-accent text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded bg-card hover:bg-accent text-xs font-semibold disabled:opacity-50 disabled:pointer-events-none transition-all shrink-0"
                   >
                     Next
                     <ArrowRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
 
-                {/* Robotic Schematic Strip — clickable thumbnail */}
+                {/* Robotic Schematic Strip — more prominent for G1 humanoid days */}
                 <button
                   onClick={() => setBlueprintFullscreen(true)}
-                  className="border border-border bg-card/40 hover:bg-card/60 rounded-lg px-4 py-3 flex flex-row items-center gap-4 shrink-0 transition-colors text-left cursor-pointer group"
+                  className={`border border-border bg-card/40 hover:bg-card/60 rounded-lg flex flex-row items-center gap-4 shrink-0 transition-colors text-left cursor-pointer group ${
+                    isG1Platform ? "px-5 py-4" : "px-4 py-3"
+                  }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] uppercase tracking-widest font-mono text-primary font-bold">Hardware Blueprint</span>
-                      <span className="text-[10px] font-mono text-muted-foreground">Day {activeDay} Platform</span>
+                      <span className="text-[10px] font-mono text-muted-foreground">
+                        {isG1Platform ? "Unitree G1 Humanoid" : `Day ${activeDay} Platform`}
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">
-                      Examine the kinematic structure and coordinate frames. In lab, you will write controllers targeting these joint motors and listen to coordinate transformations (TFs).
+                      {isG1Platform
+                        ? "Examine the G1 kinematic structure, 23–43 DOF joint layout, and TF coordinate frames. Days 5–7 focus on commanding this platform through DDS, FSM, JSON-CLI, and AI-driven locomotion engines."
+                        : "Examine the kinematic structure and coordinate frames. In lab, you will write controllers targeting these joint motors and listen to coordinate transformations (TFs)."
+                      }
                     </p>
                   </div>
-                  <div className="w-32 h-20 md:w-40 md:h-24 border border-border rounded overflow-hidden relative bg-card shadow-sm shrink-0 group-hover:ring-2 group-hover:ring-primary/40 transition-all">
+                  <div className={`border border-border rounded overflow-hidden relative bg-card shadow-sm shrink-0 group-hover:ring-2 group-hover:ring-primary/40 transition-all ${
+                    isG1Platform ? "w-44 h-28 md:w-52 md:h-32" : "w-32 h-20 md:w-40 md:h-24"
+                  }`}>
                     <img
                       src={getDaySchematic(activeDay)}
                       alt="Robot Schematic"
@@ -913,7 +895,7 @@ export default function Home() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4 shrink-0">
                   <div className="space-y-1">
                     <span className="font-mono text-sm uppercase tracking-widest text-blue-400 font-bold">
-                      Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
+                      Pillar {activeSlideIndex + 1} of {currentDayData?.slides?.length ?? 0}
                     </span>
                     <h2 className="text-3xl lg:text-4xl font-serif font-bold leading-tight tracking-tight text-white">
                       {currentSlide.title}
@@ -930,13 +912,13 @@ export default function Home() {
                   <table className="w-full text-left text-base border-collapse min-w-[750px]">
                     <thead>
                       <tr className="bg-blue-600 text-white uppercase font-mono tracking-wider text-sm font-bold border-b border-white/10 sticky top-0">
-                        {currentSlide.board_data.headers.map((h: string, idx: number) => (
+                        {(currentSlide.board_data as any)?.headers?.map?.((h: string, idx: number) => (
                           <th key={idx} className="p-5 font-bold whitespace-nowrap">{h}</th>
-                        ))}
+                        )) ?? null}
                       </tr>
                     </thead>
                     <tbody>
-                      {currentSlide.board_data.rows.map((row: string[], rIdx: number) => (
+                      {(currentSlide.board_data as any)?.rows?.map?.((row: string[], rIdx: number) => (
                         <tr key={rIdx} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors even:bg-white/[0.01]">
                           {row.map((cell: string, cIdx: number) => {
                             const sCls = semanticClass(cell);
@@ -951,7 +933,7 @@ export default function Home() {
                   </table>
                 </div>
                 {/* Diagram placeholders extracted from bottom_band */}
-                {extractDiagrams(currentSlide.bottom_band).diagrams.map((d, i) => (
+                {extractDiagrams(currentSlide.bottom_band ?? "").diagrams.map((d, i) => (
                   <div key={i} className="diagram-placeholder border-white/10 text-white/50">{d}</div>
                 ))}
               </div>
@@ -962,7 +944,7 @@ export default function Home() {
                 <div className="lg:col-span-5 flex flex-col gap-4 h-full min-h-0 overflow-y-auto custom-scrollbar">
                   <div className="flex flex-col gap-4">
                     <span className="font-mono text-sm uppercase tracking-widest text-blue-400 font-bold">
-                      Pillar {activeSlideIndex + 1} of {currentDayData.slides.length}
+                      Pillar {activeSlideIndex + 1} of {currentDayData?.slides?.length ?? 0}
                     </span>
                     <h2 className={`font-serif font-bold leading-tight tracking-tight text-white break-words ${
                       currentSlide.title.length > 18 || !currentSlide.title.includes(" ")
@@ -986,7 +968,7 @@ export default function Home() {
                       <span className="font-mono text-[10px] uppercase tracking-widest text-amber-400 font-bold">Debugging Habit</span>
                     </div>
                     <p className="font-mono text-amber-300">
-                      <SafeHTML text={extractDiagrams(currentSlide.bottom_band).clean} />
+                      <SafeHTML text={extractDiagrams(currentSlide.bottom_band ?? "").clean} />
                     </p>
                   </div>
                 </div>
@@ -1058,7 +1040,7 @@ export default function Home() {
                       </div>
                     )}
                     {/* Diagram placeholders for non-table fullscreen slides */}
-                    {extractDiagrams(currentSlide.bottom_band).diagrams.map((d, i) => (
+                    {extractDiagrams(currentSlide.bottom_band ?? "").diagrams.map((d, i) => (
                       <div key={i} className="diagram-placeholder border-white/10 text-white/50">{d}</div>
                     ))}
                   </div>
@@ -1071,7 +1053,7 @@ export default function Home() {
           <div className="border-t border-white/10 pt-4 flex items-center justify-between shrink-0 z-10">
             {/* Slide Counter */}
             <span className="font-mono text-sm text-white/70 font-bold">
-              Slide {activeSlideIndex + 1} of {currentDayData.slides.length}
+              Slide {activeSlideIndex + 1} of {currentDayData?.slides?.length ?? 0}
             </span>
 
             {/* Navigation Controls */}
@@ -1085,8 +1067,8 @@ export default function Home() {
                 Previous
               </button>
               <button
-                disabled={activeSlideIndex === currentDayData.slides.length - 1}
-                onClick={() => setActiveSlideIndex(prev => Math.min(currentDayData.slides.length - 1, prev + 1))}
+                disabled={activeSlideIndex === (currentDayData?.slides?.length ?? 1) - 1}
+                onClick={() => setActiveSlideIndex(prev => Math.min((currentDayData?.slides?.length ?? 1) - 1, prev + 1))}
                 className="flex items-center gap-2 px-4 py-2 border border-blue-500 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-semibold disabled:opacity-30 disabled:pointer-events-none transition-all"
               >
                 Next
