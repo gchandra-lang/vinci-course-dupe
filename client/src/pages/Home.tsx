@@ -180,10 +180,10 @@ export default function Home() {
   const getDaySchematic = (day: string) => {
     const base = import.meta.env.BASE_URL;
     if (day === "01" || day === "02") {
-      return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/quadruped_schematic-DUWbwKpo8zKzLia7SShhSM.webp";
+      return `${base}assets/go2_quadruped_schematic.webp`;
     }
     if (day === "03" || day === "04") {
-      return "https://d2xsxph8kpxj0f.cloudfront.net/310519663722418623/LnV78sD4YhnG2kJCQKyWmC/quadruped_schematic-RjoQuK9eKvxRP27zd8KsKz.png";
+      return `${base}assets/B2_Image.png`;
     }
     // Days 05, 06, 07: G1 Humanoid — local high-resolution asset
     return `${base}assets/G1_Image.png`;
