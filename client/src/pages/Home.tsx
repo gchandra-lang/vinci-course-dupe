@@ -29,10 +29,10 @@ import type { CurriculumDay, Slide, Lab, LabFile, PacingEntry } from "../types/s
 // ── Semantic keyword classifier — maps technical terms to CSS color classes ──
 const S_PATTERNS: [RegExp, string][] = [
   [new RegExp("subscribe|observe|listener|passive|read.only|lowest risk|monitor", "i"), "semantic-subscribe"],
-  [new RegExp("publish|command topic|send|streaming|medium risk|arm.sdk", "i"), "semantic-publish"],
-  [new RegExp("\\brpc\\b|service call|request|checkmode|motionswitcher", "i"), "semantic-rpc"],
-  [new RegExp("ready|pass\\b|success|green|stable|squat.stand|go", "i"), "semantic-safe"],
-  [new RegExp("fail|damp|danger|abort|blocked|red|zero torque|unsafe", "i"), "semantic-danger"],
+  [new RegExp("\\bpublish\\b|command topic|\\bsend\\b|streaming|medium risk|arm\\.sdk", "i"), "semantic-publish"],
+  [new RegExp("\\brpc\\b|service call|\\brequest\\b|checkmode|motionswitcher", "i"), "semantic-rpc"],
+  [new RegExp("\\bready\\b|\\bpass\\b|success|\\bgreen\\b|\\bstable\\b|squat\\.stand|\\bgo\\b", "i"), "semantic-safe"],
+  [new RegExp("\\bfail\\b|\\bdamp\\b|danger|\\babort\\b|\\bblocked\\b|\\bred\\b|zero torque|unsafe", "i"), "semantic-danger"],
 ];
 const semanticClass = (text: string): string => {
   for (const [re, cls] of S_PATTERNS) if (re.test(text)) return cls;
