@@ -469,18 +469,21 @@ export default function Home() {
                           {/* Render List Board */}
                           {currentSlide.board_type === "list" && (
                             <div className="space-y-3">
-                              {currentSlide.board_data.map((item: string, idx: number) => {
-                                const hasColon = item.includes(":");
-                                const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
-                                const desc = hasColon ? item.split(":")[1] : item;
+                              {currentSlide.board_data.map((item: any, idx: number) => {
+                                const label = typeof item === "object" && item.label ? item.label
+                                  : typeof item === "string" && item.includes(":") ? item.split(":")[0]
+                                  : `Point ${idx + 1}`;
+                                const detail = typeof item === "object" && item.detail ? item.detail
+                                  : typeof item === "string" && item.includes(":") ? item.split(":").slice(1).join(":")
+                                  : typeof item === "string" ? item : "";
                                 return (
                                   <div key={idx} className="flex gap-3 p-2.5 rounded-lg hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all bg-card/30">
                                     <div className="h-7 w-7 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-mono font-bold mt-0.5 shadow-sm shrink-0">
                                       {idx + 1}
                                     </div>
                                     <div className="flex-1">
-                                      <span className="text-base font-bold text-foreground font-serif block mb-0.5"><SafeHTML text={title} /></span>
-                                      <span className="text-sm text-foreground/80 leading-relaxed block"><SafeHTML text={desc} /></span>
+                                      <span className="text-base font-bold text-foreground font-serif block mb-0.5"><SafeHTML text={label} /></span>
+                                      <span className="text-sm text-foreground/80 leading-relaxed block"><SafeHTML text={detail} /></span>
                                     </div>
                                   </div>
                                 );
@@ -998,18 +1001,21 @@ export default function Home() {
                     {/* Render List Board */}
                     {currentSlide.board_type === "list" && (
                       <div className="space-y-3">
-                        {currentSlide.board_data.map((item: string, idx: number) => {
-                          const hasColon = item.includes(":");
-                          const title = hasColon ? item.split(":")[0] : `Point ${idx + 1}`;
-                          const desc = hasColon ? item.split(":")[1] : item;
+                        {currentSlide.board_data.map((item: any, idx: number) => {
+                          const label = typeof item === "object" && item.label ? item.label
+                            : typeof item === "string" && item.includes(":") ? item.split(":")[0]
+                            : `Point ${idx + 1}`;
+                          const detail = typeof item === "object" && item.detail ? item.detail
+                            : typeof item === "string" && item.includes(":") ? item.split(":").slice(1).join(":")
+                            : typeof item === "string" ? item : "";
                           return (
                             <div key={idx} className="flex gap-4 p-5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-transparent hover:border-white/10 transition-all shadow-md">
                               <div className="h-9 w-9 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-base font-mono font-bold mt-0.5 shadow-sm shrink-0">
                                 {idx + 1}
                               </div>
                               <div className="flex-1">
-                                <span className="text-lg font-bold text-white font-serif block mb-1"><SafeHTML text={title} /></span>
-                                <span className="text-base lg:text-lg text-white/85 leading-relaxed block"><SafeHTML text={desc} /></span>
+                                <span className="text-lg font-bold text-white font-serif block mb-1"><SafeHTML text={label} /></span>
+                                <span className="text-base lg:text-lg text-white/85 leading-relaxed block"><SafeHTML text={detail} /></span>
                               </div>
                             </div>
                           );
