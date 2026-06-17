@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { 
   BookOpen, 
@@ -79,12 +79,75 @@ export default function Home() {
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
   const [labGuideFullscreen, setLabGuideFullscreen] = useState<boolean>(false);
 
+  // ── URL sync: read params on first mount ──
+  const [urlReady, setUrlReady] = useState(false);
+  const suppressUrlWrite = useRef(true); // true while we're reading from URL
+  const initialUrlSlide = useRef<number | null>(null);
+  const initialUrlLab = useRef<string | null>(null);
+  const initialUrlTab = useRef<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const day = params.get("day");
+    const slide = params.get("slide");
+    const tab = params.get("tab");
+    const lab = params.get("lab");
+
+    if (day && /^\d{2}$/.test(day)) setActiveDay(day);
+    if (slide && /^\d+$/.test(slide)) {
+      const slideNum = parseInt(slide, 10);
+      setActiveSlideIndex(slideNum);
+      initialUrlSlide.current = slideNum;
+    }
+    if (tab === "labs") {
+      setActiveTab("labs");
+      initialUrlTab.current = "labs";
+    }
+    if (lab) {
+      setActiveLabId(lab);
+      initialUrlLab.current = lab;
+    }
+
+    // After reading initial state, allow writing to URL
+    setTimeout(() => {
+      suppressUrlWrite.current = false;
+      setUrlReady(true);
+    }, 0);
+  }, []);
+
+  // ── URL sync: write state changes to URL ──
+  useEffect(() => {
+    if (!urlReady) return;
+    const params = new URLSearchParams();
+    if (activeDay !== "01") params.set("day", activeDay);
+    if (activeTab === "lecture" && activeSlideIndex > 0) params.set("slide", String(activeSlideIndex));
+    if (activeTab === "labs") {
+      params.set("tab", "labs");
+      if (activeLabId) params.set("lab", activeLabId);
+    }
+    const qs = params.toString();
+    const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    window.history.replaceState(null, "", newUrl);
+  }, [activeDay, activeSlideIndex, activeTab, activeLabId, urlReady]);
+
   const currentDayData: CurriculumDay = resolveDay(syllabusData as Record<string, unknown>, activeDay);
 
   // Reset indices when active day changes
   useEffect(() => {
-    setActiveSlideIndex(0);
-    if (currentDayData?.labs && currentDayData.labs.length > 0) {
+    // Preserve URL-initialized values on first pass
+    if (initialUrlSlide.current !== null) {
+      setActiveSlideIndex(initialUrlSlide.current);
+      initialUrlSlide.current = null;
+    } else {
+      setActiveSlideIndex(0);
+    }
+    if (initialUrlLab.current !== null) {
+      setActiveLabId(initialUrlLab.current);
+      // Find the lab's first code file for URL-initialized lab
+      const urlLab = currentDayData?.labs?.find((l) => l.id === initialUrlLab.current);
+      setActiveLabFile(urlLab?.code_files?.[0]?.name ?? "");
+      initialUrlLab.current = null;
+    } else if (currentDayData?.labs && currentDayData.labs.length > 0) {
       setActiveLabId(currentDayData.labs[0].id);
       if (currentDayData.labs[0].code_files && currentDayData.labs[0].code_files.length > 0) {
         setActiveLabFile(currentDayData.labs[0].code_files[0].name);
