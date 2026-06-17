@@ -53,34 +53,6 @@
         "bottom_band": "Teaching Rhythm: Pause, inspect commands, and ask questions before moving to the physical hardware."
       },
       {
-        "title": "Lecture Pacing",
-        "thesis": "Three Hours, Five Ideas",
-        "board_type": "list",
-        "board_data": [
-          {
-            "label": "00:00 - 00:35 — Go2 as a System",
-            "detail": "Map the physical body, onboard compute, networks, SDK, and safety boundaries."
-          },
-          {
-            "label": "00:35 - 01:10 — Quadruped Kinematics",
-            "detail": "Connect joint motion, body frames, and foot trajectories with mathematical models."
-          },
-          {
-            "label": "01:10 - 01:45 — ROS 2 & CycloneDDS",
-            "detail": "Understand nodes, topics, service calls, action goals, and QoS policies."
-          },
-          {
-            "label": "01:45 - 02:20 — Message Arrays",
-            "detail": "Deconstruct sensor arrays, JointState messages, and index mapping rules."
-          },
-          {
-            "label": "02:20 - 03:00 — RViz & TF Mapping",
-            "detail": "Learn how coordinate transform trees enable 3D spatial visualization."
-          }
-        ],
-        "bottom_band": "Rhythm: 35 minutes of theory followed by hands-on verification in the lab workspace."
-      },
-      {
         "title": "Go2 System View",
         "thesis": "Go2 Is More Than a Robot Body",
         "board_type": "grid",
