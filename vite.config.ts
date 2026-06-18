@@ -203,7 +203,201 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+// ── Simple password hashing (matches frontend implementation) ──
+function simpleHash(input: string, salt: string): string {
+  let combined = salt + "::" + input;
+  for (let i = 0; i < 5; i++) {
+    combined = Buffer.from(combined.split("").reverse().join("") + combined).toString("base64");
+  }
+  return Buffer.from(combined + "::" + salt).toString("base64");
+}
+
+function generateSalt(): string {
+  return Buffer.from(String(Date.now()) + String(Math.random()))
+    .toString("base64")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, 16);
+}
+
+interface UserEntry {
+  email: string;
+  passwordHash?: string | null;
+  salt?: string | null;
+}
+
+function loadUsers(usersPath: string): UserEntry[] {
+  try {
+    const raw = fs.readFileSync(usersPath, "utf-8");
+    const data = JSON.parse(raw);
+    const users: UserEntry[] = (data.users ?? []).map((u: any) => ({
+      email: (u.email ?? "").toLowerCase().trim(),
+      passwordHash: u.passwordHash || null,
+      salt: u.salt || null,
+    }));
+    return users;
+  } catch {
+    return [];
+  }
+}
+
+function saveUsers(usersPath: string, users: UserEntry[]): void {
+  const data = {
+    description: "Users allowed to access the Lab Workspace.",
+    users,
+  };
+  fs.writeFileSync(usersPath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+function parseBody(req: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let body = "";
+    req.on("data", (chunk: string) => { body += chunk.toString(); });
+    req.on("end", () => {
+      try { resolve(JSON.parse(body)); }
+      catch { reject(new Error("Invalid JSON")); }
+    });
+  });
+}
+
+// ── Auth proxy for dev: handles /api/auth/* endpoints ──
+function vitePluginAuthProxy(): Plugin {
+  return {
+    name: "auth-proxy",
+    configureServer(server: ViteDevServer) {
+      const usersPath = path.resolve(PROJECT_ROOT, "server", "allowed_users.json");
+
+      // POST /api/auth/status — check if email is whitelisted and has a password
+      server.middlewares.use("/api/auth/status", async (req, res, next) => {
+        if (req.method !== "POST") return next();
+        try {
+          const { email } = await parseBody(req);
+          if (!email || typeof email !== "string" || !email.includes("@")) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "A valid email address is required." }));
+            return;
+          }
+          const normalized = email.toLowerCase().trim();
+          const users = loadUsers(usersPath);
+          const user = users.find(u => u.email === normalized);
+
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({
+            whitelisted: !!user,
+            hasPassword: !!(user?.passwordHash),
+          }));
+        } catch {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: false, error: "Invalid request." }));
+        }
+      });
+
+      // POST /api/auth/register — set password for a whitelisted user
+      server.middlewares.use("/api/auth/register", async (req, res, next) => {
+        if (req.method !== "POST") return next();
+        try {
+          const { email, password } = await parseBody(req);
+          if (!email || !password || typeof password !== "string" || password.length < 12) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "Email and a password (12+ chars) are required." }));
+            return;
+          }
+          const normalized = email.toLowerCase().trim();
+          const users = loadUsers(usersPath);
+          const user = users.find(u => u.email === normalized);
+
+          if (!user) {
+            res.writeHead(403, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "This email is not authorized." }));
+            return;
+          }
+          if (user.passwordHash) {
+            res.writeHead(409, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "Password already set. Use sign-in instead." }));
+            return;
+          }
+
+          const salt = generateSalt();
+          const passwordHash = simpleHash(password, salt);
+          user.passwordHash = passwordHash;
+          user.salt = salt;
+          saveUsers(usersPath, users);
+
+          console.log(`[auth] Password set for: ${normalized}`);
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: true, message: "Access key created." }));
+        } catch {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: false, error: "Invalid request." }));
+        }
+      });
+
+      // POST /api/auth/verify — check email + password
+      server.middlewares.use("/api/auth/verify", async (req, res, next) => {
+        if (req.method !== "POST") return next();
+        try {
+          const { email, password } = await parseBody(req);
+          if (!email || typeof email !== "string" || !email.includes("@")) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "A valid email address is required." }));
+            return;
+          }
+          const normalized = email.toLowerCase().trim();
+          const users = loadUsers(usersPath);
+          const user = users.find(u => u.email === normalized);
+
+          if (!user) {
+            res.writeHead(403, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: false, error: "This email is not authorized." }));
+            return;
+          }
+
+          // If no password set yet and no password provided, just grant access
+          if (!user.passwordHash && !password) {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, email: normalized, needsPassword: true }));
+            return;
+          }
+
+          // If no password set but one was provided, redirect to register
+          if (!user.passwordHash && password) {
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ success: true, email: normalized, needsPassword: true }));
+            return;
+          }
+
+          // If password is set, must provide matching password
+          if (user.passwordHash && user.salt) {
+            if (!password || typeof password !== "string") {
+              res.writeHead(401, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ success: false, error: "Access key required." }));
+              return;
+            }
+            const enteredHash = simpleHash(password, user.salt);
+            if (enteredHash === user.passwordHash) {
+              console.log(`[auth] Access granted: ${normalized}`);
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ success: true, email: normalized, message: "Access granted." }));
+            } else {
+              console.log(`[auth] Wrong password: ${normalized}`);
+              res.writeHead(401, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ success: false, error: "Invalid access key." }));
+            }
+            return;
+          }
+
+          // Fallback: whitelisted, no password set
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: true, email: normalized }));
+        } catch {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: false, error: "Invalid request." }));
+        }
+      });
+    },
+  };
+}
+
+const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy(), vitePluginAuthProxy()];
 
 export default defineConfig({
   base: '/Vinci-Course/',

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Workspace Authorization</title>
+  <link rel="stylesheet" href="../css/auth-page.css">
+  <meta name="csrf-token" content="{{csrf_token}}">
+</head>
+<body class="auth-page">
+  <div class="watermark">
+    <div class="watermark-pattern"></div>
+  </div>
+  <div class="container">
+    <div class="content">
+      <header class="header">
+        <h1 class="h1">Vinci Lab Industrial-Editorial Workspace</h1>
+        <p class="subheading">Please authenticate to access the lab workspace</p>
+      </header>
+
+      <div class="auth-form">
+        <form id="auth-form">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required>
+          </div>
+          <button type="submit" class="btn-primary">Access Lab Workspace</button>
+        </form>
+      </div>
+
+      <div class="status-indicator">
+        <div class="status-pill status-primary">Active Session</div>
+        <div class="status-pill status-amber">Pending Authentication</div>
+      </div>
+
+      <footer>
+        <div class="status-pill status-green">Secure Connection</div>
+        <p class="disclaimer">Your session will expire in 15 minutes of inactivity</p>
+      </footer>
+    </div>
+  </div>
+
+  <script src="../js/tab-authorization.js"></script>
+</body>
+</html>

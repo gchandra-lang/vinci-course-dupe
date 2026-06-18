@@ -64,6 +64,7 @@ import {
   Day6MotionControlSimulator,
   Day7AudioCapstoneTool
 } from "../components/telemetry";
+import LabAuthPage from "../components/LabAuthPage";
 
 // All curriculum types are now sourced from src/types/syllabus.ts
 // Imported above: CurriculumDay, Slide, Lab, LabFile, PacingEntry
@@ -78,6 +79,7 @@ export default function Home() {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
   const [labGuideFullscreen, setLabGuideFullscreen] = useState<boolean>(false);
+  const [labAuthenticated, setLabAuthenticated] = useState<boolean>(false);
 
   // ── URL sync: read params on first mount ──
   const [urlReady, setUrlReady] = useState(false);
@@ -113,6 +115,23 @@ export default function Home() {
       suppressUrlWrite.current = false;
       setUrlReady(true);
     }, 0);
+  }, []);
+
+  // ── Lab auth persistence: check localStorage on mount ──
+  useEffect(() => {
+    const stored = localStorage.getItem("vinci-lab-auth");
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.expires && data.expires > Date.now()) {
+          setLabAuthenticated(true);
+        } else {
+          localStorage.removeItem("vinci-lab-auth");
+        }
+      } catch {
+        localStorage.removeItem("vinci-lab-auth");
+      }
+    }
   }, []);
 
   // ── URL sync: write state changes to URL ──
@@ -206,6 +225,18 @@ export default function Home() {
     } else {
       setActiveLabFile("");
     }
+  };
+
+  // ── Lab auth handlers ──
+  const handleLabAuthSuccess = (email: string) => {
+    const expires = Date.now() + 15 * 60 * 1000; // 15 min session
+    localStorage.setItem("vinci-lab-auth", JSON.stringify({ email, expires }));
+    setLabAuthenticated(true);
+  };
+
+  const handleLabSignOut = () => {
+    localStorage.removeItem("vinci-lab-auth");
+    setLabAuthenticated(false);
   };
 
   // Lab fullscreen toggle — activates native HTML5 Fullscreen API on the portal container
@@ -666,31 +697,50 @@ export default function Home() {
 
             {/* LAB WORKSPACES TAB */}
             {activeTab === "labs" && currentDayData.labs && currentDayData.labs.length > 0 && (
-              <div className="flex flex-col lg:flex-row gap-6">
-                
-                {/* Lab Selection Sidebar */}
-                <div className="w-full lg:w-72 flex flex-col gap-3">
-                  <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground">Available Labs</span>
-                  <div className="space-y-2">
-                    {currentDayData.labs.map((lab) => {
-                      const isActive = activeLabId === lab.id;
-                      return (
+              <>
+                {!labAuthenticated ? (
+                  /* Show auth page when not authenticated */
+                  <LabAuthPage onAuthSuccess={handleLabAuthSuccess} />
+                ) : (
+                  /* Show lab workspace when authenticated */
+                  <div className="flex flex-col lg:flex-row gap-6">
+
+                    {/* Authenticated badge + sign out */}
+                    <div className="w-full lg:w-72 flex flex-col gap-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground">Available Labs</span>
                         <button
-                          key={lab.id}
-                          onClick={() => handleLabChange(lab.id)}
-                          className={`w-full text-left p-4 rounded border transition-all flex flex-col gap-1 ${
-                            isActive 
-                              ? "bg-card border-primary shadow-sm" 
-                              : "bg-card/40 border-border hover:bg-accent"
-                          }`}
+                          onClick={handleLabSignOut}
+                          className="text-[10px] font-mono text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
                         >
-                          <span className="font-mono text-[10px] text-primary font-bold uppercase">{lab.id}</span>
-                          <span className="text-xs font-serif font-bold text-foreground line-clamp-1">{lab.title}</span>
+                          <Minimize2 className="h-3 w-3" />
+                          Sign Out
                         </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#509BB4]/10 border border-[#509BB4]/20 text-[#509BB4] text-[10px] font-mono font-bold w-fit">
+                        <div className="h-1.5 w-1.5 rounded-full bg-[#509BB4]" />
+                        Authenticated Session
+                      </div>
+                      <div className="space-y-2 mt-2">
+                        {currentDayData.labs.map((lab) => {
+                          const isActive = activeLabId === lab.id;
+                          return (
+                            <button
+                              key={lab.id}
+                              onClick={() => handleLabChange(lab.id)}
+                              className={`w-full text-left p-4 rounded border transition-all flex flex-col gap-1 ${
+                                isActive
+                                  ? "bg-card border-primary shadow-sm"
+                                  : "bg-card/40 border-border hover:bg-accent"
+                              }`}
+                            >
+                              <span className="font-mono text-[10px] text-primary font-bold uppercase">{lab.id}</span>
+                              <span className="text-xs font-serif font-bold text-foreground line-clamp-1">{lab.title}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
 
                 {/* Active Lab Workspace */}
                 {activeLab && (
@@ -852,6 +902,8 @@ export default function Home() {
                 )}
 
               </div>
+                )}
+              </>
             )}
 
           </div>
